@@ -1,0 +1,2268 @@
+  <!DOCTYPE html>
+  <!-- ============================================================
+      CUBEFLICT — Crisis en el Consejo de Seguridad
+      Archivo único autocontenido: HTML + CSS + JavaScript.
+      Sin librerías, imágenes ni sonidos externos.
+      Fase 1: diseño visual. Fase 2: cubos, turnos y decisiones.
+      ============================================================ -->
+  <html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUBEFLICT — Crisis en el Consejo de Seguridad</title>
+
+    <style>
+      /* ==========================================================
+        BLOQUE 1: VARIABLES DE DISEÑO Y REINICIO BÁSICO
+        Paleta oscura y medidas reutilizables en todo el juego.
+        ========================================================== */
+      :root {
+        --fondo: #111;
+        --panel: #1c1c1c;
+        --borde: #333;
+        --texto: #eee;
+        --texto-suave: #aaa;
+        --azul: #3b82f6;
+        --verde: #22c55e;
+        --amarillo: #eab308;
+        --rojo: #ef4444;
+        --radio: 12px;
+        --sombra: 0 8px 24px rgba(0, 0, 0, 0.45);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        color-scheme: dark;
+      }
+
+      body {
+        min-height: 100vh;
+        background: var(--fondo);
+        color: var(--texto);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu,
+          Cantarell, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.5;
+        padding: 24px 16px 48px;
+      }
+
+      /* ==========================================================
+        BLOQUE 2: CONTENEDOR PRINCIPAL
+        Centra el juego y limita su ancho en pantallas grandes.
+        ========================================================== */
+      .juego {
+        width: 100%;
+        max-width: 960px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      /* ==========================================================
+        BLOQUE 3: CABECERA CON TÍTULO Y SUBTÍTULO
+        Identidad visual del juego.
+        ========================================================== */
+      .cabecera {
+        text-align: center;
+        padding: 8px 0 4px;
+      }
+
+      .titulo {
+        font-size: clamp(2.4rem, 9vw, 4.5rem);
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        line-height: 1;
+        background: linear-gradient(180deg, #ffffff 0%, #9ca3af 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 40px rgba(59, 130, 246, 0.15);
+      }
+
+      .subtitulo {
+        margin-top: 8px;
+        font-size: clamp(0.95rem, 2.6vw, 1.2rem);
+        color: var(--texto-suave);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      /* ==========================================================
+        BLOQUE 4: PANEL GENÉRICO
+        Tarjeta reutilizable para estadísticas, turnos y decisiones.
+        ========================================================== */
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--borde);
+        border-radius: var(--radio);
+        padding: 18px;
+        box-shadow: var(--sombra);
+      }
+
+      .panel__titulo {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--texto-suave);
+        margin-bottom: 14px;
+      }
+
+      /* ==========================================================
+        BLOQUE 5: CONTADOR DE TURNOS Y FASE NARRATIVA
+        Muestra "Turno X de 12" y el nombre de la fase actual.
+        ========================================================== */
+      .turnos {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .turnos__numero {
+        font-size: clamp(1.1rem, 3vw, 1.35rem);
+        font-weight: 800;
+      }
+
+      .turnos__numero span {
+        color: var(--azul);
+      }
+
+      .turnos__fase {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--texto-suave);
+        border: 1px solid var(--borde);
+        border-radius: 999px;
+        padding: 5px 12px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      /* ==========================================================
+        BLOQUE 6: PANEL DE LAS CUATRO ESTADÍSTICAS
+        Cuatro barras de progreso de 0 a 100 con icono y valor.
+        ========================================================== */
+      .estadisticas {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 24px;
+      }
+
+      .estadistica {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      .estadistica__fila {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .estadistica__nombre {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--texto-suave);
+        white-space: nowrap;
+      }
+
+      .estadistica__icono {
+        font-size: 0.95rem;
+        line-height: 1;
+      }
+
+      .estadistica__valor {
+        font-variant-numeric: tabular-nums;
+        font-size: 0.95rem;
+        font-weight: 800;
+      }
+
+      /* Pista y relleno de la barra de progreso */
+      .barra {
+        position: relative;
+        width: 100%;
+        height: 12px;
+        border-radius: 999px;
+        background: #0b0b0b;
+        border: 1px solid var(--borde);
+        overflow: hidden;
+      }
+
+      .barra__relleno {
+        height: 100%;
+        width: 50%; /* Valor inicial de todas las estadísticas */
+        border-radius: inherit;
+        transition: width 0.35s ease, background-color 0.35s ease;
+      }
+
+      /* Colores por estado: amarillo en el rango medio (valor 50) */
+      .barra__relleno--amarillo { background: var(--amarillo); }
+      .barra__relleno--verde    { background: var(--verde); }
+      .barra__relleno--rojo     { background: var(--rojo); }
+
+      /* Acentos por estadística en el icono */
+      .estadistica--diplomacia .estadistica__icono { color: var(--azul); }
+      .estadistica--economia   .estadistica__icono { color: var(--verde); }
+      .estadistica--opinion    .estadistica__icono { color: var(--amarillo); }
+      .estadistica--conflicto  .estadistica__icono { color: var(--rojo); }
+
+      /* ==========================================================
+        BLOQUE 7: MODAL DE DECISIONES
+        Pantalla superpuesta que oscurece el tablero. Reutiliza la
+        base visual de la pantalla final y del tutorial.
+        ========================================================== */
+      .decision__tarjeta {
+        max-width: 560px;
+        text-align: left;
+        max-height: 86vh;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .decision__etiqueta {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--texto-suave);
+        margin-bottom: 0;
+      }
+
+      /* ==========================================================
+        BLOQUE 8: PIE DE PÁGINA
+        Crédito contextual discreto.
+        ========================================================== */
+      .pie {
+        text-align: center;
+        font-size: 0.72rem;
+        color: #666;
+        letter-spacing: 0.04em;
+      }
+
+      /* ==========================================================
+        BLOQUE 9: DISEÑO RESPONSIVE
+        En móvil las estadísticas pasan a una sola columna.
+        ========================================================== */
+       @media (max-width: 560px) {
+       body {
+       padding: 16px 12px 32px;
+     }
+
+       .panel {
+       padding: 14px;
+      }
+
+      .estadisticas {
+      grid-template-columns: 1fr;
+      gap: 14px;
+     }
+
+      .turnos {
+      flex-direction: column;
+      align-items: flex-start;
+     }
+    }
+
+      /* ==========================================================
+        BLOQUE 10: ACCESIBILIDAD
+        Respeta la preferencia de movimiento reducido.
+        ========================================================== */
+      @media (prefers-reduced-motion: reduce) {
+        .barra__relleno {
+          transition: none;
+        }
+      }
+
+      /* ==========================================================
+        BLOQUE 17: TABLERO DE CUBOS
+        Rejilla 6x6 con cubos cuadrados y tamaño adaptativo.
+        ========================================================== */
+      .tablero-info {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .tablero-info .panel__titulo {
+        margin-bottom: 0;
+      }
+
+      .tablero-controles {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .racha {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--texto-suave);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--borde);
+        border-radius: 999px;
+        padding: 6px 12px;
+        white-space: nowrap;
+      }
+
+      .racha strong {
+        color: var(--amarillo);
+        font-size: 1rem;
+      }
+
+      .racha__total {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding-left: 8px;
+        border-left: 1px solid var(--borde);
+        color: #777;
+        font-size: 0.7rem;
+      }
+
+      .racha__total b {
+        color: var(--azul);
+        font-size: 0.9rem;
+      }
+
+      .leyenda {
+        font-size: 0.72rem;
+        line-height: 1.7;
+        color: #8a8a8a;
+        text-align: center;
+        margin-bottom: 14px;
+      }
+
+      .tablero-scroll {
+        width: 100%;
+        overflow-x: auto;
+        display: flex;
+        justify-content: center;
+        padding-bottom: 2px;
+      }
+
+      .tablero {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 6px;
+        width: 100%;
+        min-width: 282px;   /* 6 cubos de 40 px + separaciones */
+        max-width: 402px;   /* 6 cubos de 60 px + separaciones */
+        padding: 6px;
+        background: #0d0d0d;
+        border: 1px solid var(--borde);
+        border-radius: 12px;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      .cubo {
+        aspect-ratio: 1 / 1;
+        min-width: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: inherit;
+        font-size: clamp(1rem, 5vw, 1.55rem);
+        line-height: 1;
+        color: #fff;
+        border: 2px solid rgba(255, 255, 255, 0.14);
+        border-radius: 8px;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: transform 0.12s ease, border-color 0.12s ease,
+          box-shadow 0.12s ease, opacity 0.16s ease;
+      }
+
+      .cubo:hover {
+        transform: scale(1.04);
+      }
+
+      .cubo--seleccionado {
+        border-color: #fff;
+        transform: scale(1.08);
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3),
+          0 0 16px rgba(255, 255, 255, 0.25);
+        z-index: 2;
+      }
+
+      .cubo--tratado  { background: linear-gradient(145deg, #2563eb, #1e3a8a); }
+      .cubo--comercio { background: linear-gradient(145deg, #22c55e, #15803d); }
+      .cubo--prensa   { background: linear-gradient(145deg, #eab308, #a16207); }
+      .cubo--militar  { background: linear-gradient(145deg, #ef4444, #991b1b); }
+
+      .cubo--hueco {
+        background: transparent;
+        border-color: transparent;
+        pointer-events: none;
+      }
+
+      .cubo--eliminando {
+        opacity: 0;
+        transform: scale(0.35) rotate(10deg);
+        pointer-events: none;
+      }
+
+      @keyframes caerCubo {
+        from { transform: translateY(-22px); opacity: 0.15; }
+        to   { transform: translateY(0); opacity: 1; }
+      }
+
+      .cubo--caida {
+        animation: caerCubo 0.2s ease-out both;
+      }
+
+      /* ==========================================================
+        BLOQUE 18: BOTONES
+        Estilos comunes para todas las acciones del juego.
+        ========================================================== */
+      .boton {
+        font: inherit;
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 10px 16px;
+        color: var(--texto);
+        background: #2a2a2a;
+        border: 1px solid #444;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.15s ease, border-color 0.15s ease,
+          transform 0.1s ease;
+      }
+
+      .boton:hover {
+        background: #333;
+        border-color: #666;
+      }
+
+      .boton:active {
+        transform: scale(0.98);
+      }
+
+      .boton:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .boton--principal {
+        background: var(--azul);
+        border-color: var(--azul);
+        color: #fff;
+      }
+
+      .boton--principal:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+      }
+
+      .boton--peligro {
+        background: transparent;
+        border-color: #7f1d1d;
+        color: #f87171;
+      }
+
+      .boton--peligro:hover {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: #b91c1c;
+      }
+
+      .turnos__acciones {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+      }
+
+      /* ==========================================================
+        BLOQUE 19: MODAL DE DECISIÓN
+        El fondo oscurecido y la tarjeta los aporta .final; aquí se
+        ajustan el texto y las opciones de la decisión.
+        ========================================================== */
+      .decision__fase {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--azul);
+      }
+
+      .decision__texto {
+        font-size: 1.02rem;
+        font-weight: 700;
+        line-height: 1.45;
+      }
+
+      .decision__nota {
+        font-size: 0.75rem;
+        color: var(--amarillo);
+      }
+
+      .decision__opciones {
+        display: grid;
+        gap: 10px;
+        width: 100%;
+      }
+
+      .opcion {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        width: 100%;
+        padding: 12px 14px;
+        text-align: left;
+        font: inherit;
+        color: var(--texto);
+        background: #242424;
+        border: 1px solid #3a3a3a;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+      }
+
+      .opcion:hover:not(:disabled) {
+        background: #2c2c2c;
+        border-color: #666;
+      }
+
+      .opcion:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .opcion__titulo {
+        font-weight: 700;
+        font-size: 0.92rem;
+      }
+
+      .opcion__efecto {
+        font-size: 0.76rem;
+        color: var(--texto-suave);
+      }
+
+      .opcion__requisito {
+        font-size: 0.74rem;
+        font-weight: 700;
+        color: #f87171;
+      }
+
+      .decision__resultado {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 14px;
+        background: #222;
+        border: 1px solid #3a3a3a;
+        border-radius: 10px;
+      }
+
+      .decision__resultado p {
+        font-size: 0.9rem;
+      }
+
+      .decision__resultado .destacado {
+        font-weight: 800;
+        color: #fff;
+      }
+
+      /* ==========================================================
+        BLOQUE 20: REGISTRO DE LA PARTIDA
+        ========================================================== */
+      .registro {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-height: 190px;
+        overflow-y: auto;
+        font-size: 0.8rem;
+        line-height: 1.45;
+        color: #b5b5b5;
+        scrollbar-width: thin;
+      }
+
+      .registro__linea {
+        border-left: 2px solid #333;
+        padding-left: 9px;
+      }
+
+      .registro__linea--destacado {
+        border-left-color: var(--azul);
+        color: var(--texto);
+      }
+
+      /* ==========================================================
+        BLOQUE 21: PANTALLA FINAL
+        ========================================================== */
+      .final {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(3px);
+      }
+
+      .final[hidden] {
+        display: none;
+      }
+
+      .final__tarjeta {
+        width: 100%;
+        max-width: 520px;
+        padding: 30px 26px;
+        text-align: center;
+        background: var(--panel);
+        border: 1px solid #444;
+        border-radius: 16px;
+        box-shadow: var(--sombra);
+      }
+
+      .final__etiqueta {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--texto-suave);
+        margin-bottom: 10px;
+      }
+
+      .final__titulo {
+        font-size: clamp(1.5rem, 6vw, 2.2rem);
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        line-height: 1.1;
+        margin-bottom: 8px;
+      }
+
+      .final--victoria .final__titulo { color: var(--verde); }
+      .final--derrota  .final__titulo { color: var(--rojo); }
+      .final--neutro   .final__titulo { color: var(--amarillo); }
+
+      .final__subtitulo {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--texto-suave);
+        margin-bottom: 16px;
+      }
+
+      .final__informe {
+        font-size: 0.88rem;
+        color: #c8c8c8;
+        margin-bottom: 22px;
+      }
+
+      /* ==========================================================
+        BLOQUE 21B: PANTALLA DE INICIO / TUTORIAL
+        Modal previo a la partida que explica los colores.
+        ========================================================== */
+      .tutorial__tarjeta {
+        max-width: 560px;
+        text-align: left;
+      }
+
+      .tutorial__titulo {
+        color: #fff;
+        text-align: center;
+      }
+
+      .tutorial__intro {
+        font-size: 0.88rem;
+        color: #c8c8c8;
+        margin-bottom: 18px;
+        text-align: center;
+      }
+
+      .tutorial__lista {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .tutorial__item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 10px 12px;
+        background: #222;
+        border: 1px solid #333;
+        border-radius: 10px;
+      }
+
+      .muestra {
+        flex: 0 0 auto;
+        width: 34px;
+        height: 34px;
+        border-radius: 7px;
+        border: 2px solid rgba(255, 255, 255, 0.16);
+      }
+
+      .muestra--tratado  { background: linear-gradient(145deg, #2563eb, #1e3a8a); }
+      .muestra--comercio { background: linear-gradient(145deg, #22c55e, #15803d); }
+      .muestra--prensa   { background: linear-gradient(145deg, #eab308, #a16207); }
+      .muestra--militar  { background: linear-gradient(145deg, #ef4444, #991b1b); }
+
+      .tutorial__detalle {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .tutorial__detalle strong {
+        font-size: 0.88rem;
+      }
+
+      .tutorial__detalle span {
+        font-size: 0.78rem;
+        color: var(--texto-suave);
+      }
+
+      .tutorial__nota {
+        font-size: 0.78rem;
+        color: var(--amarillo);
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .tutorial__accion {
+        display: flex;
+        justify-content: center;
+      }
+
+      /* Aviso de ayuda bajo el título del tablero */
+      .tablero-ayuda {
+        font-size: 0.75rem;
+        color: var(--texto-suave);
+        text-align: center;
+        margin-bottom: 12px;
+      }
+
+      /* ==========================================================
+        BLOQUE 22: AJUSTES RESPONSIVE DEL TABLERO
+        ========================================================== */
+      @media (max-width: 560px) {
+        .tablero-info {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .tablero-controles {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .boton {
+          padding: 9px 13px;
+          font-size: 0.8rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .cubo,
+        .cubo--caida {
+          transition: none;
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ==========================================================
+        BLOQUE 11: CONTENEDOR GENERAL DEL JUEGO
+        ========================================================== -->
+    <main class="juego">
+
+      <!-- BLOQUE 12: CABECERA (título y subtítulo) -->
+      <header class="cabecera">
+        <h1 class="titulo">CUBEFLICT</h1>
+        <p class="subtitulo">Crisis en el Consejo de Seguridad</p>
+      </header>
+
+      <!-- BLOQUE 13: CONTADOR DE TURNOS Y FASE NARRATIVA -->
+      <section class="panel" aria-label="Turno actual">
+        <div class="turnos">
+          <p class="turnos__numero">Turno <span id="turno-numero">1</span> de 12</p>
+          <p class="turnos__fase" id="turno-fase">Fase 1 — Alerta Temprana</p>
+          <div class="turnos__acciones">
+            <button class="boton boton--peligro" id="boton-reiniciar" type="button">
+              Reiniciar juego
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- BLOQUE 14: PANEL DE ESTADÍSTICAS -->
+      <section class="panel" id="panel-estadisticas" aria-label="Estadísticas del juego">
+        <h2 class="panel__titulo">Estadísticas</h2>
+
+        <div class="estadisticas">
+
+          <!-- Diplomacia -->
+          <div class="estadistica estadistica--diplomacia">
+            <div class="estadistica__fila">
+              <span class="estadistica__nombre">
+                <span class="estadistica__icono" aria-hidden="true">🔵</span>
+                Diplomacia
+              </span>
+              <span class="estadistica__valor">50</span>
+            </div>
+            <div class="barra" role="progressbar" aria-valuemin="0"
+                aria-valuemax="100" aria-valuenow="50"
+                aria-label="Diplomacia">
+              <div class="barra__relleno barra__relleno--amarillo"></div>
+            </div>
+          </div>
+
+          <!-- Economía -->
+          <div class="estadistica estadistica--economia">
+            <div class="estadistica__fila">
+              <span class="estadistica__nombre">
+                <span class="estadistica__icono" aria-hidden="true">🟢</span>
+                Economía
+              </span>
+              <span class="estadistica__valor">50</span>
+            </div>
+            <div class="barra" role="progressbar" aria-valuemin="0"
+                aria-valuemax="100" aria-valuenow="50"
+                aria-label="Economía">
+              <div class="barra__relleno barra__relleno--amarillo"></div>
+            </div>
+          </div>
+
+          <!-- Opinión pública -->
+          <div class="estadistica estadistica--opinion">
+            <div class="estadistica__fila">
+              <span class="estadistica__nombre">
+                <span class="estadistica__icono" aria-hidden="true">🟡</span>
+                Opinión pública
+              </span>
+              <span class="estadistica__valor">50</span>
+            </div>
+            <div class="barra" role="progressbar" aria-valuemin="0"
+                aria-valuemax="100" aria-valuenow="50"
+                aria-label="Opinión pública">
+              <div class="barra__relleno barra__relleno--amarillo"></div>
+            </div>
+          </div>
+
+          <!-- Conflicto -->
+          <div class="estadistica estadistica--conflicto">
+            <div class="estadistica__fila">
+              <span class="estadistica__nombre">
+                <span class="estadistica__icono" aria-hidden="true">🔴</span>
+                Conflicto
+              </span>
+              <span class="estadistica__valor">50</span>
+            </div>
+            <div class="barra" role="progressbar" aria-valuemin="0"
+                aria-valuemax="100" aria-valuenow="50"
+                aria-label="Conflicto">
+              <div class="barra__relleno barra__relleno--amarillo"></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- BLOQUE 15: TABLERO DE CUBOS -->
+      <section class="panel" aria-label="Tablero de cubos">
+        <div class="tablero-info">
+          <h2 class="panel__titulo">Tablero de crisis</h2>
+          <div class="tablero-controles">
+            <p class="racha" title="Cubos de la cadena actual y racha acumulada">
+              Cadena <strong id="racha-valor">0</strong>
+              <span class="racha__total">Total <b id="racha-total">0</b></span>
+            </p>
+          </div>
+        </div>
+
+        <p class="tablero-ayuda">
+          Une al menos 3 cubos del mismo color en horizontal, vertical o diagonal.
+          Una jugada por turno.
+        </p>
+
+        <p class="leyenda">
+          🟦 Tratado: +Diplomacia, −Economía |
+          🟩 Comercio: +Economía, −Opinión |
+          🟨 Prensa: +Opinión, −Economía |
+          🟥 Militar: +Conflicto, +Economía
+        </p>
+
+        <div class="tablero-scroll">
+          <div class="tablero" id="tablero" role="grid"
+              aria-label="Tablero de cubos 6 por 6"></div>
+        </div>
+      </section>
+
+      <!-- BLOQUE 17: REGISTRO DE LA PARTIDA -->
+      <section class="panel" aria-label="Registro de la partida">
+        <h2 class="panel__titulo">Registro</h2>
+        <div class="registro" id="registro" aria-live="polite"></div>
+      </section>
+
+      <!-- BLOQUE 18: PIE -->
+      <footer class="pie">
+        Inspirado en la Resolución 1298 (2000) del Consejo de Seguridad de la ONU.
+      </footer>
+
+    </main>
+
+    <!-- BLOQUE 19: PANTALLA FINAL (oculta hasta el turno 12) -->
+    <div class="final" id="final" hidden>
+      <div class="final__tarjeta" role="dialog" aria-modal="true"
+          aria-labelledby="final-titulo">
+        <p class="final__etiqueta">Fin del juego</p>
+        <h2 class="final__titulo" id="final-titulo">—</h2>
+        <p class="final__subtitulo" id="final-subtitulo">—</p>
+        <p class="final__informe" id="final-informe">—</p>
+        <button class="boton boton--principal" id="final-reiniciar" type="button">
+          Jugar de nuevo
+        </button>
+      </div>
+    </div>
+
+  <!-- BLOQUE 19B: PANTALLA DE INICIO / TUTORIAL EN CADENA -->
+  <div class="final" id="tutorial">
+    <div class="final__tarjeta tutorial__tarjeta" role="dialog" aria-modal="true">
+      <p class="final__etiqueta">Consejo de Seguridad</p>
+
+      <div id="paso-tutorial-1">
+        <h2 class="final__titulo tutorial__titulo">La Crisis</h2>
+        <p class="tutorial__intro">Dos naciones, Valdavia y Kestria, están al borde de la guerra. Como miembro del Consejo de Seguridad, tu voto y tus decisiones son la única esperanza para evitar el desastre.</p>
+      </div>
+
+      <div id="paso-tutorial-2" style="display: none;">
+        <h2 class="final__titulo tutorial__titulo">El Tablero</h2>
+        <p class="tutorial__intro">Une 3 o más cubos del mismo color (en línea o diagonal) para alterar el curso de la historia. Cada color tiene un símbolo y un efecto distinto.</p>
+        <ul class="tutorial__lista">
+          <li class="tutorial__item"><span class="muestra muestra--tratado"></span><span class="tutorial__detalle"><strong>Azul — Tratado (☮)</strong><span>+Diplomacia, −Economía</span></span></li>
+          <li class="tutorial__item"><span class="muestra muestra--comercio"></span><span class="tutorial__detalle"><strong>Verde — Comercio (¤)</strong><span>+Economía, −Opinión</span></span></li>
+          <li class="tutorial__item"><span class="muestra muestra--prensa"></span><span class="tutorial__detalle"><strong>Amarillo — Prensa (!)</strong><span>+Opinión, −Economía</span></span></li>
+          <li class="tutorial__item"><span class="muestra muestra--militar"></span><span class="tutorial__detalle"><strong>Rojo — Militar (✖)</strong><span>+Conflicto, +Economía</span></span></li>
+        </ul>
+      </div>
+
+      <div id="paso-tutorial-3" style="display: none;">
+        <h2 class="final__titulo tutorial__titulo">Las Estadísticas</h2>
+        <p class="tutorial__intro">Cada movimiento altera las 4 barras de tu panel. Tu objetivo es subir la Diplomacia, la Economía y la Opinión, mientras mantienes el Conflicto lo más bajo posible. Si el Conflicto llega a 100, la guerra estalla.</p>
+      </div>
+
+      <div id="paso-tutorial-4" style="display: none;">
+        <h2 class="final__titulo tutorial__titulo">La Racha y las Decisiones</h2>
+        <p class="tutorial__intro">Las cadenas de 4 o más cubos suman a tu racha global. Las de exactamente 3 la reinician a 0.<br><br>En los turnos 3, 6, 9 y 12, el juego se detendrá y deberás tomar una decisión diplomática. Tienes 12 turnos para salvar la paz.</p>
+      </div>
+
+      <div class="tutorial__accion" style="margin-top: 20px;">
+        <button class="boton boton--principal" id="btn-siguiente-tutorial" type="button">Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- BLOQUE 19C: MODAL DE DECISIÓN (oculto; se abre en los turnos 3, 6, 9 y 12)
+        Superpone la tarjeta oscureciendo el tablero de fondo. -->
+    <div class="final" id="decision-modal" hidden>
+      <div class="final__tarjeta decision__tarjeta" role="dialog" aria-modal="true"
+          aria-labelledby="decision-titulo">
+        <p class="final__etiqueta decision__etiqueta">Consejo de Seguridad</p>
+        <p class="decision__fase" id="decision-fase">—</p>
+        <h2 class="decision__texto" id="decision-titulo">—</h2>
+        <p class="decision__nota" id="decision-nota">—</p>
+        <div class="decision__opciones" id="decision-opciones"></div>
+      </div>
+    </div>
+    <!-- BLOQUE 20: SCRIPT DEL JUEGO -->
+    <script>
+      /* ============================================================
+        BLOQUE 21: CONFIGURACIÓN
+        Todas las constantes numéricas del juego, comentadas para
+        poder ajustar la dificultad sin tocar la lógica.
+        ============================================================ */
+      const CONFIG = {
+        FILAS: 6,                    // Filas del tablero de cubos
+        COLUMNAS: 6,                 // Columnas del tablero de cubos
+        TURNOS_TOTALES: 12,          // Número total de turnos de la partida
+
+        // Efectos por cubo de cada tipo
+        EFECTO_TRATADO:  { diplomacia: 1,   economia: -0.5, opinion: 0,   conflicto: 0 },
+        EFECTO_COMERCIO: { diplomacia: 0,   economia: 1,    opinion: -0.5, conflicto: 0 },
+        EFECTO_PRENSA:   { diplomacia: 0,   economia: -0.5, opinion: 1,   conflicto: 0 },
+        EFECTO_MILITAR:  { diplomacia: 0,   economia: 1,    opinion: 0,   conflicto: 1 },
+
+        // Estadísticas
+        STAT_INICIAL: 50,            // Valor inicial de las 4 estadísticas
+        STAT_MIN: 0,                 // Valor mínimo permitido
+        STAT_MAX: 100,               // Valor máximo permitido
+
+        // Umbrales de color de las barras
+        UMBRAL_VERDE_ALTO: 60,       // Diplomacia/Economía/Opinión: verde por encima
+        UMBRAL_ROJO_BAJO: 30,        // Diplomacia/Economía/Opinión: rojo por debajo
+        UMBRAL_CONFLICTO_VERDE: 40,  // Conflicto: verde por debajo
+        UMBRAL_CONFLICTO_ROJO: 70,   // Conflicto: rojo por encima
+        UMBRAL_DIPLOMACIA_VICTORIA: 70, // Diplomacia mínima para la victoria
+        UMBRAL_DIPLOMACIA_DERROTA: 40,  // Diplomacia máxima en la derrota
+
+        // Requisitos de las decisiones bloqueadas
+        REQUISITO_ECONOMIA: 40,      // Economía mínima para ciertas opciones
+        REQUISITO_OPINION: 40,       // Opinión mínima para ciertas opciones
+
+        // Audio (Web Audio API)
+        AUDIO_VOLUMEN: 0.08,         // Volumen del tono (0 a 1)
+        AUDIO_DURACION: 0.15,        // Duración del tono en segundos
+        AUDIO_FRECUENCIA_BASE: 440,  // Frecuencia base al resolver un grupo (Hz)
+        AUDIO_PASO_FRECUENCIA: 80,   // Incremento por cubo al resolver (Hz)
+
+        // Audio de la cadena: cada cubo añadido suena más agudo
+        AUDIO_CADENA_BASE: 400,      // Frecuencia del primer cubo de la cadena (Hz)
+        AUDIO_CADENA_PASO: 100,      // Incremento por cubo añadido (Hz)
+
+        // Racha
+        RACHA_MINIMO_SUMA: 4,        // Cadenas de 4+ cubos suman a la racha global
+
+        // Decisiones
+        MULTIPLICADOR_FASE_FINAL: 2, // Las decisiones de la fase 4 valen x2
+
+        // Reglas del puzzle
+        MINIMO_GRUPO: 3,             // Cubos mínimos para validar una jugada
+        JUGADAS_POR_TURNO: 1,        // Una única jugada por turno
+
+        // Animaciones
+        MS_ELIMINAR: 220,            // Duración de la animación de borrado (ms)
+        MS_CAIDA: 200,               // Duración de la animación de caída (ms)
+        MS_CIERRE_SELECCION: 1200    // Espera para cerrar un grupo con clics (ms)
+      };
+
+      /* ============================================================
+        BLOQUE 22: CONSTANTES DE CONTENIDO
+        Diccionario de países y definición de los tipos de cubo.
+        ============================================================ */
+      const NOMBRES_PAISES = [
+        "Amara", "Bedir", "Kestria", "Valdavia", "Sorvania", "Trentia",
+        "Malvar", "Oresia", "Pelagia", "Dravenia", "Corvania", "Eldara",
+        "Fenris", "Galvia", "Halcyon", "Jorvania", "Kaldria", "Lusitania",
+        "Mordavia", "Norvia"
+      ];
+
+      // Tipos de cubo: clave interna, clase CSS de color y nombre visible.
+      // El tablero muestra solo cuadrados de color, sin iconos.
+      const TIPOS_CUBO = {
+        tratado:  { clase: "cubo--tratado",  nombre: "Tratado"  },
+        comercio: { clase: "cubo--comercio", nombre: "Comercio" },
+        prensa:   { clase: "cubo--prensa",   nombre: "Prensa"   },
+        militar:  { clase: "cubo--militar",  nombre: "Militar"  }
+      };
+
+      const CLAVES_TIPO = Object.keys(TIPOS_CUBO);
+
+      // Fases narrativas según el turno
+      const FASES = [
+        { hasta: 3,  nombre: "Fase 1 — Alerta Temprana" },
+        { hasta: 6,  nombre: "Fase 2 — Estallido y Reacción" },
+        { hasta: 9,  nombre: "Fase 3 — Presión y Desgaste" },
+        { hasta: 12, nombre: "Fase 4 — Resolución" }
+      ];
+
+      // Turnos en los que aparece una decisión
+      const TURNOS_DECISION = [3, 6, 9, 12];
+
+      /* ============================================================
+        BLOQUE 23: DECISIONES
+        Cuatro situaciones (una por fase) con opciones, efectos
+        garantizados y tirada de dados (bonus o penalty).
+        ============================================================ */
+      const DECISIONES = {
+        3: {
+          fase: "Fase 1 — Alerta Temprana",
+          texto: "Los satélites confirman movimientos inusuales. Las tropas enemigas se acumulan en el paso fronterizo. La población exige una respuesta firme, pero un paso en falso podría desatar lo impensable. El Consejo espera tu propuesta.",
+          opciones: [
+            {
+              titulo: "Enviar observadores militares",
+              efecto: { diplomacia: 8, conflicto: -4 },
+              tirada: { stat: "diplomacia", bonus: 10, penaltyStat: "conflicto", penalty: 10 }
+            },
+            {
+              titulo: "Ignorar la movilización",
+              efecto: { conflicto: 8, opinion: -4 },
+              tirada: { stat: "conflicto", bonus: 10, penaltyStat: "diplomacia", penalty: -10 }
+            }
+          ]
+        },
+        6: {
+          fase: "Fase 2 — Estallido y Reacción",
+          texto: "El primer choque armado ha dejado víctimas mortales. La comunidad internacional observa con horror. La presión sobre el Consejo de Seguridad es máxima y cada palabra cuenta.",
+          opciones: [
+            {
+              titulo: "Condenar públicamente el ataque",
+              efecto: { opinion: 8, conflicto: -2 },
+              tirada: { stat: "opinion", bonus: 10, penaltyStat: "diplomacia", penalty: -10 }
+            },
+            {
+              titulo: "Proponer un embargo de armas",
+              efecto: { diplomacia: 8, economia: -5 },
+              requisito: { stat: "economia", valor: CONFIG.REQUISITO_ECONOMIA },
+              tirada: { stat: "diplomacia", bonus: 10, penaltyStat: "economia", penalty: -10 }
+            }
+          ]
+        },
+        9: {
+          fase: "Fase 3 — Presión y Desgaste",
+          texto: "La guerra se estanca y las trincheras se han vuelto permanentes. El desgaste económico y humano es insoportable. La presión internacional exige una salida, pero las posturas están más enfrentadas que nunca.",
+          opciones: [
+            {
+              titulo: "Ampliar las sanciones económicas",
+              efecto: { diplomacia: 8, economia: -5 },
+              requisito: { stat: "economia", valor: CONFIG.REQUISITO_ECONOMIA },
+              tirada: { stat: "diplomacia", bonus: 10, penaltyStat: "opinion", penalty: -10 }
+            },
+            {
+              titulo: "Aumentar el apoyo militar al aliado",
+              efecto: { conflicto: 8, economia: 3 },
+              tirada: { stat: "conflicto", bonus: 10, penaltyStat: "diplomacia", penalty: -10 }
+            }
+          ]
+        },
+        12: {
+          fase: "Fase 4 — Resolución",
+          texto: "El Consejo vota la resolución final. El destino de dos naciones pende de un hilo. La historia juzgará vuestras acciones. El destino está en juego.",
+          opciones: [
+            {
+              titulo: "Firmar el acuerdo de paz",
+              efecto: { diplomacia: 10, conflicto: -10 },
+              tirada: { stat: "diplomacia", bonus: 10, penaltyStat: "conflicto", penalty: 10 }
+            },
+            {
+              titulo: "Romper las negociaciones",
+              efecto: { conflicto: 10, diplomacia: -5 },
+              tirada: { stat: "conflicto", bonus: 10, penaltyStat: "opinion", penalty: -10 }
+            }
+          ]
+        }
+      };
+
+      /* ============================================================
+        BLOQUE 24: ESTADO DEL JUEGO
+        Todo lo mutable de la partida vive en este objeto.
+        ============================================================ */
+      let estado = {
+        turno: 1,
+        fase: "Fase 1 — Alerta Temprana",
+        racha: 0,                // Racha global acumulada (persiste entre turnos)
+        jugadaUsada: false,      // El jugador ya gastó su jugada del turno
+        resolviendo: false,      // Animación en curso, se bloquean los clics
+        decisionPendiente: false,
+        decisionResuelta: false,
+        finDeJuego: false,
+        estadisticas: {
+          diplomacia: CONFIG.STAT_INICIAL,
+          economia: CONFIG.STAT_INICIAL,
+          opinion: CONFIG.STAT_INICIAL,
+          conflicto: CONFIG.STAT_INICIAL
+        },
+        tablero: []   // Matriz de FILAS x COLUMNAS con claves de tipo
+      };
+
+      /* ============================================================
+        BLOQUE 25: REFERENCIAS AL DOM
+        Se buscan una sola vez al cargar el script.
+        ============================================================ */
+      const el = {
+        turnoNumero: document.getElementById("turno-numero"),
+        turnoFase: document.getElementById("turno-fase"),
+        botonReiniciar: document.getElementById("boton-reiniciar"),
+        rachaValor: document.getElementById("racha-valor"),
+        rachaTotal: document.getElementById("racha-total"),
+        tablero: document.getElementById("tablero"),
+        registro: document.getElementById("registro"),
+        tutorial: document.getElementById("tutorial"),
+        tutorialEmpezar: document.getElementById("tutorial-empezar"),
+        decisionModal: document.getElementById("decision-modal"),
+        decisionFase: document.getElementById("decision-fase"),
+        decisionTitulo: document.getElementById("decision-titulo"),
+        decisionNota: document.getElementById("decision-nota"),
+        decisionOpciones: document.getElementById("decision-opciones"),
+        final: document.getElementById("final"),
+        finalTitulo: document.getElementById("final-titulo"),
+        finalSubtitulo: document.getElementById("final-subtitulo"),
+        finalInforme: document.getElementById("final-informe"),
+        finalReiniciar: document.getElementById("final-reiniciar")
+      };
+
+      /* ============================================================
+        BLOQUE 26: UTILIDADES
+        Funciones auxiliares pequeñas y reutilizables.
+        ============================================================ */
+      function aleatorioEntero(max) {
+        return Math.floor(Math.random() * max);
+      }
+
+      function elegirAleatorio(lista) {
+        return lista[aleatorioEntero(lista.length)];
+      }
+
+      function limitar(valor, minimo, maximo) {
+        return Math.max(minimo, Math.min(maximo, valor));
+      }
+
+      function formatearNumero(valor) {
+        // Muestra enteros sin decimales y medios valores con un decimal
+        return Number.isInteger(valor) ? String(valor) : valor.toFixed(1);
+      }
+
+      /* ============================================================
+        BLOQUE 27: AUDIO (WEB AUDIO API)
+        Tonos sinusoidales cortos. Sin archivos externos.
+        - Sonido de cadena: sube con cada cubo añadido.
+        - Sonido de resolución: sube con la racha global.
+        ============================================================ */
+      let contextoAudio = null;
+
+      function asegurarContextoAudio() {
+        if (!contextoAudio) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return null;
+          contextoAudio = new AudioCtx();
+        }
+        if (contextoAudio.state === "suspended") {
+          contextoAudio.resume();
+        }
+        return contextoAudio;
+      }
+
+      // Emite un tono sinusoidal de duración y frecuencia dadas
+      function emitirTono(frecuencia) {
+        try {
+          const ctx = asegurarContextoAudio();
+          if (!ctx) return;
+
+          const oscilador = ctx.createOscillator();
+          const ganancia = ctx.createGain();
+
+          oscilador.type = "sine";
+          oscilador.frequency.value = frecuencia;
+
+          ganancia.gain.setValueAtTime(CONFIG.AUDIO_VOLUMEN, ctx.currentTime);
+          ganancia.gain.exponentialRampToValueAtTime(
+            0.0001,
+            ctx.currentTime + CONFIG.AUDIO_DURACION
+          );
+
+          oscilador.connect(ganancia);
+          ganancia.connect(ctx.destination);
+          oscilador.start();
+          oscilador.stop(ctx.currentTime + CONFIG.AUDIO_DURACION);
+        } catch (error) {
+          // El audio es opcional: si falla, el juego sigue funcionando
+          console.warn("Audio no disponible:", error);
+        }
+      }
+
+      // Sonido al resolver un grupo: la frecuencia sube con la racha global
+      function reproducirTono(racha) {
+        emitirTono(CONFIG.AUDIO_FRECUENCIA_BASE +
+          Math.max(0, racha - 1) * CONFIG.AUDIO_PASO_FRECUENCIA);
+      }
+
+      // Sonido al añadir un cubo a la cadena: 1 cubo = 400 Hz, 2 = 500 Hz...
+      function reproducirTonoCadena(longitudCadena) {
+        emitirTono(CONFIG.AUDIO_CADENA_BASE +
+          Math.max(0, longitudCadena - 1) * CONFIG.AUDIO_CADENA_PASO);
+      }
+
+      /* ============================================================
+        BLOQUE 28: REGISTRO
+        Añade líneas de texto al registro visible de la partida.
+        ============================================================ */
+      function registrar(texto, destacado = false) {
+        const linea = document.createElement("p");
+        linea.className = "registro__linea" +
+          (destacado ? " registro__linea--destacado" : "");
+        linea.textContent = texto;
+        el.registro.appendChild(linea);
+        el.registro.scrollTop = el.registro.scrollHeight;
+      }
+
+      /* ============================================================
+        BLOQUE 29: ESTADÍSTICAS
+        Aplicación de cambios, límites y pintado de las barras.
+        ============================================================ */
+      function aplicarCambios(cambios, multiplicador = 1) {
+        Object.keys(cambios).forEach(function (clave) {
+          if (clave in estado.estadisticas) {
+            estado.estadisticas[clave] = limitar(
+              estado.estadisticas[clave] + cambios[clave] * multiplicador,
+              CONFIG.STAT_MIN,
+              CONFIG.STAT_MAX
+            );
+          }
+        });
+        pintarEstadisticas();
+      }
+
+      function colorBarra(clave, valor) {
+        if (clave === "conflicto") {
+          if (valor < CONFIG.UMBRAL_CONFLICTO_VERDE) return "verde";
+          if (valor > CONFIG.UMBRAL_CONFLICTO_ROJO) return "rojo";
+          return "amarillo";
+        }
+        if (valor > CONFIG.UMBRAL_VERDE_ALTO) return "verde";
+        if (valor < CONFIG.UMBRAL_ROJO_BAJO) return "rojo";
+        return "amarillo";
+      }
+
+      function pintarEstadisticas() {
+        const claves = ["diplomacia", "economia", "opinion", "conflicto"];
+
+        claves.forEach(function (clave) {
+          const contenedor = document.querySelector(".estadistica--" + clave);
+          if (!contenedor) return;
+
+          const valor = estado.estadisticas[clave];
+          const valorTexto = contenedor.querySelector(".estadistica__valor");
+          const barra = contenedor.querySelector(".barra");
+          const relleno = contenedor.querySelector(".barra__relleno");
+
+          valorTexto.textContent = formatearNumero(valor);
+          relleno.style.width = valor + "%";
+          relleno.className = "barra__relleno barra__relleno--" +
+            colorBarra(clave, valor);
+          barra.setAttribute("aria-valuenow", String(Math.round(valor)));
+        });
+      }
+
+      /* ============================================================
+        BLOQUE 30: TABLERO
+        Creación, pintado, gravedad y relleno de cubos.
+        ============================================================ */
+      function tipoAleatorio() {
+        return elegirAleatorio(CLAVES_TIPO);
+      }
+
+      function crearTablero() {
+        estado.tablero = [];
+        for (let fila = 0; fila < CONFIG.FILAS; fila++) {
+          const filaCubos = [];
+          for (let columna = 0; columna < CONFIG.COLUMNAS; columna++) {
+            filaCubos.push(tipoAleatorio());
+          }
+          estado.tablero.push(filaCubos);
+        }
+
+        // Garantiza que el jugador siempre tenga al menos una jugada posible
+        if (!hayGrupoValido()) plantarGrupo();
+      }
+
+      // Comprueba si existe algún grupo recto o diagonal de MINIMO_GRUPO cubos
+      function hayGrupoValido() {
+        const minimo = CONFIG.MINIMO_GRUPO;
+        const direcciones = [[0, 1], [1, 0], [1, 1], [1, -1]];
+
+        for (let fila = 0; fila < CONFIG.FILAS; fila++) {
+          for (let columna = 0; columna < CONFIG.COLUMNAS; columna++) {
+            const tipo = estado.tablero[fila][columna];
+
+            for (let d = 0; d < direcciones.length; d++) {
+              const df = direcciones[d][0];
+              const dc = direcciones[d][1];
+              let encontrados = 1;
+
+              for (let paso = 1; paso < minimo; paso++) {
+                const f = fila + df * paso;
+                const c = columna + dc * paso;
+                if (f < 0 || f >= CONFIG.FILAS || c < 0 || c >= CONFIG.COLUMNAS) break;
+                if (estado.tablero[f][c] !== tipo) break;
+                encontrados++;
+              }
+
+              if (encontrados >= minimo) return true;
+            }
+          }
+        }
+        return false;
+      }
+
+      // Si el tablero aleatorio no ofrece jugadas, planta un grupo válido
+      function plantarGrupo() {
+        const direcciones = [[0, 1], [1, 0], [1, 1], [1, -1]];
+        const minimo = CONFIG.MINIMO_GRUPO;
+        const tipo = tipoAleatorio();
+
+        for (let intento = 0; intento < 60; intento++) {
+          const direccion = elegirAleatorio(direcciones);
+          const fila = aleatorioEntero(CONFIG.FILAS);
+          const columna = aleatorioEntero(CONFIG.COLUMNAS);
+          const celdas = [];
+          let cabe = true;
+
+          for (let paso = 0; paso < minimo; paso++) {
+            const f = fila + direccion[0] * paso;
+            const c = columna + direccion[1] * paso;
+            if (f < 0 || f >= CONFIG.FILAS || c < 0 || c >= CONFIG.COLUMNAS) {
+              cabe = false;
+              break;
+            }
+            celdas.push({ fila: f, columna: c });
+          }
+
+          if (!cabe) continue;
+          celdas.forEach(function (celda) {
+            estado.tablero[celda.fila][celda.columna] = tipo;
+          });
+          return;
+        }
+      }
+
+       // Crea el tablero desde cero (solo se usa al iniciar o reiniciar)
+          function pintarTablero() {
+            el.tablero.innerHTML = "";
+            for (let fila = 0; fila < CONFIG.FILAS; fila++) {
+              for (let columna = 0; columna < CONFIG.COLUMNAS; columna++) {
+                const tipo = estado.tablero[fila][columna];
+                el.tablero.appendChild(crearCuboDOM(tipo, fila, columna));
+              }
+            }
+          }
+
+          // Actualiza el tablero SIN borrarlo (para que no parpadee)
+            function actualizarTablero() {
+              const cubos = el.tablero.querySelectorAll(".cubo");
+              let indice = 0;
+              for (let fila = 0; fila < CONFIG.FILAS; fila++) {
+                for (let columna = 0; columna < CONFIG.COLUMNAS; columna++) {
+                  const tipo = estado.tablero[fila][columna];
+                  const cubo = cubos[indice];
+                  if (cubo) {
+                    const tipoAnterior = cubo.dataset.tipo;
+
+                    cubo.className = "cubo " + TIPOS_CUBO[tipo].clase;
+                    let simbolo = "";
+                    if (tipo === "tratado") simbolo = "☮";
+                    if (tipo === "comercio") simbolo = "$";
+                    if (tipo === "prensa") simbolo = "✍︎";
+                    if (tipo === "militar") simbolo = "⚔︎";
+                    cubo.innerHTML = `<span style="color: #fff; font-size: 1.2em; opacity: 0.9;">${simbolo}</span>`;
+                    cubo.dataset.fila = String(fila);
+                    cubo.dataset.columna = String(columna);
+                    cubo.dataset.tipo = tipo;
+
+                    // Si el cubo ha cambiado (ha caído o es nuevo), le ponemos la animación
+                    if (tipo !== tipoAnterior) {
+                      cubo.classList.add("cubo--caida");
+                      setTimeout(() => cubo.classList.remove("cubo--caida"), CONFIG.MS_CAIDA);
+                    }
+                  }
+                  indice++;
+                }
+              }
+            }
+
+      function crearCuboDOM(tipo, fila, columna) {
+        const cubo = document.createElement("button");
+        cubo.type = "button";
+        cubo.className = "cubo " + TIPOS_CUBO[tipo].clase;
+        let simbolo = "";
+        if (tipo === "tratado") simbolo = "☮";
+        if (tipo === "comercio") simbolo = "$";
+        if (tipo === "prensa") simbolo = "✍︎";
+        if (tipo === "militar") simbolo = "⚔︎";
+        cubo.innerHTML = `<span style="color: #fff; font-size: 1.2em; opacity: 0.9;">${simbolo}</span>`;
+        cubo.dataset.fila = String(fila);
+        cubo.dataset.columna = String(columna);
+        cubo.dataset.tipo = tipo;
+        cubo.setAttribute("role", "gridcell");
+        cubo.setAttribute(
+          "aria-label",
+          TIPOS_CUBO[tipo].nombre + " en fila " + (fila + 1) +
+            ", columna " + (columna + 1)
+        );
+        return cubo;
+      }
+
+      function cuboDOM(fila, columna) {
+        return el.tablero.querySelector(
+          '.cubo[data-fila="' + fila + '"][data-columna="' + columna + '"]'
+        );
+      }
+
+      /* ============================================================
+        BLOQUE 30B: GRAVEDAD Y RELLENO POR ARRIBA
+        Los cubos supervivientes caen y los huecos se rellenan con
+        cubos nuevos. El tablero NO se reinicia entre turnos.
+        ============================================================ */
+            function aplicarGravedad() {
+        for (let columna = 0; columna < CONFIG.COLUMNAS; columna++) {
+          const supervivientes = [];
+
+          // Recoge los cubos que quedan, de abajo hacia arriba
+          for (let fila = CONFIG.FILAS - 1; fila >= 0; fila--) {
+            if (estado.tablero[fila][columna] !== null) {
+              supervivientes.push(estado.tablero[fila][columna]);
+            }
+          }
+
+          // Los supervivientes se asientan en el fondo y arriba entran nuevos
+          for (let fila = CONFIG.FILAS - 1; fila >= 0; fila--) {
+            const indice = CONFIG.FILAS - 1 - fila;
+            estado.tablero[fila][columna] = indice < supervivientes.length
+              ? supervivientes[indice]
+              : tipoAleatorio();
+          }
+        }
+      }
+
+      // Si tras la caída no queda ninguna jugada, planta un grupo mínimo.
+      // Solo toca las celdas imprescindibles para no alterar el tablero.
+      // Devuelve true si hubo que modificar el tablero.
+      function garantizarJugada() {
+        if (hayGrupoValido()) return false;
+        plantarGrupo();
+        return true;
+      }
+
+      function rellenarTablero() {
+        crearTablero();
+        pintarTablero();
+        animarCaida();
+      }
+
+      /* ============================================================
+        BLOQUE 31: SELECCIÓN DE GRUPOS CONECTADOS
+        Se arrastra (o se toca) por cubos vecinos del mismo tipo,
+        en horizontal, vertical o diagonal.
+        ============================================================ */
+      let seleccion = [];        // Lista de {fila, columna}
+      let arrastrando = false;
+      let huboMovimiento = false; // Distingue arrastre real de simple clic
+
+      function esAdyacente(a, b) {
+        const distanciaFilas = Math.abs(a.fila - b.fila);
+        const distanciaColumnas = Math.abs(a.columna - b.columna);
+        // Vecindad de 8: incluye las cuatro diagonales
+        return distanciaFilas <= 1 && distanciaColumnas <= 1 &&
+          !(distanciaFilas === 0 && distanciaColumnas === 0);
+      }
+
+      function contieneSeleccion(fila, columna) {
+        return seleccion.some(function (c) {
+          return c.fila === fila && c.columna === columna;
+        });
+      }
+
+      function resaltarSeleccion() {
+        el.tablero.querySelectorAll(".cubo--seleccionado").forEach(function (c) {
+          c.classList.remove("cubo--seleccionado");
+        });
+        seleccion.forEach(function (c) {
+          const cubo = cuboDOM(c.fila, c.columna);
+          if (cubo) cubo.classList.add("cubo--seleccionado");
+        });
+      }
+
+      function limpiarSeleccion() {
+        seleccion = [];
+        resaltarSeleccion();
+        actualizarRachaCadena();
+      }
+
+      // El contador "Cadena" muestra los cubos acumulados mientras se arrastra
+      function actualizarRachaCadena() {
+        el.rachaValor.textContent = String(seleccion.length);
+      }
+
+      // El contador "Total" muestra la racha global acumulada
+      function actualizarRachaTotal() {
+        el.rachaTotal.textContent = String(estado.racha);
+      }
+
+      // Una jugada solo está permitida si el turno sigue abierto
+      function puedeJugar() {
+        return !estado.resolviendo && !estado.jugadaUsada &&
+          !estado.decisionPendiente && !estado.finDeJuego &&
+          el.tutorial.hidden;
+      }
+
+      function iniciarSeleccion(fila, columna) {
+        if (!puedeJugar()) return;
+        if (!estado.tablero[fila][columna]) return;
+        seleccion = [{ fila: fila, columna: columna }];
+        arrastrando = true;
+        resaltarSeleccion();
+        reproducirTonoCadena(1);
+        actualizarRachaCadena();
+      }
+
+      function extenderSeleccion(fila, columna) {
+        if (!arrastrando || !puedeJugar()) return;
+
+        const tipo = estado.tablero[fila][columna];
+        if (!tipo) return;
+
+        const ultimo = seleccion[seleccion.length - 1];
+        if (!ultimo) return;
+
+        // VIAJE ATRÁS: si el puntero vuelve al penúltimo cubo de la cadena,
+        // el último se desselecciona y pierde su borde blanco.
+        const penultimo = seleccion[seleccion.length - 2];
+        if (penultimo && penultimo.fila === fila && penultimo.columna === columna) {
+          seleccion.pop();
+          resaltarSeleccion();
+          actualizarRachaCadena();
+          return;
+        }
+
+        const nueva = { fila: fila, columna: columna };
+
+        if (contieneSeleccion(fila, columna)) return;
+        if (!esAdyacente(ultimo, nueva)) return;
+        if (tipo !== estado.tablero[ultimo.fila][ultimo.columna]) return;
+
+        seleccion.push(nueva);
+        resaltarSeleccion();
+        // Sonido ascendente: 1 cubo = 400 Hz, 2 = 500 Hz, 3 = 600 Hz...
+        reproducirTonoCadena(seleccion.length);
+        actualizarRachaCadena();
+      }
+
+      // Un clic inicia la selección; los clics siguientes en cubos vecinos del
+      // mismo tipo amplían el grupo. El grupo se cierra al arrastrar y soltar,
+      // al pulsar de nuevo el último cubo o tras un instante sin tocar.
+      let temporizadorCierre = null;
+
+      function cancelarCierreAutomatico() {
+        if (temporizadorCierre !== null) {
+          window.clearTimeout(temporizadorCierre);
+          temporizadorCierre = null;
+        }
+      }
+
+      function programarCierreAutomatico() {
+        cancelarCierreAutomatico();
+        if (seleccion.length < CONFIG.MINIMO_GRUPO) return;
+        temporizadorCierre = window.setTimeout(function () {
+          temporizadorCierre = null;
+          // Si el puntero sigue pulsado, reintenta más tarde
+          if (arrastrando) {
+            programarCierreAutomatico();
+            return;
+          }
+          if (seleccion.length >= CONFIG.MINIMO_GRUPO) {
+            resolverGrupo(seleccion.slice());
+          }
+        }, CONFIG.MS_CIERRE_SELECCION);
+      }
+
+      function pulsarCubo(fila, columna) {
+        if (!puedeJugar()) return;
+
+        const tipo = estado.tablero[fila][columna];
+        if (!tipo) return;
+
+        const ultimo = seleccion[seleccion.length - 1];
+        const esUltimo = ultimo && ultimo.fila === fila && ultimo.columna === columna;
+
+        // Pulsar de nuevo el último cubo cierra el grupo manualmente
+        if (esUltimo) {
+          cancelarCierreAutomatico();
+          if (seleccion.length >= CONFIG.MINIMO_GRUPO) {
+            resolverGrupo(seleccion.slice());
+          } else {
+            limpiarSeleccion();
+          }
+          return;
+        }
+
+        const puedeAmpliar = ultimo && !contieneSeleccion(fila, columna) &&
+          esAdyacente(ultimo, { fila: fila, columna }) &&
+          tipo === estado.tablero[ultimo.fila][ultimo.columna];
+
+        // Pulsar fuera del grupo intenta cerrarlo; si no llega al mínimo,
+        // se reinicia la selección en el nuevo cubo.
+        if (!puedeAmpliar && seleccion.length > 0) {
+          cancelarCierreAutomatico();
+          if (seleccion.length >= CONFIG.MINIMO_GRUPO) {
+            resolverGrupo(seleccion.slice());
+            return;
+          }
+          iniciarSeleccion(fila, columna);
+          return;
+        }
+
+        if (puedeAmpliar) {
+          extenderSeleccion(fila, columna);
+        } else {
+          iniciarSeleccion(fila, columna);
+        }
+        programarCierreAutomatico();
+      }
+
+      function soltarSeleccion(eraArrastre) {
+        if (!arrastrando) return;
+        arrastrando = false;
+
+        // Un arrastre real resuelve al soltar; el modo clic-clic espera al
+        // temporizador o a que el jugador pulse el último cubo.
+        if (eraArrastre && seleccion.length >= CONFIG.MINIMO_GRUPO) {
+          cancelarCierreAutomatico();
+          resolverGrupo(seleccion.slice());
+        }
+      }
+
+      /* ============================================================
+        BLOQUE 32: RESOLUCIÓN DE UN GRUPO
+        Aplica efectos, elimina cubos y encadena el turno siguiente.
+        ============================================================ */
+      function resolverGrupo(grupo) {
+        if (estado.jugadaUsada || estado.resolviendo) return;
+        if (grupo.length < CONFIG.MINIMO_GRUPO) {
+          limpiarSeleccion();
+          return;
+        }
+
+        const tipo = estado.tablero[grupo[0].fila][grupo[0].columna];
+        const cantidad = grupo.length;
+        const efectos = {
+          tratado:  CONFIG.EFECTO_TRATADO,
+          comercio: CONFIG.EFECTO_COMERCIO,
+          prensa:   CONFIG.EFECTO_PRENSA,
+          militar:  CONFIG.EFECTO_MILITAR
+        }[tipo];
+
+        estado.resolviendo = true;
+        estado.jugadaUsada = true;
+
+        // RACHA ACUMULATIVA: una cadena de 3 reinicia la racha a 0;
+        // una cadena de 4 o más suma sus cubos al contador global.
+        if (cantidad >= CONFIG.RACHA_MINIMO_SUMA) {
+          estado.racha += cantidad;
+        } else {
+          estado.racha = 0;
+        }
+        actualizarRachaTotal();
+        reproducirTono(estado.racha);
+
+        // Marca visual de eliminación
+        grupo.forEach(function (c) {
+          const cubo = cuboDOM(c.fila, c.columna);
+          if (cubo) cubo.classList.add("cubo--eliminando");
+          estado.tablero[c.fila][c.columna] = null;
+        });
+        limpiarSeleccion();
+
+        // Aplica los efectos multiplicados por el tamaño del grupo
+        const cambios = {};
+        Object.keys(efectos).forEach(function (clave) {
+          if (efectos[clave] !== 0) {
+            cambios[clave] = efectos[clave] * cantidad;
+          }
+        });
+        aplicarCambios(cambios);
+
+        // Resumen legible del efecto
+        const partes = [];
+        if (cambios.diplomacia) partes.push((cambios.diplomacia > 0 ? "+" : "") + cambios.diplomacia + " Diplomacia");
+        if (cambios.economia) partes.push((cambios.economia > 0 ? "+" : "") + cambios.economia + " Economía");
+        if (cambios.opinion) partes.push((cambios.opinion > 0 ? "+" : "") + cambios.opinion + " Opinión");
+        if (cambios.conflicto) partes.push((cambios.conflicto > 0 ? "+" : "") + cambios.conflicto + " Conflicto");
+
+        registrar(
+          "Turno " + estado.turno + " · " + TIPOS_CUBO[tipo].nombre +
+            " x" + cantidad + " → " + partes.join(", ") +
+            " · Racha total: " + estado.racha,
+          true
+        );
+
+        // Deja ver la animación, aplica la gravedad y encadena el turno
+        window.setTimeout(function () {
+          aplicarGravedad();
+          actualizarTablero();
+          animarCaida();
+          estado.resolviendo = false;
+          finalizarJugada();
+        }, CONFIG.MS_ELIMINAR);
+      }
+
+      // Tras la única jugada del turno: decisión o turno siguiente
+      function finalizarJugada() {
+        if (esTurnoDeDecision(estado.turno)) {
+          mostrarDecision();
+          return;
+        }
+        avanzarTurno();
+      }
+
+      function animarCaida() {
+        el.tablero.querySelectorAll(".cubo").forEach(function (cubo) {
+          cubo.classList.add("cubo--caida");
+          window.setTimeout(function () {
+            cubo.classList.remove("cubo--caida");
+          }, CONFIG.MS_CAIDA);
+        });
+      }
+
+      /* ============================================================
+        BLOQUE 33: EVENTOS DEL TABLERO
+        Soporta ratón y táctil con la misma lógica.
+        ============================================================ */
+      function datosCuboDesdeEvento(evento) {
+        const objetivo = document.elementFromPoint(evento.clientX, evento.clientY);
+        if (!objetivo || !objetivo.classList.contains("cubo")) return null;
+        const fila = Number(objetivo.dataset.fila);
+        const columna = Number(objetivo.dataset.columna);
+        if (Number.isNaN(fila) || Number.isNaN(columna)) return null;
+        return { fila: fila, columna: columna };
+      }
+
+      el.tablero.addEventListener("pointerdown", function (evento) {
+        const cubo = evento.target.closest(".cubo");
+        if (!cubo) return;
+        evento.preventDefault();
+        huboMovimiento = false;
+        arrastrando = true;
+        pulsarCubo(Number(cubo.dataset.fila), Number(cubo.dataset.columna));
+        if (el.tablero.setPointerCapture) {
+          try { el.tablero.setPointerCapture(evento.pointerId); } catch (e) {}
+        }
+      });
+
+      el.tablero.addEventListener("pointermove", function (evento) {
+        if (!arrastrando) return;
+        const datos = datosCuboDesdeEvento(evento);
+        if (datos) {
+          const antes = seleccion.length;
+          extenderSeleccion(datos.fila, datos.columna);
+          if (seleccion.length > antes) huboMovimiento = true;
+        }
+      });
+
+      el.tablero.addEventListener("pointerup", function () {
+        soltarSeleccion(huboMovimiento);
+        huboMovimiento = false;
+      });
+
+      el.tablero.addEventListener("pointercancel", function () {
+        arrastrando = false;
+        huboMovimiento = false;
+        limpiarSeleccion();
+      });
+
+      /* ============================================================
+        BLOQUE 34: DECISIONES
+        Renderizado de opciones, requisitos y resolución con dados.
+        ============================================================ */
+      function esTurnoDeDecision(turno) {
+        return TURNOS_DECISION.indexOf(turno) !== -1;
+      }
+
+      function requisitoCumplido(requisito) {
+        if (!requisito) return true;
+        return estado.estadisticas[requisito.stat] >= requisito.valor;
+      }
+
+      function textoRequisito(requisito) {
+        const nombres = {
+          economia: "Economía",
+          opinion: "Opinión",
+          diplomacia: "Diplomacia",
+          conflicto: "Conflicto"
+        };
+        return "🔒 Requiere " + nombres[requisito.stat] + " ≥ " + requisito.valor;
+      }
+
+      function textoEfectoGarantizado(efecto) {
+        const nombres = {
+          diplomacia: "Diplomacia",
+          economia: "Economía",
+          opinion: "Opinión",
+          conflicto: "Conflicto"
+        };
+        return Object.keys(efecto).map(function (clave) {
+          const valor = efecto[clave];
+          return (valor > 0 ? "+" : "") + valor + " " + nombres[clave];
+        }).join(", ");
+      }
+
+      function mostrarDecision() {
+        const decision = DECISIONES[estado.turno];
+        if (!decision) return;
+
+        estado.decisionPendiente = true;
+        estado.decisionResuelta = false;
+
+        // Rellena la tarjeta del modal superpuesto
+        el.decisionFase.textContent = decision.fase;
+        el.decisionTitulo.textContent = decision.texto;
+        el.decisionNota.textContent = estado.turno === 12
+          ? "Decisión final: los efectos valen x" + CONFIG.MULTIPLICADOR_FASE_FINAL + "."
+          : "Elige una opción para continuar.";
+        el.decisionOpciones.innerHTML = "";
+
+        decision.opciones.forEach(function (opcion) {
+          const boton = document.createElement("button");
+          boton.type = "button";
+          boton.className = "opcion";
+
+          const titulo = document.createElement("span");
+          titulo.className = "opcion__titulo";
+          titulo.textContent = opcion.titulo;
+
+          const efecto = document.createElement("span");
+          efecto.className = "opcion__efecto";
+          efecto.textContent = "Garantizado: " + textoEfectoGarantizado(opcion.efecto);
+
+          boton.appendChild(titulo);
+          boton.appendChild(efecto);
+
+          if (opcion.requisito && !requisitoCumplido(opcion.requisito)) {
+            const requisito = document.createElement("span");
+            requisito.className = "opcion__requisito";
+            requisito.textContent = textoRequisito(opcion.requisito);
+            boton.appendChild(requisito);
+            boton.disabled = true;
+          } else {
+            boton.addEventListener("click", function () {
+              resolverDecision(opcion);
+            });
+          }
+
+          el.decisionOpciones.appendChild(boton);
+        });
+
+        // Abre el modal: el fondo se oscurece sobre el tablero
+        el.decisionModal.hidden = false;
+
+        registrar("Decisión disponible: " + decision.texto, true);
+      }
+
+      function resolverDecision(opcion) {
+        if (estado.decisionResuelta) return;
+        estado.decisionResuelta = true;
+        estado.decisionPendiente = false;
+
+        const multiplicador = estado.turno === 12
+          ? CONFIG.MULTIPLICADOR_FASE_FINAL
+          : 1;
+
+        // Efecto garantizado (multiplicado si toca)
+        aplicarCambios(opcion.efecto, multiplicador);
+
+        // Tirada de dados: 50% bonus, 50% penalty
+        const tirada = opcion.tirada;
+        const exito = Math.random() < 0.5;
+        let textoTirada = "";
+
+        if (tirada) {
+          if (exito) {
+            const cambios = {};
+            cambios[tirada.stat] = tirada.bonus * multiplicador;
+            aplicarCambios(cambios);
+            textoTirada = "🎲 Tirada exitosa: +" + (tirada.bonus * multiplicador) +
+              " " + nombreStat(tirada.stat) + ".";
+          } else {
+            const cambios = {};
+            cambios[tirada.penaltyStat] = tirada.penalty * multiplicador;
+            aplicarCambios(cambios);
+            textoTirada = "🎲 Tirada fallida: " + (tirada.penalty * multiplicador) +
+              " " + nombreStat(tirada.penaltyStat) + ".";
+          }
+        }
+
+        const resumen = textoEfectoGarantizado(
+          multiplicarEfecto(opcion.efecto, multiplicador)
+        );
+
+        registrar(
+          "Decisión: " + opcion.titulo + " → " + resumen + ". " + textoTirada,
+          true
+        );
+
+        // El modal pasa a mostrar el resultado con un botón para continuar
+        el.decisionOpciones.innerHTML = "";
+
+        const caja = document.createElement("div");
+        caja.className = "decision__resultado";
+
+        const mensaje = document.createElement("p");
+        mensaje.innerHTML = "<span class='destacado'>" + opcion.titulo +
+          "</span><br>Efecto aplicado: " + resumen;
+
+        const dados = document.createElement("p");
+        dados.textContent = textoTirada;
+
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.className = "boton boton--principal";
+        boton.textContent = estado.turno >= CONFIG.TURNOS_TOTALES
+          ? "Ver resultado final"
+          : "Siguiente turno";
+        boton.addEventListener("click", function () {
+          // Cierra el modal antes de avanzar
+          el.decisionModal.hidden = true;
+          avanzarTurno();
+        });
+
+        caja.appendChild(mensaje);
+        caja.appendChild(dados);
+        caja.appendChild(boton);
+        el.decisionOpciones.appendChild(caja);
+      }
+
+      // Cierra el modal de decisión y limpia su contenido
+      function cerrarModalDecision() {
+        el.decisionModal.hidden = true;
+        el.decisionFase.textContent = "—";
+        el.decisionTitulo.textContent = "—";
+        el.decisionNota.textContent = "—";
+        el.decisionOpciones.innerHTML = "";
+      }
+
+      function nombreStat(clave) {
+        const nombres = {
+          diplomacia: "Diplomacia",
+          economia: "Economía",
+          opinion: "Opinión",
+          conflicto: "Conflicto"
+        };
+        return nombres[clave] || clave;
+      }
+
+      function multiplicarEfecto(efecto, multiplicador) {
+        const resultado = {};
+        Object.keys(efecto).forEach(function (clave) {
+          resultado[clave] = efecto[clave] * multiplicador;
+        });
+        return resultado;
+      }
+
+      /* ============================================================
+        BLOQUE 35: FLUJO DE TURNOS
+        Una jugada por turno; el tablero se rellena entero al empezar.
+        ============================================================ */
+      function faseDelTurno(turno) {
+        for (let i = 0; i < FASES.length; i++) {
+          if (turno <= FASES[i].hasta) return FASES[i].nombre;
+        }
+        return FASES[FASES.length - 1].nombre;
+      }
+
+      function avanzarTurno() {
+        if (estado.finDeJuego) return;
+
+        // Limpia cualquier selección o cierre pendiente antes de cambiar
+        cancelarCierreAutomatico();
+        seleccion = [];
+        arrastrando = false;
+        huboMovimiento = false;
+        resaltarSeleccion();
+
+        // Cierra cualquier decisión pendiente antes de cambiar de turno
+        estado.decisionPendiente = false;
+        estado.decisionResuelta = false;
+        cerrarModalDecision();
+
+        if (estado.turno >= CONFIG.TURNOS_TOTALES) {
+          finalizarJuego();
+          return;
+        }
+
+        estado.turno += 1;
+        // La racha global NO se reinicia al cambiar de turno
+        estado.jugadaUsada = false;
+        actualizarRachaCadena();
+        actualizarRachaTotal();
+        actualizarCabecera();
+        registrar("— Turno " + estado.turno + ": elige tu jugada —");
+      }
+
+      function actualizarCabecera() {
+        estado.fase = faseDelTurno(estado.turno);
+        el.turnoNumero.textContent = String(estado.turno);
+        el.turnoFase.textContent = estado.fase;
+      }
+
+      /* ============================================================
+        BLOQUE 36: FINALES
+        Evaluación en orden: derrota, victoria, final neutro.
+        ============================================================ */
+      function finalizarJuego() {
+        estado.finDeJuego = true;
+
+        const diplomacia = estado.estadisticas.diplomacia;
+        const conflicto = estado.estadisticas.conflicto;
+
+        let clase, titulo, subtitulo, informe;
+
+        if (conflicto >= CONFIG.UMBRAL_CONFLICTO_ROJO &&
+            diplomacia < CONFIG.UMBRAL_DIPLOMACIA_DERROTA) {
+          clase = "final--derrota";
+          titulo = "LA GUERRA ESTALLA";
+          subtitulo = "Derrota";
+          informe = "La diplomacia fracasó y el conflicto se desbordó. " +
+            "Inspirado en los momentos previos a la guerra entre Etiopía y " +
+            "Eritrea (1998), cuando el Consejo no actuó a tiempo.";
+        } else if (diplomacia >= CONFIG.UMBRAL_DIPLOMACIA_VICTORIA &&
+                  conflicto < CONFIG.UMBRAL_CONFLICTO_VERDE) {
+          clase = "final--victoria";
+          titulo = "NACE LA PAZ";
+          subtitulo = "Victoria";
+          informe = "El Consejo logró imponer un acuerdo de paz. Inspirado en " +
+            "la Resolución 1298 (2000) y el Acuerdo de Cese de Hostilidades " +
+            "entre Etiopía y Eritrea.";
+        } else {
+          clase = "final--neutro";
+          titulo = "LAS TENSIONES PERMANECEN";
+          subtitulo = "Final neutro";
+          informe = "El conflicto no se resolvió pero tampoco estalló. " +
+            "Una paz frágil que puede romperse en cualquier momento.";
+        }
+
+        el.final.className = "final " + clase;
+        el.finalTitulo.textContent = titulo;
+        el.finalSubtitulo.textContent = subtitulo;
+        el.finalInforme.textContent = informe;
+        el.final.hidden = false;
+
+        registrar("FIN DEL JUEGO: " + titulo, true);
+      }
+
+      /* ============================================================
+        BLOQUE 37: REINICIO Y ARRANQUE
+        Deja el estado como al principio y repinta todo.
+        ============================================================ */
+      function reiniciarJuego() {
+        estado = {
+          turno: 1,
+          fase: "Fase 1 — Alerta Temprana",
+          racha: 0,
+          jugadaUsada: false,
+          resolviendo: false,
+          decisionPendiente: false,
+          decisionResuelta: false,
+          finDeJuego: false,
+          estadisticas: {
+            diplomacia: CONFIG.STAT_INICIAL,
+            economia: CONFIG.STAT_INICIAL,
+            opinion: CONFIG.STAT_INICIAL,
+            conflicto: CONFIG.STAT_INICIAL
+          },
+          tablero: []
+        };
+
+        seleccion = [];
+        arrastrando = false;
+        huboMovimiento = false;
+        cancelarCierreAutomatico();
+
+        el.final.hidden = true;
+        el.final.className = "final";
+        actualizarRachaCadena();
+        actualizarRachaTotal();
+        el.registro.innerHTML = "";
+        cerrarModalDecision();
+
+        rellenarTablero();
+        pintarEstadisticas();
+        actualizarCabecera();
+
+        registrar("Nueva partida. Turno 1 de " + CONFIG.TURNOS_TOTALES + ".", true);
+      }
+
+      // Arranque: el tablero se genera, pero el juego espera al tutorial
+    function arrancarJuego() {
+      reiniciarJuego();
+      reiniciarTutorial();
+      el.tutorial.hidden = false;
+    }
+
+      function empezarDesdeTutorial() {
+        el.tutorial.hidden = true;
+        rellenarTablero();
+        registrar("¡Partida iniciada! Une 3 cubos del mismo color.", true);
+      }
+
+      el.botonReiniciar.addEventListener("click", function () {
+        // Reinicio rápido: el jugador ya conoce las reglas
+        el.tutorial.hidden = true;
+        reiniciarJuego();
+      });
+      el.finalReiniciar.addEventListener("click", function () {
+         arrancarJuego();
+  });
+
+      // --- LÓGICA DE LA INTRODUCCIÓN EN CADENA ---
+  let pasoActualTutorial = 1;
+  const btnSiguienteTutorial = document.getElementById("btn-siguiente-tutorial");
+
+  function reiniciarTutorial() {
+    pasoActualTutorial = 1;
+    for (let i = 1; i <= 4; i++) {
+      const paso = document.getElementById("paso-tutorial-" + i);
+      if (paso) paso.style.display = (i === 1) ? "block" : "none";
+    }
+    if (btnSiguienteTutorial) btnSiguienteTutorial.textContent = "Siguiente";
+  }
+
+  if (btnSiguienteTutorial) {
+    btnSiguienteTutorial.addEventListener("click", function() {
+      document.getElementById("paso-tutorial-" + pasoActualTutorial).style.display = "none";
+      pasoActualTutorial++;
+
+      if (pasoActualTutorial <= 4) {
+        document.getElementById("paso-tutorial-" + pasoActualTutorial).style.display = "block";
+        if (pasoActualTutorial === 4) {
+          btnSiguienteTutorial.textContent = "Empezar a jugar";
+        }
+      } else {
+        empezarDesdeTutorial();
+      }
+    });
+  }
+
+      arrancarJuego();
+
+      /* ============================================================
+        BLOQUE 38: AUTOCOMPROBACIÓN (comentada)
+        Qué debería ocurrir en el turno 1 al unir 3 cubos azules (Tratado):
+        1. La Diplomacia sube +3 (de 50 a 53).
+        2. La Economía baja −1.5 (de 50 a 48.5).
+        3. Al arrastrar, el contador "Cadena" muestra 1, 2 y 3 cubos, con
+            tonos de 400, 500 y 600 Hz; si el puntero vuelve al penúltimo
+            cubo, el último se desselecciona.
+        4. Al soltar una cadena de 3, la racha global vuelve a 0.
+        5. Los cubos desaparecen con gravedad, el juego avanza al turno 2
+            y el tablero conserva los cubos no unidos.
+        ============================================================ */
+    </script>
+  </body>
+  </html>
