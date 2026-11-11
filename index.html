@@ -10,18 +10,16 @@
        TEMA MILITAR / TACTICAL HUD
        ========================================= */
     :root {
-      --fondo: #0a0c10; /* Negro azulado profundo */
-      --panel: #131820; /* Gris táctico oscuro */
-      --borde: #2a3441; /* Bordes definidos */
-      --texto: #d1d5db; /* Blanco sucio (legibilidad) */
-      --texto-suave: #6b7280; /* Gris apagado */
-
-      --azul: #4a8cbd; /* Azul acero (Diplomacia) */
-      --verde: #5c9e75; /* Verde oliva (Economía) */
-      --amarillo: #d4a373; /* Ámbar táctico (Opinión) */
-      --rojo: #c94b4b; /* Rojo alerta (Conflicto) */
-
-      --radio: 4px; /* Bordes casi rectos */
+      --fondo: #0a0c10;
+      --panel: #131820;
+      --borde: #2a3441;
+      --texto: #d1d5db;
+      --texto-suave: #6b7280;
+      --azul: #4a8cbd;
+      --verde: #5c9e75;
+      --amarillo: #d4a373;
+      --rojo: #c94b4b;
+      --radio: 4px;
       --sombra: 0 4px 12px rgba(0, 0, 0, 0.6);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -35,7 +33,7 @@
       background:
         linear-gradient(rgba(10, 12, 16, 0.95), rgba(10, 12, 16, 0.95)),
         repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px),
-        var(--fondo); /* Efecto sutil de líneas de escaneo */
+        var(--fondo);
       background-attachment: fixed;
       color: var(--texto);
       font-family: "Segoe UI", Roboto, Ubuntu, sans-serif;
@@ -44,37 +42,28 @@
       font-size: 16px; line-height: 1.6;
     }
 
-    /* =========================================
-       ESTRUCTURA PRINCIPAL
-       ========================================= */
     .juego { width: 100%; max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
     .cabecera { text-align: center; padding: 4px 0; }
     .titulo { font-size: clamp(2rem, 8vw, 4rem); font-weight: 900; letter-spacing: 0.15em; line-height: 1; color: var(--texto); text-transform: uppercase; }
     .subtitulo { margin-top: 4px; font-size: clamp(0.8rem, 2.4vw, 1rem); color: var(--texto-suave); letter-spacing: 0.1em; text-transform: uppercase; }
 
-    /* =========================================
-       COMPONENTES TÁCTICOS
-       ========================================= */
     .panel, .noticiero, .registro-panel, .modal__tarjeta {
       background: var(--panel);
       border: 1px solid var(--borde);
       box-shadow: var(--sombra);
       border-radius: var(--radio);
-      /* Pequeña esquina táctica */
       clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
     }
 
     .panel { padding: 14px; }
     .panel__titulo { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--texto-suave); margin-bottom: 10px; border-bottom: 1px solid var(--borde); padding-bottom: 6px; }
 
-    /* Turnos */
     .turnos { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
     .turnos__numero { font-size: clamp(1rem, 2.8vw, 1.2rem); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
     .turnos__numero span { color: var(--amarillo); }
     .turnos__fase { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--texto-suave); border: 1px solid var(--borde); border-radius: 2px; padding: 4px 10px; background: #0a0c10; }
     .turnos__botones { display: flex; gap: 6px; }
 
-    /* Noticiero */
     .noticiero { border-left: 4px solid var(--azul); padding: 12px 14px; font-size: 0.95rem; font-style: normal; color: var(--texto); display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; cursor: pointer; user-select: none; }
     .noticiero__marcador { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em; flex-shrink: 0; padding-top: 3px; padding-right: 6px; border-right: 1px solid var(--borde); }
     .noticiero__toggle { margin-left: auto; font-size: 0.7rem; font-weight: 700; opacity: 0.55; transition: transform 0.2s; line-height: 1.4; }
@@ -86,7 +75,19 @@
     .noticiero.alerta { border-left-color: var(--amarillo); background: #1c1810; }
     .noticiero.peligro { border-left-color: var(--rojo); background: #1c1010; color: #ffbaba; }
 
-    /* Estadísticas */
+    .p5-grid { display: flex; justify-content: space-between; gap: 6px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--borde); }
+    .p5-pais { display: flex; flex-direction: column; align-items: center; padding: 6px 4px; border-radius: 2px; border: 1px solid var(--borde); flex: 1; transition: all 0.3s; background: #0a0c10; cursor: pointer; font-family: inherit; color: var(--texto); }
+    .p5-pais:hover { background: #1f2937; border-color: var(--texto-suave); }
+    .p5-pais span { font-size: 1.3rem; filter: grayscale(20%); }
+    .p5-pais small { font-size: 0.68rem; color: var(--texto-suave); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+    .p5-pais small::after { content: "ⓘ"; font-size: 0.6rem; opacity: 0.6; }
+    .p5-pais.neutral { border-color: var(--borde); }
+    .p5-pais.alerta { border-color: var(--amarillo); background: #1c1810; }
+    .p5-pais.peligro { border-color: var(--rojo); background: #1c1010; animation: latido 1s infinite; }
+    .p5-pais.veto { background: #000; border-color: #333; opacity: 0.5; filter: grayscale(100%); }
+    .p5-pais.veto span { position: relative; }
+    .p5-pais.veto span::after { content: "✕"; position: absolute; top: -6px; right: -10px; font-size: 0.85rem; color: var(--rojo); text-shadow: 0 0 4px #000; font-weight: 900; }
+
     .estadisticas-compactas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
     .mini-stat { display: flex; flex-direction: column; gap: 3px; align-items: center; background: #0a0c10; border: 1px solid var(--borde); padding: 6px 2px; border-radius: 2px; transition: background 0.15s; color: var(--texto); min-width: 0; overflow: hidden; }
     .mini-stat:hover { background: #131820; }
@@ -103,20 +104,6 @@
     .mini-stat--conflicto .mini-stat__barra::after { content: ""; position: absolute; top: 0; bottom: 0; left: 70%; width: 1px; background: var(--rojo); box-shadow: 0 0 4px rgba(201,75,75,0.8); animation: latido 1.5s infinite; }
     @keyframes latido { 0%,100%{opacity:0.5} 50%{opacity:1} }
 
-    /* P5 */
-    .p5-panel { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--borde); }
-    .p5-grid { display: flex; justify-content: space-between; gap: 6px; }
-    .p5-pais { display: flex; flex-direction: column; align-items: center; padding: 6px 4px; border-radius: 2px; border: 1px solid var(--borde); flex: 1; transition: all 0.3s; background: #0a0c10; }
-    .p5-pais span { font-size: 1.3rem; filter: grayscale(20%); }
-    .p5-pais small { font-size: 0.68rem; color: var(--texto-suave); font-weight: 700; }
-    .p5-pais.neutral { border-color: var(--borde); }
-    .p5-pais.alerta { border-color: var(--amarillo); background: #1c1810; }
-    .p5-pais.peligro { border-color: var(--rojo); background: #1c1010; animation: latido 1s infinite; }
-    .p5-pais.veto { background: #000; border-color: #333; opacity: 0.5; filter: grayscale(100%); }
-    .p5-pais.veto span { position: relative; }
-    .p5-pais.veto span::after { content: "✕"; position: absolute; top: -6px; right: -10px; font-size: 0.85rem; color: var(--rojo); text-shadow: 0 0 4px #000; font-weight: 900; }
-
-    /* Tablero */
     .tablero-info { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
     .racha { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--texto-suave); background: #0a0c10; border: 1px solid var(--borde); border-radius: 2px; padding: 5px 12px; }
     .racha strong { color: var(--amarillo); }
@@ -125,13 +112,11 @@
     .tablero { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; width: 100%; max-width: min(92vw, 340px); margin: 0 auto; padding: 6px; background: #080a0d; border: 1px solid var(--borde); border-radius: 4px; touch-action: none; user-select: none; -webkit-user-select: none; transition: opacity 0.25s, filter 0.25s; }
     .tablero.tablero--bloqueado { opacity: 0.6; filter: grayscale(30%); }
 
-    /* Cubos */
     .cubo { aspect-ratio: 1/1; min-width: 0; padding: 0; display: flex; align-items: center; justify-content: center; color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 2px; cursor: pointer; transition: transform 0.1s, border-color 0.1s, box-shadow 0.1s, opacity 0.15s; box-shadow: inset 0 0 8px rgba(0,0,0,0.5); }
     .cubo:hover { transform: scale(1.02); border-color: rgba(255, 255, 255, 0.4); }
     .cubo:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
     .cubo--seleccionado { border-color: #fff; transform: scale(1.05); box-shadow: 0 0 0 2px rgba(255,255,255,0.3), 0 0 12px rgba(255,255,255,0.2); z-index: 2; }
 
-    /* Colores de cubos más "planos" y tácticos */
     .cubo--tratado { background: #2c5d82; }
     .cubo--comercio { background: #357a53; }
     .cubo--prensa { background: #996f2e; }
@@ -146,7 +131,6 @@
     .pista-accion { text-align: center; font-size: 0.85rem; color: var(--texto-suave); padding: 6px 0; font-style: normal; font-family: monospace; min-height: 1.8em; text-transform: uppercase; letter-spacing: 0.05em; }
     .acciones-tablero { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px; }
 
-    /* Botones */
     .boton { font: inherit; font-weight: 700; font-size: 0.95rem; padding: 12px 18px; color: var(--texto); background: #131820; border: 1px solid var(--borde); border-radius: 2px; cursor: pointer; transition: background 0.15s, border 0.15s; text-transform: uppercase; letter-spacing: 0.05em; }
     .boton:hover { background: #1f2937; border-color: #4b5563; }
     .boton:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -156,18 +140,15 @@
     .boton--compacto { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px; padding: 11px 8px; font-size: 0.95rem; line-height: 1; }
     .boton--compacto small { font-size: 0.75rem; color: var(--texto-suave); font-weight: 600; letter-spacing: 0; text-transform: none; }
 
-    /* Inputs */
     .input-texto { width: 100%; font: inherit; font-size: 1.05rem; padding: 14px 16px; background: #080a0d; border: 1px solid var(--borde); border-radius: 2px; color: var(--texto); outline: none; font-family: monospace; }
     .input-texto:focus { border-color: var(--azul); box-shadow: 0 0 0 1px var(--azul); }
 
-    /* Registro */
     .registro-panel { border-radius: 2px; overflow: hidden; }
     .registro-header { padding: 10px 14px 4px; color: var(--texto-suave); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; border-bottom: 1px solid var(--borde); margin-bottom: 6px; }
     .registro { padding: 0 14px 12px; display: flex; flex-direction: column; gap: 4px; }
     .registro__linea { font-size: 0.85rem; color: #9ca3af; border-left: 2px solid var(--borde); padding-left: 8px; line-height: 1.4; font-family: monospace; }
     .registro__linea--destacado { border-left-color: var(--verde); color: var(--texto); }
 
-    /* Modales y Overlays */
     .modal { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, 0.85); backdrop-filter: none; }
     .modal[hidden] { display: none; }
     .modal__tarjeta { width: 100%; max-width: 540px; max-height: 90dvh; overflow-y: auto; border-radius: 4px; padding: 24px 20px; display: flex; flex-direction: column; gap: 14px; }
@@ -177,7 +158,6 @@
     .modal__accion { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
     .modal__accion .boton { font-size: 1rem; padding: 12px 22px; }
 
-    /* Presentación y Formulario */
     .presentacion .modal__tarjeta { text-align: left; }
     .presentacion__rol { background: rgba(74, 140, 189, 0.1); border-left: 3px solid var(--azul); padding: 12px; border-radius: 2px; font-size: 0.9rem; margin-bottom: 10px; line-height: 1.55; }
     .form-nombre { display: flex; flex-direction: column; gap: 6px; }
@@ -186,7 +166,6 @@
     .form-nombre__row .input-texto { flex: 1; }
     .form-nombre__row .boton { white-space: nowrap; padding: 12px 14px; }
 
-    /* Tutorial */
     .tutorial__item { display: flex; align-items: flex-start; gap: 12px; padding: 8px 10px; background: #0a0c10; border: 1px solid var(--borde); border-radius: 2px; margin-bottom: 6px; }
     .muestra { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
     .muestra--tratado { background: #2c5d82; }
@@ -207,7 +186,6 @@
     .tutorial__paso--activo { display: flex; }
     .tutorial__indicador { text-align: center; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--texto-suave); margin-top: -6px; margin-bottom: 4px; }
 
-    /* Decisiones y Opciones */
     .opciones { display: grid; gap: 8px; }
     #decision-texto { font-size: clamp(1rem, 3.8vw, 1.15rem); font-weight: 400; line-height: 1.55; color: #d1d5db; text-align: left; margin: 0; }
     .opcion { display: flex; flex-direction: column; gap: 3px; width: 100%; padding: 14px 16px; text-align: left; font: inherit; color: var(--texto); background: #0a0c10; border: 1px solid var(--borde); border-left: 3px solid var(--borde); border-radius: 2px; cursor: pointer; transition: background 0.15s, border 0.15s; }
@@ -220,7 +198,6 @@
     .opcion__probabilidad { color: var(--verde); font-weight: 700; }
     .opcion__penalizacion { color: var(--rojo); font-weight: 700; }
 
-    /* Veto, Stats y Finales */
     .veto__tarjeta { border: 2px solid var(--rojo); box-shadow: 0 0 30px rgba(201,75,75,0.2); text-align: center; }
     .veto__dialogo { background: #0a0c10; border-left: 3px solid var(--rojo); padding: 14px; border-radius: 2px; font-style: italic; color: #ddd; text-align: left; font-size: 1rem; }
     .veto__debuff { background: rgba(201,75,75,0.1); padding: 12px; border-radius: 2px; border: 1px solid var(--rojo); color: #e89a9a; font-size: 0.9rem; }
@@ -237,9 +214,6 @@
     .informe__lista li { margin-bottom: 3px; }
     .final__cita { margin-top: 12px; padding: 12px 14px; border-left: 3px solid var(--amarillo); background: rgba(212,163,115,0.06); font-style: italic; font-size: 0.9rem; color: #d8d0b8; border-radius: 0 2px 2px 0; line-height: 1.45; }
 
-    /* =========================================
-       EFECTOS FLOTANTES Y TOASTS
-       ========================================= */
     .floating-text { position: fixed; font-weight: 900; font-size: 1.2rem; pointer-events: none; z-index: 1000; animation: floatUpFade 1.2s ease-out forwards; text-shadow: 0 2px 4px rgba(0,0,0,0.9); transform: translate(-50%, -50%); font-family: monospace; }
     @keyframes floatUpFade { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -150%) scale(1.2); } }
     .barra__fantasma { position: absolute; top: 0; bottom: 0; pointer-events: none; z-index: 5; transition: left 0.1s, width 0.1s, background 0.1s; }
@@ -251,9 +225,6 @@
     @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
     @keyframes toastOut { to { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
 
-    /* =========================================
-       DADO
-       ========================================= */
     #modal-dado { z-index: 150; }
     #modal-dado .modal__tarjeta { max-width: 340px; text-align: center; gap: 10px; border: 1px solid var(--borde); }
     .dado { width: 96px; height: 96px; margin: 6px auto; background: #0a0c10; border: 2px solid var(--borde); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 2.6rem; font-weight: 900; color: var(--texto); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); transition: border-color 0.15s, color 0.15s; font-family: monospace; }
@@ -265,9 +236,6 @@
     .dado-resultado--exito { color: var(--verde); }
     .dado-resultado--fallo { color: var(--rojo); }
 
-    /* =========================================
-       RESPONSIVE
-       ========================================= */
     @media (max-width: 560px) {
       .panel { padding: 12px; }
       .cabecera { padding: 2px 0; }
@@ -275,23 +243,19 @@
       .boton--compacto small { font-size: 0.7rem; }
       .mini-stat__label { font-size: 0.55rem; letter-spacing: 0; }
     }
-
     @media (max-width: 340px) {
       .tablero { min-width: 280px; margin: 0; }
       .tablero-scroll { padding-right: 12px; }
     }
-
     @media (max-width: 360px) {
       .estadisticas-compactas { grid-template-columns: repeat(2, 1fr); }
     }
-
     @media (prefers-reduced-motion: reduce) {
       * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
-  <!-- A partir de aquí sigue tu HTML normal -->
   <div class="modal presentacion" id="modal-presentacion">
     <div class="modal__tarjeta">
       <p class="modal__etiqueta">Consejo de Seguridad · 2026</p>
@@ -385,7 +349,15 @@
 
     <div class="noticiero" id="noticiero" aria-live="polite" tabindex="0"></div>
 
-    <section class="panel" aria-label="Estadísticas">
+    <section class="panel" aria-label="Estado del Consejo">
+      <div class="p5-grid">
+        <button type="button" class="p5-pais neutral" id="p5-eeuu"><span>🇺🇸</span><small>EE.UU.</small></button>
+        <button type="button" class="p5-pais neutral" id="p5-rusia"><span>🇷🇺</span><small>Rusia</small></button>
+        <button type="button" class="p5-pais neutral" id="p5-china"><span>🇨🇳</span><small>China</small></button>
+        <button type="button" class="p5-pais neutral" id="p5-francia"><span>🇫🇷</span><small>Francia</small></button>
+        <button type="button" class="p5-pais neutral" id="p5-reino"><span>🇬🇧</span><small>R. Unido</small></button>
+      </div>
+
       <div class="estadisticas-compactas">
         <button type="button" class="mini-stat mini-stat--diplomacia" data-stat="diplomacia">
           <span class="mini-stat__label">Diplomacia</span>
@@ -407,15 +379,6 @@
           <span class="mini-stat__valor" id="mini-conflicto">50</span>
           <div class="mini-stat__barra"><div class="relleno" id="barra-conflicto" style="width:50%"></div></div>
         </button>
-      </div>
-      <div class="p5-panel">
-        <div class="p5-grid">
-          <div class="p5-pais neutral" id="p5-eeuu"><span>🇺🇸</span><small>EE.UU.</small></div>
-          <div class="p5-pais neutral" id="p5-rusia"><span>🇷🇺</span><small>Rusia</small></div>
-          <div class="p5-pais neutral" id="p5-china"><span>🇨🇳</span><small>China</small></div>
-          <div class="p5-pais neutral" id="p5-francia"><span>🇫🇷</span><small>Francia</small></div>
-          <div class="p5-pais neutral" id="p5-reino"><span>🇬🇧</span><small>R. Unido</small></div>
-        </div>
       </div>
     </section>
 
@@ -446,6 +409,17 @@
       <p class="modal__etiqueta" id="decision-fase">Consejo de Seguridad</p>
       <h2 class="modal__titulo" id="decision-texto">—</h2>
       <div class="opciones" id="decision-opciones"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal-p5" hidden>
+    <div class="modal__tarjeta">
+      <p class="modal__etiqueta">Miembro Permanente</p>
+      <div id="p5-icono" style="font-size:3rem; text-align:center;">🇺🇸</div>
+      <h2 class="modal__titulo" id="p5-titulo">—</h2>
+      <p class="modal__texto" id="p5-condicion">—</p>
+      <div class="veto__debuff" id="p5-debuff">—</div>
+      <div class="modal__accion"><button class="boton boton--principal" id="btn-p5-cerrar">Entendido</button></div>
     </div>
   </div>
 
@@ -548,6 +522,14 @@
     const ABREV_STATS = { diplomacia: "Dip", economia: "Eco", opinion: "Opi", conflicto: "Con" };
     const COLORES_STATS = { diplomacia: "#6a9ee8", economia: "#5cbf8e", opinion: "#e0b85a", conflicto: "#e07070" };
 
+    const P5_DESCRIPCIONES = {
+      eeuu: { nombre: "Estados Unidos", icono: "🇺🇸", condicion: "Retira su apoyo si el Conflicto es menor a 38 en el Turno 5.", debuff: "Paraguas militar retirado: tus cubos militares suman +3 Conflicto extra." },
+      rusia: { nombre: "Rusia", icono: "🇷🇺", condicion: "Retira su apoyo si el Conflicto es mayor a 50 en el Turno 5.", debuff: "Maquinaria multilateral bloqueada: tus cadenas de 4+ cubos escalan menos (máx 1.3x)." },
+      china: { nombre: "China", icono: "🇨🇳", condicion: "Retira su apoyo si la Diplomacia es menor a 70 en el Turno 9.", debuff: "No respalda tratados: tus cubos de Tratado dan la mitad de Diplomacia." },
+      francia: { nombre: "Francia", icono: "🇫🇷", condicion: "Retira su apoyo si la Opinión es menor a 35 en el Turno 13.", debuff: "Altavoz humanitario retirado: tus cubos de Prensa dan la mitad de Opinión." },
+      reino: { nombre: "Reino Unido", icono: "🇬🇧", condicion: "Retira su apoyo si la Economía es menor a 28 en el Turno 9.", debuff: "Financiación cortada: tus cubos de Comercio dan la mitad de Economía." }
+    };
+
     const DESCRIPCIONES_STATS = {
       diplomacia: {
         descripcion: "Tu capacidad de negociar y construir alianzas en el Consejo. Determina la probabilidad de éxito en decisiones que dependen del diálogo.",
@@ -610,15 +592,15 @@
         icono: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg>`
       },
       comercio: {
-    clase: "cubo--comercio",
-    nombre: "Comercio",
-    icono: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>`
-  },
-  prensa: {
-    clase: "cubo--prensa",
-    nombre: "Prensa",
-    icono: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>`
-  },
+        clase: "cubo--comercio",
+        nombre: "Comercio",
+        icono: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>`
+      },
+      prensa: {
+        clase: "cubo--prensa",
+        nombre: "Prensa",
+        icono: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>`
+      },
       militar: {
         clase: "cubo--militar",
         nombre: "Militar",
@@ -746,7 +728,6 @@ const DECISIONES_POOL = {
 
     let estado = null;
     let seleccion = [], arrastrando = false, huboMovimiento = false;
-    let contextoAudio = null, audioDesbloqueado = false;
     let noticieroExpandido = true;
     let lastNoticieroKey = "";
 
@@ -764,6 +745,7 @@ const DECISIONES_POOL = {
       "modal-veto","veto-icono","veto-titulo","veto-dialogo","veto-debuff","btn-veto-continuar",
       "modal-reconciliacion","recon-titulo","recon-texto","recon-opciones",
       "modal-stat","stat-titulo","stat-descripcion","stat-tips","btn-stat-cerrar",
+      "modal-p5","p5-titulo","p5-icono","p5-condicion","p5-debuff","btn-p5-cerrar",
       "modal-reinicio","btn-reinicio-cancelar","btn-reinicio-confirmar",
       "modal-final","final-titulo","final-sub","final-informe","btn-final-reiniciar"
     ].forEach(id => el[id.replace(/-/g, "_")] = document.getElementById(id));
@@ -783,31 +765,47 @@ const DECISIONES_POOL = {
       return (texto || "").replace(/\{RIVAL\}/g, estado.nombreRival || "el país rival");
     }
 
-    function desbloquearAudio() {
-      if (audioDesbloqueado) return;
-      try {
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) return;
-        contextoAudio = new AC();
-        if (contextoAudio.state === "suspended") contextoAudio.resume();
-        audioDesbloqueado = true;
-      } catch(e) {}
+    // === SISTEMA DE AUDIO OPTIMIZADO ===
+    let ctx = null;
+    function initAudio() {
+      if (ctx) return;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        ctx = new AC();
+        if (ctx.state === "suspended") ctx.resume();
+      }
     }
-    document.addEventListener("pointerdown", desbloquearAudio, { once: true });
+    document.addEventListener("pointerdown", initAudio, { once: true });
+
+  const Sonido = {
+  playTone(freq, type, dur, vol, slideTo = null) {
+    if (!ctx) return;
+    try {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(freq, ctx.currentTime);
+      if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, ctx.currentTime + dur);
+      g.gain.setValueAtTime(vol, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      o.stop(ctx.currentTime + dur);
+      o.onended = () => { o.disconnect(); g.disconnect(); };
+    } catch(e) {}
+  },
+  cubo(n = 0) { this.playTone(440 + n * 40, 'sine', 0.12, 0.06); },
+  cadena(n) { this.playTone(440 + (n + 1) * 40, 'sine', 0.3, 0.08); }, // <-- Sube un paso extra al soltar
+  tick() { this.playTone(800, 'triangle', 0.03, 0.02); },
+  exito() { this.playTone(523.25, 'sine', 0.1, 0.06); setTimeout(() => this.playTone(659.25, 'sine', 0.1, 0.06), 80); setTimeout(() => this.playTone(783.99, 'sine', 0.3, 0.06), 160); },
+  fallo() { this.playTone(150, 'sawtooth', 0.3, 0.08, 100); },
+  veto() {
+    this.playTone(60, 'sine', 0.8, 0.15, 40);
+    setTimeout(() => this.playTone(120, 'square', 0.4, 0.05, 80), 100);
+  }
+};
 
     function vibrar(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
-    function tono(freq, dur) {
-      if (!contextoAudio) return;
-      try {
-        const o = contextoAudio.createOscillator();
-        const g = contextoAudio.createGain();
-        o.type = "sine"; o.frequency.value = freq;
-        g.gain.setValueAtTime(0.06, contextoAudio.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.0001, contextoAudio.currentTime + (dur || 0.12));
-        o.connect(g); g.connect(contextoAudio.destination);
-        o.start(); o.stop(contextoAudio.currentTime + (dur || 0.12));
-      } catch(e) {}
-    }
 
     function mostrarToast(msg, tipo) {
       const t = document.createElement("div");
@@ -889,190 +887,140 @@ const DECISIONES_POOL = {
       });
     }
 
-function pintarNoticiero(force) {
-  const s = estado.estadisticas;
-  const key = JSON.stringify({ t: estado.turno, s, p5: estado.apoyoP5 });
-  if (!force && key === lastNoticieroKey) return;
-  lastNoticieroKey = key;
+    function pintarNoticiero(force) {
+      const s = estado.estadisticas;
+      const key = JSON.stringify({ t: estado.turno, s, p5: estado.apoyoP5 });
+      if (!force && key === lastNoticieroKey) return;
+      lastNoticieroKey = key;
 
-  const rival = estado.nombreRival || "el país rival";
-  const turno = estado.turno;
+      const rival = estado.nombreRival || "el país rival";
+      const turno = estado.turno;
+      let marcador, color, clase, opcionesTexto;
 
-  // ===== ESTADO DEL MUNDO =====
-  let marcador, color, clase, opcionesTexto;
+      if (s.conflicto >= 70) {
+        marcador = "GUERRA"; color = "var(--rojo)"; clase = "noticiero peligro";
+        opcionesTexto = [
+          "Combates abiertos con " + rival + ". La guerra ya no es una amenaza: es el presente.",
+          "El frente se ha roto. " + rival + " ha cruzado la última línea roja.",
+          "Los generales hablan de horas, no de días. La guerra total está a la vuelta de la esquina.",
+          "Tres explosiones en la capital. " + rival + " niega cualquier implicación."
+        ];
+      } else if (s.conflicto >= 60) {
+        marcador = "ALERTA"; color = "var(--rojo)"; clase = "noticiero peligro";
+        opcionesTexto = [
+          "Combates abiertos con " + rival + ". La guerra es inminente.",
+          "Las tropas de " + rival + " han cruzado la frontera. El Consejo se reúne de urgencia.",
+          "El ejército confirma bajas en el frente. La población empieza a exigir respuestas.",
+          "Los mediadores abandonan la mesa. La vía diplomática se agota."
+        ];
+      } else if (s.conflicto >= 40) {
+        marcador = "TENSIÓN"; color = "var(--amarillo)"; clase = "noticiero alerta";
+        opcionesTexto = [
+          "La frontera con " + rival + " se calienta. Los mediadores piden calma.",
+          "Movimientos de tropas en el paso fronterizo. Los satélites confirman blindados.",
+          "El embajador de " + rival + " ha sido llamado a consultas. Las conversaciones siguen.",
+          "Incidentes aislados en la frontera. Nadie habla de guerra todavía, pero nadie la descarta."
+        ];
+      } else if (s.diplomacia >= 75 && s.conflicto < 30) {
+        marcador = "VICTORIA"; color = "var(--verde)"; clase = "noticiero";
+        opcionesTexto = [
+          "La paz con " + rival + " pende de un hilo muy fino. Y ese hilo eres tú.",
+          "Los mediadores hablan de 'acuerdo histórico'. El Consejo prepara la firma.",
+          "La diplomacia funciona. " + rival + " ha aceptado sentarse a negociar en serio.",
+          "Un giro inesperado: " + rival + " cede en el punto que bloqueaba todo."
+        ];
+      } else if (s.diplomacia >= 60) {
+        marcador = "DIPLOMACIA"; color = "var(--azul)"; clase = "noticiero";
+        opcionesTexto = [
+          "Avances en las conversaciones con " + rival + ".",
+          "El Consejo respalda tu última propuesta. Las conversaciones avanzan.",
+          "Los mediadores internacionales aplauden tu gestión. Todavía hay margen.",
+          "Reunión discreta en Ginebra. Nadie confirma nada, pero todos sonríen."
+        ];
+      } else if (s.economia <= 15) {
+        marcador = "COLAPSO"; color = "var(--rojo)"; clase = "noticiero peligro";
+        opcionesTexto = [
+          "La bolsa se desploma. Sin fondos para nuevas sanciones contra " + rival + ".",
+          "El gobierno no puede pagar la próxima nómina. La economía está en caída libre.",
+          "Los mercados han cerrado. El FMI estudia una intervención de emergencia.",
+          "El país se queda sin reservas. La crisis ya no es solo exterior."
+        ];
+      } else if (s.economia <= 30) {
+        marcador = "CRISIS"; color = "var(--amarillo)"; clase = "noticiero alerta";
+        opcionesTexto = [
+          "El banco central pide calma. La economía se contrae trimestre tras trimestre.",
+          "Los inversores empiezan a marcharse. El país pierde atractivo.",
+          "Recortes en el presupuesto de defensa. La crisis ya toca el frente.",
+          "El FMI advierte: sin plan de ajuste, la cosa se pone fea."
+        ];
+      } else if (s.opinion <= 15) {
+        marcador = "RUPTURA"; color = "var(--rojo)"; clase = "noticiero peligro";
+        opcionesTexto = [
+          "Protestas en la capital. La población exige una salida.",
+          "El gobierno ya no controla las calles. La oposición pide elecciones anticipadas.",
+          "Tres ministros han dimitido esta semana. El gabinete se descompone.",
+          "La popularidad del gobierno está en mínimos históricos. Nadie te defiende."
+        ];
+      } else if (s.opinion <= 30) {
+        marcador = "DESGASTE"; color = "var(--amarillo)"; clase = "noticiero alerta";
+        opcionesTexto = [
+          "La población empieza a dar la espalda al gobierno. Las encuestas no engañan.",
+          "Manifestaciones dispersas en varias ciudades. El malestar crece.",
+          "Los sindicatos amenazan con una huelga general. El gobierno tiembla.",
+          "La opinión pública se impacienta. Los ciudadanos quieren resultados."
+        ];
+      } else {
+        marcador = "INFORMATIVO"; color = "var(--texto-suave)"; clase = "noticiero";
+        opcionesTexto = [
+          "Movimientos de tropas en la frontera con " + rival + ".",
+          "El Consejo se reúne sin avances. La crisis sigue su curso.",
+          "Los satélites confirman presencia militar de " + rival + " en el paso fronterizo.",
+          "La comunidad internacional observa. Nadie interviene todavía."
+        ];
+      }
 
-  if (s.conflicto >= 70) {
-    marcador = "GUERRA"; color = "var(--rojo)"; clase = "noticiero peligro";
-    opcionesTexto = [
-      "Combates abiertos con " + rival + ". La guerra ya no es una amenaza: es el presente.",
-      "El frente se ha roto. " + rival + " ha cruzado la última línea roja.",
-      "Los generales hablan de horas, no de días. La guerra total está a la vuelta de la esquina.",
-      "Tres explosiones en la capital. " + rival + " niega cualquier implicación."
-    ];
-  } else if (s.conflicto >= 60) {
-    marcador = "ALERTA"; color = "var(--rojo)"; clase = "noticiero peligro";
-    opcionesTexto = [
-      "Combates abiertos con " + rival + ". La guerra es inminente.",
-      "Las tropas de " + rival + " han cruzado la frontera. El Consejo se reúne de urgencia.",
-      "El ejército confirma bajas en el frente. La población empieza a exigir respuestas.",
-      "Los mediadores abandonan la mesa. La vía diplomática se agota."
-    ];
-  } else if (s.conflicto >= 40) {
-    marcador = "TENSIÓN"; color = "var(--amarillo)"; clase = "noticiero alerta";
-    opcionesTexto = [
-      "La frontera con " + rival + " se calienta. Los mediadores piden calma.",
-      "Movimientos de tropas en el paso fronterizo. Los satélites confirman blindados.",
-      "El embajador de " + rival + " ha sido llamado a consultas. Las conversaciones siguen.",
-      "Incidentes aislados en la frontera. Nadie habla de guerra todavía, pero nadie la descarta."
-    ];
-  } else if (s.diplomacia >= 75 && s.conflicto < 30) {
-    marcador = "VICTORIA"; color = "var(--verde)"; clase = "noticiero";
-    opcionesTexto = [
-      "La paz con " + rival + " pende de un hilo muy fino. Y ese hilo eres tú.",
-      "Los mediadores hablan de 'acuerdo histórico'. El Consejo prepara la firma.",
-      "La diplomacia funciona. " + rival + " ha aceptado sentarse a negociar en serio.",
-      "Un giro inesperado: " + rival + " cede en el punto que bloqueaba todo."
-    ];
-  } else if (s.diplomacia >= 60) {
-    marcador = "DIPLOMACIA"; color = "var(--azul)"; clase = "noticiero";
-    opcionesTexto = [
-      "Avances en las conversaciones con " + rival + ".",
-      "El Consejo respalda tu última propuesta. Las conversaciones avanzan.",
-      "Los mediadores internacionales aplauden tu gestión. Todavía hay margen.",
-      "Reunión discreta en Ginebra. Nadie confirma nada, pero todos sonríen."
-    ];
-  } else if (s.economia <= 15) {
-    marcador = "COLAPSO"; color = "var(--rojo)"; clase = "noticiero peligro";
-    opcionesTexto = [
-      "La bolsa se desploma. Sin fondos para nuevas sanciones contra " + rival + ".",
-      "El gobierno no puede pagar la próxima nómina. La economía está en caída libre.",
-      "Los mercados han cerrado. El FMI estudia una intervención de emergencia.",
-      "El país se queda sin reservas. La crisis ya no es solo exterior."
-    ];
-  } else if (s.economia <= 30) {
-    marcador = "CRISIS"; color = "var(--amarillo)"; clase = "noticiero alerta";
-    opcionesTexto = [
-      "El banco central pide calma. La economía se contrae trimestre tras trimestre.",
-      "Los inversores empiezan a marcharse. El país pierde atractivo.",
-      "Recortes en el presupuesto de defensa. La crisis ya toca el frente.",
-      "El FMI advierte: sin plan de ajuste, la cosa se pone fea."
-    ];
-  } else if (s.opinion <= 15) {
-    marcador = "RUPTURA"; color = "var(--rojo)"; clase = "noticiero peligro";
-    opcionesTexto = [
-      "Protestas en la capital. La población exige una salida.",
-      "El gobierno ya no controla las calles. La oposición pide elecciones anticipadas.",
-      "Tres ministros han dimitido esta semana. El gabinete se descompone.",
-      "La popularidad del gobierno está en mínimos históricos. Nadie te defiende."
-    ];
-  } else if (s.opinion <= 30) {
-    marcador = "DESGASTE"; color = "var(--amarillo)"; clase = "noticiero alerta";
-    opcionesTexto = [
-      "La población empieza a dar la espalda al gobierno. Las encuestas no engañan.",
-      "Manifestaciones dispersas en varias ciudades. El malestar crece.",
-      "Los sindicatos amenazan con una huelga general. El gobierno tiembla.",
-      "La opinión pública se impacienta. Los ciudadanos quieren resultados."
-    ];
-  } else {
-    marcador = "INFORMATIVO"; color = "var(--texto-suave)"; clase = "noticiero";
-    opcionesTexto = [
-      "Movimientos de tropas en la frontera con " + rival + ".",
-      "El Consejo se reúne sin avances. La crisis sigue su curso.",
-      "Los satélites confirman presencia militar de " + rival + " en el paso fronterizo.",
-      "La comunidad internacional observa. Nadie interviene todavía."
-    ];
-  }
+      const texto = opcionesTexto[(turno * 7 + 3) % opcionesTexto.length];
+      const frases = [];
 
-  // ===== TITULAR DEL TURNO (estable dentro del turno) =====
-  const texto = opcionesTexto[(turno * 7 + 3) % opcionesTexto.length];
+      if (!estado.apoyoP5.eeuu) {
+        frases.push("Washington no responde a las llamadas del embajador.", "El Pentágono ha congelado la cooperación militar con tu país.", "La Casa Blanca evita pronunciarse. El silencio es la respuesta.");
+      } else if (s.conflicto < 38) {
+        frases.push("Washington exige una respuesta militar más firme.", "El secretario de Estado pide 'hechos, no palabras'.", "El Congreso debate retirar la ayuda si no hay movimientos pronto.");
+      }
+      if (!estado.apoyoP5.rusia) {
+        frases.push("Moscú ha vetado tres borradores seguidos.", "El Kremlin califica la situación de 'injerencia inaceptable'.", "Rusia refuerza su flota en el Báltico. Mensaje recibido.");
+      } else if (s.conflicto > 50) {
+        frases.push("Moscú advierte contra la escalada.", "El Kremlin pide 'contención' antes de que sea tarde.", "Rusia ha movilizado tropas en su frontera oeste. Advertencia clara.");
+      }
+      if (!estado.apoyoP5.china) {
+        frases.push("Pekín se retira del proceso diplomático.", "China ha suspendido las conversaciones comerciales.", "El gigante asiático respalda públicamente a " + rival + ".");
+      } else if (s.diplomacia < 60) {
+        frases.push("Pekín pide más gestos de diálogo.", "China espera una propuesta concreta antes de la próxima votación.", "El embajador chino ha pedido 'paciencia estratégica'.");
+      }
+      if (!estado.apoyoP5.francia) {
+        frases.push("París critica la falta de respuesta humanitaria.", "Francia ha bloqueado una resolución clave. Silencio incómodo.", "El Elíseo califica la situación de 'preocupante'.");
+      } else if (s.opinion < 35) {
+        frases.push("París pide contener el coste humano.", "Francia exige garantías para los civiles antes de seguir apoyando.", "El Quai d'Orsay convoca al embajador. No es buena señal.");
+      }
+      if (!estado.apoyoP5.reino) {
+        frases.push("Londres congela la línea de financiación.", "El Reino Unido se retira del consorcio financiero. Golpe duro.", "La City cierra el grifo. Sin crédito, no hay política exterior.");
+      } else if (s.economia < 35) {
+        frases.push("Londres duda de la solvencia del país.", "El Tesoro británico pide garantías antes de ampliar la línea de crédito.", "Los mercados de Londres empiezan a descontar un impago.");
+      }
 
-  // ===== FRASES P5 (3 variantes por P5) =====
-  const frases = [];
+      let p5 = "";
+      if (frases.length > 0) p5 = frases[(turno * 31) % frases.length];
 
-  if (!estado.apoyoP5.eeuu) {
-    frases.push(
-      "Washington no responde a las llamadas del embajador.",
-      "El Pentágono ha congelado la cooperación militar con tu país.",
-      "La Casa Blanca evita pronunciarse. El silencio es la respuesta."
-    );
-  } else if (s.conflicto < 38) {
-    frases.push(
-      "Washington exige una respuesta militar más firme.",
-      "El secretario de Estado pide 'hechos, no palabras'.",
-      "El Congreso debate retirar la ayuda si no hay movimientos pronto."
-    );
-  }
-
-  if (!estado.apoyoP5.rusia) {
-    frases.push(
-      "Moscú ha vetado tres borradores seguidos.",
-      "El Kremlin califica la situación de 'injerencia inaceptable'.",
-      "Rusia refuerza su flota en el Báltico. Mensaje recibido."
-    );
-  } else if (s.conflicto > 50) {
-    frases.push(
-      "Moscú advierte contra la escalada.",
-      "El Kremlin pide 'contención' antes de que sea tarde.",
-      "Rusia ha movilizado tropas en su frontera oeste. Advertencia clara."
-    );
-  }
-
-  if (!estado.apoyoP5.china) {
-    frases.push(
-      "Pekín se retira del proceso diplomático.",
-      "China ha suspendido las conversaciones comerciales.",
-      "El gigante asiático respalda públicamente a " + rival + "."
-    );
-  } else if (s.diplomacia < 60) {
-    frases.push(
-      "Pekín pide más gestos de diálogo.",
-      "China espera una propuesta concreta antes de la próxima votación.",
-      "El embajador chino ha pedido 'paciencia estratégica'."
-    );
-  }
-
-  if (!estado.apoyoP5.francia) {
-    frases.push(
-      "París critica la falta de respuesta humanitaria.",
-      "Francia ha bloqueado una resolución clave. Silencio incómodo.",
-      "El Elíseo califica la situación de 'preocupante'."
-    );
-  } else if (s.opinion < 35) {
-    frases.push(
-      "París pide contener el coste humano.",
-      "Francia exige garantías para los civiles antes de seguir apoyando.",
-      "El Quai d'Orsay convoca al embajador. No es buena señal."
-    );
-  }
-
-  if (!estado.apoyoP5.reino) {
-    frases.push(
-      "Londres congela la línea de financiación.",
-      "El Reino Unido se retira del consorcio financiero. Golpe duro.",
-      "La City cierra el grifo. Sin crédito, no hay política exterior."
-    );
-  } else if (s.economia < 35) {
-    frases.push(
-      "Londres duda de la solvencia del país.",
-      "El Tesoro británico pide garantías antes de ampliar la línea de crédito.",
-      "Los mercados de Londres empiezan a descontar un impago."
-    );
-  }
-
-  let p5 = "";
-  if (frases.length > 0) p5 = frases[(turno * 31) % frases.length];
-
-  // ===== RENDER =====
-  el.noticiero.className = clase;
-  if (noticieroExpandido) el.noticiero.classList.add("noticiero--expandido");
-  el.noticiero.innerHTML =
-    `<span class="noticiero__marcador" style="color:${color}">${esc(marcador)}</span>` +
-    `<span class="noticiero__toggle">▼</span>` +
-    `<div class="noticiero__cuerpo">` +
-      `<span class="noticiero__texto">${esc(texto)}</span>` +
-      (p5 ? `<span class="noticiero__p5">${esc(p5)}</span>` : "") +
-    `</div>`;
-}
+      el.noticiero.className = clase;
+      if (noticieroExpandido) el.noticiero.classList.add("noticiero--expandido");
+      el.noticiero.innerHTML =
+        `<span class="noticiero__marcador" style="color:${color}">${esc(marcador)}</span>` +
+        `<span class="noticiero__toggle">▼</span>` +
+        `<div class="noticiero__cuerpo">` +
+          `<span class="noticiero__texto">${esc(texto)}</span>` +
+          (p5 ? `<span class="noticiero__p5">${esc(p5)}</span>` : "") +
+        `</div>`;
+    }
 
     function pintar() {
       pintarStats();
@@ -1111,7 +1059,6 @@ function pintarNoticiero(force) {
       }
       return false;
     }
-    function hayGrupoValido(t) { return hayCadenaDe(t, CONFIG.MINIMO_GRUPO); }
 
     function plantarGrupo(t, longitudMinima) {
       const min = longitudMinima || CONFIG.MINIMO_GRUPO;
@@ -1162,26 +1109,29 @@ function pintarNoticiero(force) {
       return b;
     }
 
-    function actualizarTablero() {
+    function actualizarTablero(tableroAnterior) {
       const cubos = el.tablero.querySelectorAll(".cubo");
       let i = 0;
-      for (let f = 0; f < CONFIG.FILAS; f++)
+      for (let f = 0; f < CONFIG.FILAS; f++) {
         for (let c = 0; c < CONFIG.COLUMNAS; c++) {
           const tipo = estado.tablero[f][c];
           const cubo = cubos[i];
           if (cubo) {
-            const anterior = cubo.dataset.tipo;
+            const tipoAnterior = tableroAnterior ? tableroAnterior[f][c] : cubo.dataset.tipo;
+
             cubo.className = "cubo " + TIPOS_CUBO[tipo].clase;
             cubo.innerHTML = `<span>${TIPOS_CUBO[tipo].icono}</span>`;
             cubo.dataset.fila = f; cubo.dataset.col = c; cubo.dataset.tipo = tipo;
             cubo.setAttribute("aria-label", TIPOS_CUBO[tipo].nombre + " fila " + (f+1) + " col " + (c+1));
-            if (anterior !== tipo) {
+
+            if (tipoAnterior !== tipo) {
               cubo.classList.add("cubo--caida");
               setTimeout(() => cubo.classList.remove("cubo--caida"), CONFIG.MS_CAIDA);
             }
           }
           i++;
         }
+      }
     }
 
     function aplicarGravedad() {
@@ -1214,7 +1164,7 @@ function pintarNoticiero(force) {
       if (!puedeJugar() || !estado.tablero[f][c]) return;
       seleccion = [{ fila: f, col: c }];
       arrastrando = true;
-      resaltar(); vibrar(15); tono(440);
+      resaltar(); vibrar(15); Sonido.cubo();
       pintarBarrasFantasma();
       pintarPista();
     }
@@ -1233,7 +1183,7 @@ function pintarNoticiero(force) {
       const nueva = { fila: f, col: c };
       if (contiene(f, c) || !esAdyacente(ultimo, nueva) || tipo !== estado.tablero[ultimo.fila][ultimo.col]) return;
       seleccion.push(nueva);
-      resaltar(); vibrar(10); tono(440 + seleccion.length * 40);
+      resaltar(); vibrar(10); Sonido.cubo(seleccion.length);
       pintarBarrasFantasma(); pintarPista();
     }
 
@@ -1385,7 +1335,7 @@ function pintarNoticiero(force) {
       const mult = multiplicador(cantidad);
 
       estado.resolviendo = true; estado.jugadaUsada = true;
-      vibrar(50); tono(600, 0.2);
+      vibrar(50); Sonido.cadena(cantidad);
 
       if (cantidad >= CONFIG.RACHA_MINIMO_SUMA) estado.rachaGlobal += cantidad;
       else estado.rachaGlobal = 0;
@@ -1410,12 +1360,18 @@ function pintarNoticiero(force) {
       if (verificarGameOver()) return;
 
       setTimeout(() => {
+        // Guardamos el estado anterior para que la animación de caída se aplique correctamente
+        const tableroAnterior = estado.tablero.map(fila => fila.slice());
+
         aplicarGravedad();
         if (!hayCadenaDe(estado.tablero, 3)) plantarGrupo(estado.tablero, 3);
         if (!hayCadenaDe(estado.tablero, 4) && Math.random() < CONFIG.PROB_PLANTAR_4) {
           plantarGrupo(estado.tablero, 4);
         }
-        actualizarTablero();
+
+        // Le pasamos el tablero anterior a la función
+        actualizarTablero(tableroAnterior);
+
         estado.resolviendo = false;
         finalizarJugada();
       }, CONFIG.MS_ELIMINAR);
@@ -1513,7 +1469,7 @@ function pintarNoticiero(force) {
         b.innerHTML = html;
 
         if (tieneReq) b.disabled = true;
-        else b.addEventListener("click", () => resolverDecision(op));
+        else b.addEventListener("click", () => { Sonido.cubo(); resolverDecision(op); });
 
         el.decision_opciones.appendChild(b);
       });
@@ -1521,7 +1477,6 @@ function pintarNoticiero(force) {
       el.modal_decision.hidden = false;
     }
 
-    // Mensajes del dado según el stat de la decisión
     function mensajeDado(exito, stat) {
       const EXITO = {
         diplomacia: ["El Consejo respalda tu propuesta", "La sala asiente. Hay acuerdo", "Ginebra sonríe por una vez"],
@@ -1561,6 +1516,7 @@ function pintarNoticiero(force) {
         const maxTicks = 8;
         const interval = setInterval(() => {
           el.dado_cara.textContent = 1 + aleatorio(20);
+          Sonido.tick();
           tick++;
           if (tick >= maxTicks) {
             clearInterval(interval);
@@ -1569,8 +1525,10 @@ function pintarNoticiero(force) {
             el.dado_etiqueta.textContent = exito ? "¡Éxito!" : "Fallo";
             el.dado_resultado.textContent = mensajeDado(exito, stat);
             el.dado_resultado.className = "dado-resultado " + (exito ? "dado-resultado--exito" : "dado-resultado--fallo");
-            tono(exito ? 880 : 220, 0.18);
+
+            if (exito) Sonido.exito(); else Sonido.fallo();
             vibrar(exito ? [30, 30, 30] : [80, 40, 80]);
+
             setTimeout(() => {
               el.modal_dado.hidden = true;
               resolve();
@@ -1673,6 +1631,7 @@ function pintarNoticiero(force) {
       el.veto_dialogo.textContent = v.dialogo;
       el.veto_debuff.textContent = "Consecuencia: " + v.debuff;
       el.modal_veto.hidden = false;
+      Sonido.veto();
       vibrar([100, 50, 100]);
     }
 
@@ -1688,6 +1647,7 @@ function pintarNoticiero(force) {
       b1.className = "opcion";
       b1.innerHTML = `<span class="opcion__titulo">Ofrecer concesiones</span><span class="opcion__efecto">−15 Economía, −5 Opinión. Recupera el apoyo.</span>`;
       b1.addEventListener("click", () => {
+        Sonido.cubo();
         aplicarCambios({ economia: -15, opinion: -5 });
         estado.apoyoP5[pais] = true;
         pintarP5();
@@ -1701,6 +1661,7 @@ function pintarNoticiero(force) {
       b2.className = "opcion";
       b2.innerHTML = `<span class="opcion__titulo">Ignorar la oportunidad</span><span class="opcion__efecto">Sin coste. La relación sigue rota.</span>`;
       b2.addEventListener("click", () => {
+        Sonido.cubo();
         el.modal_reconciliacion.hidden = true;
         continuarAvance();
       });
@@ -1836,10 +1797,11 @@ function pintarNoticiero(force) {
 
     el.tablero.addEventListener("pointermove", e => {
       if (!arrastrando) return;
-      const d = datosEvento(e);
-      if (d) {
+      const obj = document.elementFromPoint(e.clientX, e.clientY);
+      const cubo = obj && obj.closest ? obj.closest(".cubo") : null;
+      if (cubo) {
         const antes = seleccion.length;
-        extenderSeleccion(d.fila, d.col);
+        extenderSeleccion(Number(cubo.dataset.fila), Number(cubo.dataset.col));
         if (seleccion.length !== antes) huboMovimiento = true;
       }
     });
@@ -1898,6 +1860,24 @@ function pintarNoticiero(force) {
 
     el.btn_stat_cerrar.addEventListener("click", () => {
       el.modal_stat.hidden = true;
+    });
+
+    document.querySelectorAll(".p5-pais").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const key = btn.id.replace("p5-", "");
+        const data = P5_DESCRIPCIONES[key];
+        if (!data) return;
+
+        el.p5_titulo.textContent = data.nombre;
+        el.p5_icono.textContent = data.icono;
+        el.p5_condicion.textContent = "Condición de veto: " + data.condicion;
+        el.p5_debuff.textContent = "Consecuencia: " + data.debuff;
+        el.modal_p5.hidden = false;
+      });
+    });
+
+    el.btn_p5_cerrar.addEventListener("click", () => {
+      el.modal_p5.hidden = true;
     });
 
     el.btn_nombre_aleatorio.addEventListener("click", () => {
