@@ -336,31 +336,36 @@
   .boton--compacto small { font-size: 0.7rem; }
 
   /* 7. Modales */
-.modal {
-  align-items: center; /* Centrar el modal en la pantalla */
-  padding: 10px; /* Menos margen exterior */
-}
-.modal__tarjeta {
-  max-height: 95dvh; /* Que ocupe casi toda la pantalla */
-  padding: 16px;
-  overflow-y: auto; /* Permitir scroll DENTRO de la tarjeta si es muy larga */
-}
-.modal__titulo { font-size: 1.3rem; }
-.modal__texto { font-size: 0.9rem; }
-.opcion { padding: 10px; }
-.opcion__titulo { font-size: 0.95rem; }
-.opcion__efecto, .opcion__probabilidad, .opcion__penalizacion { font-size: 0.75rem; }
+  .modal {
+    align-items: center;
+    padding: 8px;
+  }
+  .modal__tarjeta {
+    max-height: 95dvh;
+    padding: 12px 16px; /* Menos padding para ganar espacio */
+    gap: 10px;
+    overflow-y: auto;
+  }
+  .modal__etiqueta { display: none; } /* Ocultamos la etiqueta "Consejo de Seguridad 2026" para ganar espacio */
+  .modal__titulo { font-size: 1.2rem; }
+  .modal__texto { font-size: 0.85rem; line-height: 1.4; }
+  .opcion { padding: 10px; }
+  .opcion__titulo { font-size: 0.95rem; }
+  .opcion__efecto, .opcion__probabilidad, .opcion__penalizacion { font-size: 0.75rem; }
 
-/* Ajustes específicos para la pantalla de inicio (Presentación) */
-.presentacion__rol {
-  font-size: 0.85rem; /* Letra más pequeña para que quepa todo */
-  line-height: 1.45;
-  padding: 10px;
+  /* Ajustes específicos para la pantalla de inicio (Presentación) */
+  .presentacion__rol {
+    font-size: 0.8rem; /* Letra más pequeña */
+    line-height: 1.4;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+  }
+  .form-nombre { margin-bottom: 0; }
+  .form-nombre label { font-size: 0.7rem; }
+  .input-texto { padding: 10px 12px; font-size: 0.95rem; }
+  .modal__accion { gap: 8px; }
+  .modal__accion .boton { padding: 10px 16px; font-size: 0.9rem; }
 }
-.form-nombre { margin-bottom: 0; }
-.modal__accion { gap: 8px; }
-.modal__accion .boton { padding: 10px 16px; }
-
     /* =========================================
        VT323 — PIXEL READABLE (números y marcadores)
        ========================================= */
@@ -405,10 +410,10 @@
     <div class="modal__tarjeta">
       <p class="modal__etiqueta">Consejo de Seguridad · 2026</p>
       <h1 class="modal__titulo">CUBEFLICT</h1>
-      <div class="presentacion__rol">
-        Eres el embajador de tu país ante el Consejo de Seguridad de la ONU. Un país vecino ha movilizado tropas en la frontera y la comunidad internacional se mantiene al tanto de la situación. <br><br>
-        Tienes quince turnos para evitar que la crisis derive en guerra. Cinco miembros permanentes (EE.UU., Rusia, China, Francia y Reino Unido) tienen la última palabra. Si alguno retira su apoyo, las resoluciones que propongas caerán.
-      </div>
+        <div class="presentacion__rol" style="background: rgba(74, 140, 189, 0.15); border-left: 4px solid var(--azul); padding: 12px; border-radius: 2px; font-size: 0.9rem; margin-bottom: 10px; line-height: 1.55;">
+      Eres el <strong>Ministro de Asuntos Exteriores</strong> de tu país, al frente de la delegación ante el Consejo de Seguridad de la ONU. Un país vecino ha movilizado tropas en la frontera y la comunidad internacional se mantiene al tanto de la situación. <br><br>
+      Tienes quince turnos para evitar que la crisis derive en guerra. Cinco miembros permanentes (EE.UU., Rusia, China, Francia y Reino Unido) tienen la última palabra. Si alguno retira su apoyo, las resoluciones que propongas caerán.
+    </div>
       <div class="form-nombre">
         <label for="input-nombre">Nombre de tu país</label>
         <div class="form-nombre__row">
