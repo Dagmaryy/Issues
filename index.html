@@ -335,22 +335,32 @@
   .boton--compacto { padding: 6px 4px; }
   .boton--compacto small { font-size: 0.7rem; }
 
-  /* Modales */
-  .modal {
-    align-items: flex-start;
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
-  .modal__tarjeta {
-    max-height: 85dvh;
-    padding: 16px;
-  }
-  .modal__titulo { font-size: 1.3rem; }
-  .modal__texto { font-size: 0.9rem; }
-  .opcion { padding: 10px; }
-  .opcion__titulo { font-size: 0.95rem; }
-  .opcion__efecto, .opcion__probabilidad, .opcion__penalizacion { font-size: 0.75rem; }
+  /* 7. Modales */
+.modal {
+  align-items: center; /* Centrar el modal en la pantalla */
+  padding: 10px; /* Menos margen exterior */
 }
+.modal__tarjeta {
+  max-height: 95dvh; /* Que ocupe casi toda la pantalla */
+  padding: 16px;
+  overflow-y: auto; /* Permitir scroll DENTRO de la tarjeta si es muy larga */
+}
+.modal__titulo { font-size: 1.3rem; }
+.modal__texto { font-size: 0.9rem; }
+.opcion { padding: 10px; }
+.opcion__titulo { font-size: 0.95rem; }
+.opcion__efecto, .opcion__probabilidad, .opcion__penalizacion { font-size: 0.75rem; }
+
+/* Ajustes específicos para la pantalla de inicio (Presentación) */
+.presentacion__rol {
+  font-size: 0.85rem; /* Letra más pequeña para que quepa todo */
+  line-height: 1.45;
+  padding: 10px;
+}
+.form-nombre { margin-bottom: 0; }
+.modal__accion { gap: 8px; }
+.modal__accion .boton { padding: 10px 16px; }
+
     /* =========================================
        VT323 — PIXEL READABLE (números y marcadores)
        ========================================= */
