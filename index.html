@@ -36,7 +36,7 @@
         var(--fondo);
       background-attachment: fixed;
       color: var(--texto);
-      font-family: "Segoe UI", Roboto, Ubuntu, sans-serif;
+      font-family: 'Courier New', Courier, monospace;
       line-height: 1.5; padding: calc(16px + var(--safe-top)) 16px calc(24px + var(--safe-bottom));
       -webkit-tap-highlight-color: transparent;
       font-size: 16px; line-height: 1.6;
@@ -173,11 +173,7 @@
       .modal__texto { font-size: 1.05rem; line-height: 1.5; }
 
       /* Subimos el texto del recuadro azul de la presentación */
-      .presentacion__rol {
-        font-size: 1.05rem;
-        line-height: 1.5;
-        padding: 12px 14px;
-        margin-bottom: 12px;
+    .presentacion__rol { background: rgba(74, 140, 189, 0.1); border-left: 3px solid var(--azul); padding: 12px; border-radius: 2px; font-size: 0.95rem; margin-bottom: 10px; line-height: 1.6; font-family: 'Courier New', Courier, monospace; }
       }
     .form-nombre { display: flex; flex-direction: column; gap: 6px; }
     .form-nombre label { font-size: 0.8rem; color: var(--texto-suave); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
@@ -317,37 +313,43 @@
       .pista-accion { display: none; }
       .acciones-tablero { display: none; }
 
-      /* MODALES EN MÓVIL */
-      .modal { align-items: center; padding: 8px; }
-      .modal__tarjeta {
-        max-height: 95dvh;
-        padding: 16px;
-        gap: 12px;
-        overflow-y: auto;
-      }
-      .modal__etiqueta { display: none; }
-      .modal__titulo { font-size: 1.3rem; }
-      .modal__texto { font-size: 0.95rem; line-height: 1.5; }
+  /* MODALES EN MÓVIL */
+.modal { align-items: center; padding: 8px; }
+.modal__tarjeta {
+  max-height: 95dvh;
+  padding: 16px;
+  gap: 12px;
+  overflow-y: auto; /* Permite scroll interno si el texto es muy grande */
+}
+.modal__etiqueta { display: none; }
+.modal__titulo { font-size: 1.4rem; }
 
-      .opcion { padding: 12px; }
-      .opcion__titulo { font-size: 1rem; }
-      .opcion__efecto, .opcion__probabilidad, .opcion__penalizacion { font-size: 0.8rem; }
+/* Subimos bastante el texto general de los modales (tutorial, decisiones, etc) */
+.modal__texto { font-size: 1.15rem; line-height: 1.5; }
 
-      .presentacion__rol {
-        font-size: 0.9rem;
-        line-height: 1.45;
-        padding: 10px 12px;
-        margin-bottom: 8px;
-      }
-      .form-nombre { margin-bottom: 0; }
-      .form-nombre label { font-size: 0.75rem; }
-      .input-texto { padding: 10px 12px; font-size: 1rem; }
-      .modal__accion { gap: 8px; }
-      .modal__accion .boton { padding: 10px 16px; font-size: 0.95rem; }
+.opcion { padding: 14px; }
+.opcion__titulo { font-size: 1.1rem; }
+.opcion__efecto, .opcion__probabilidad, .opcion__penalizacion { font-size: 0.9rem; }
 
-      .tutorial__detalle strong { font-size: 0.95rem; }
-      .tutorial__detalle span { font-size: 0.85rem; line-height: 1.4; }
-      .tutorial__item { padding: 10px; gap: 10px; margin-bottom: 8px; }
+/* PRESENTACIÓN: Restauramos la línea azul y subimos el texto */
+.presentacion__rol {
+  font-size: 1.15rem;
+  line-height: 1.5;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-left: 4px solid var(--azul); /* Fuerza la línea azul */
+  background: rgba(74, 140, 189, 0.15); /* Fuerza el fondo azulado */
+}
+.form-nombre { margin-bottom: 0; }
+.form-nombre label { font-size: 0.85rem; }
+.input-texto { padding: 12px 14px; font-size: 1.1rem; }
+.modal__accion { gap: 8px; }
+.modal__accion .boton { padding: 12px 16px; font-size: 1rem; }
+
+/* Textos del tutorial un poco más grandes */
+.tutorial__detalle strong { font-size: 1.05rem; }
+.tutorial__detalle span { font-size: 0.95rem; line-height: 1.4; }
+.tutorial__item { padding: 12px; gap: 10px; margin-bottom: 8px; }
     }
 
     .turnos__numero, .mini-stat__valor, .racha, .noticiero__marcador, .dado, .dado-resultado, .panel__titulo, .floating-text {
