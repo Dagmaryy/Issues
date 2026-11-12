@@ -136,8 +136,7 @@
     @keyframes caerCubo { from { transform: translateY(-20px); opacity: 0.15; } to { transform: translateY(0); opacity: 1; } }
     .cubo--caida { animation: caerCubo 0.2s ease-out both; }
     .cubo > span { display: inline-flex; align-items: center; justify-content: center; pointer-events: none; }
-    .cubo svg { width: clamp(22px, 5.5vw, 30px); height: clamp(22px, 5.5vw, 30px); stroke: #e2e8f0; fill: none; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.8)); }
-
+    .cubo svg { width: clamp(22px, 5.5vw, 30px); height: clamp(22px, 5.5vw, 30px); stroke: #e2e8f0; fill: none; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; }
     .pista-accion { text-align: center; font-size: 0.85rem; color: var(--texto-suave); padding: 6px 0; font-style: normal; font-family: monospace; min-height: 1.8em; text-transform: uppercase; letter-spacing: 0.05em; }
     .acciones-tablero { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px; }
 
@@ -922,6 +921,7 @@ const DECISIONES_POOL = {
     let noticieroExpandido = true;
     let lastNoticieroKey = "";
     let nivelConflictoAnterior = "neutral";
+    let cubosDOM = []; // Memoria caché de los cubos
 
     const el = {};
     [
@@ -1450,12 +1450,19 @@ const DECISIONES_POOL = {
   break;
 }
 }
-    function pintarTablero() {
-      el.tablero.innerHTML = "";
-      for (let f = 0; f < CONFIG.FILAS; f++)
-        for (let c = 0; c < CONFIG.COLUMNAS; c++)
-          el.tablero.appendChild(crearCuboDOM(estado.tablero[f][c], f, c));
+   function pintarTablero() {
+    el.tablero.innerHTML = "";
+    cubosDOM = [];
+    for (let f = 0; f < CONFIG.FILAS; f++) {
+      const fila = [];
+      for (let c = 0; c < CONFIG.COLUMNAS; c++) {
+        const cubo = crearCuboDOM(estado.tablero[f][c], f, c);
+        el.tablero.appendChild(cubo);
+        fila.push(cubo);
+      }
+      cubosDOM.push(fila);
     }
+  }
 
     function crearCuboDOM(tipo, f, c) {
       const b = document.createElement("button");
@@ -1505,7 +1512,7 @@ const DECISIONES_POOL = {
     }
 
     function cuboDOM(f, c) {
-      return el.tablero.querySelector(`.cubo[data-fila="${f}"][data-col="${c}"]`);
+      return cubosDOM[f] ? cubosDOM[f][c] : null;
     }
     function esAdyacente(a, b) {
       const df = Math.abs(a.fila - b.fila), dc = Math.abs(a.col - b.col);
@@ -1513,10 +1520,17 @@ const DECISIONES_POOL = {
     }
     function contiene(f, c) { return seleccion.some(s => s.fila === f && s.col === c); }
 
-    function resaltar() {
-      el.tablero.querySelectorAll(".cubo--seleccionado").forEach(x => x.classList.remove("cubo--seleccionado"));
-      seleccion.forEach(s => { const cb = cuboDOM(s.fila, s.col); if (cb) cb.classList.add("cubo--seleccionado"); });
+   function resaltar() {
+  for (let f = 0; f < CONFIG.FILAS; f++) {
+    for (let c = 0; c < CONFIG.COLUMNAS; c++) {
+      const cb = cuboDOM(f, c);
+      if (cb) {
+        if (contiene(f, c)) cb.classList.add("cubo--seleccionado");
+        else cb.classList.remove("cubo--seleccionado");
+      }
     }
+  }
+}
 
     function iniciarSeleccion(f, c) {
       if (!puedeJugar() || !estado.tablero[f][c]) return;
@@ -2333,16 +2347,23 @@ if (s.conflicto >= CONFIG.UMBRAL_CONFLICTO_ROJO && s.diplomacia < 40) {
       try { el.tablero.setPointerCapture(e.pointerId); } catch(err) {}
     });
 
-    el.tablero.addEventListener("pointermove", e => {
-      if (!arrastrando) return;
-      const obj = document.elementFromPoint(e.clientX, e.clientY);
-      const cubo = obj && obj.closest ? obj.closest(".cubo") : null;
-      if (cubo) {
-        const antes = seleccion.length;
-        extenderSeleccion(Number(cubo.dataset.fila), Number(cubo.dataset.col));
-        if (seleccion.length !== antes) huboMovimiento = true;
-      }
-    });
+  el.tablero.addEventListener("pointermove", e => {
+  if (!arrastrando) return;
+  const rect = el.tablero.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  // Calculamos la fila y columna basándonos en el tamaño del tablero
+  const col = Math.floor((x / rect.width) * CONFIG.COLUMNAS);
+  const fila = Math.floor((y / rect.height) * CONFIG.FILAS);
+
+  // Verificamos que no nos salgamos del tablero
+  if (fila >= 0 && fila < CONFIG.FILAS && col >= 0 && col < CONFIG.COLUMNAS) {
+    const antes = seleccion.length;
+    extenderSeleccion(fila, col);
+    if (seleccion.length !== antes) huboMovimiento = true;
+  }
+});
 
     el.tablero.addEventListener("pointerup", () => {
       if (!arrastrando) return;
