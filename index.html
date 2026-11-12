@@ -287,28 +287,28 @@
   .turnos__numero { font-size: 1rem !important; }
   .turnos__fase { font-size: 0.65rem; padding: 2px 6px; }
 
-  .noticiero { padding: 6px 8px; font-size: 0.75rem; gap: 6px; margin-bottom: 0; }
-  .noticiero__marcador { font-size: 0.65rem !important; padding-right: 4px; padding-top: 1px; }
-  .noticiero__texto { font-size: 0.7rem; line-height: 1.3; }
-  .noticiero__p5 { font-size: 0.7rem; margin-top: 4px; }
-  .noticiero__toggle { font-size: 0.6rem; line-height: 1; }
+  .noticiero { padding: 8px 10px; gap: 8px; margin-bottom: 0; }
+  .noticiero__marcador { font-size: 0.8rem !important; padding-right: 6px; padding-top: 2px; }
+  .noticiero__texto { font-size: 0.9rem !important; line-height: 1.4; }
+  .noticiero__p5 { font-size: 0.85rem !important; margin-top: 6px; }
+  .noticiero__toggle { font-size: 0.8rem; line-height: 1; }
 
-  .p5-grid { gap: 4px; margin-bottom: 6px; padding-bottom: 6px; }
-  .p5-pais { padding: 4px 2px; }
-  .p5-pais span { font-size: 1.1rem; }
-  .p5-pais small { font-size: 0.55rem; }
+  .p5-grid { gap: 4px; margin-bottom: 8px; padding-bottom: 8px; }
+  .p5-pais { padding: 6px 4px; }
+  .p5-pais span { font-size: 1.3rem; }
+  .p5-pais small { font-size: 0.75rem !important; } /* Antes 0.55, ahora se lee */
 
-  .estadisticas-compactas { gap: 4px; }
-  .mini-stat { padding: 4px 2px; }
-  .mini-stat__label { font-size: 0.55rem; letter-spacing: 0; }
-  .mini-stat__valor { font-size: 1.2rem !important; }
-  .mini-stat__barra { height: 3px; }
+  .estadisticas-compactas { gap: 6px; }
+  .mini-stat { padding: 6px 2px; }
+  .mini-stat__label { font-size: 0.7rem !important; letter-spacing: 0.02em; } /* Antes 0.55 */
+  .mini-stat__valor { font-size: 1.4rem !important; } /* Un poco más grande */
+  .mini-stat__barra { height: 4px; }
 
   section[aria-label="Tablero"] {
     display: flex; flex-direction: column; justify-content: flex-start; min-height: 0; padding: 8px; flex-shrink: 0;
   }
   .tablero-scroll { display: flex; align-items: center; padding: 0; width: 100%; }
-  .tablero { width: 100%; max-width: 100%; max-height: 55vh; aspect-ratio: 1/1; margin: auto; }
+  .tablero { width: 100%; max-width: 100%; max-height: 48vh; aspect-ratio: 1/1; margin: auto; }
   .cubo svg { width: clamp(18px, 6vw, 24px); height: clamp(18px, 6vw, 24px); }
 
   .pista-accion { display: none; }
