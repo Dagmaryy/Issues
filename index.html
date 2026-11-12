@@ -267,32 +267,30 @@
 
  /* === AJUSTES PARA MÓVIL (UN SOLO PLANO) === */
 @media (max-width: 560px) {
-  /* 1. Dejar que el body haga scroll normal, pero apretado */
   body {
     padding: calc(8px + var(--safe-top)) 8px calc(8px + var(--safe-bottom));
-    /* Quitamos height: 100dvh y overflow: hidden */
+    overflow-y: auto; /* Permite scroll si la pantalla es muy pequeña */
   }
 
-  /* 2. El contenedor ocupa el alto de la pantalla, pero permite desbordar si hace falta */
   .juego {
     min-height: 100dvh;
     gap: 8px;
     justify-content: flex-start;
   }
 
-  /* 3. Ocultar lo que sobra */
+  /* Ocultar lo que sobra */
   .cabecera { display: none; }
   .registro-panel { display: none; }
   footer { display: none; }
 
-  /* 4. Paneles superiores compactos */
+  /* Paneles superiores compactos */
   .panel { padding: 8px 10px; }
   .turnos__numero { font-size: 1rem !important; }
   .turnos__fase { font-size: 0.65rem; padding: 2px 6px; }
   .noticiero { padding: 8px; font-size: 0.8rem; }
   .noticiero__texto { font-size: 0.75rem; }
 
-  /* 5. P5 y Estadísticas */
+  /* P5 y Estadísticas */
   .p5-grid { gap: 4px; margin-bottom: 6px; padding-bottom: 6px; }
   .p5-pais { padding: 4px 2px; }
   .p5-pais span { font-size: 1.1rem; }
@@ -304,23 +302,26 @@
   .mini-stat__valor { font-size: 1.2rem !important; }
   .mini-stat__barra { height: 3px; }
 
-  /* 6. Tablero */
+  /* Tablero */
   section[aria-label="Tablero"] {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     min-height: 0;
     padding: 8px;
+    flex-shrink: 0;
   }
   .tablero-scroll {
     display: flex;
     align-items: center;
     padding: 0;
+    width: 100%;
   }
   .tablero {
     width: 100%;
     max-width: 100%;
-    max-height: 100%;
+    /* EL TRUCO: limitar el alto para que quepa en el plano */
+    max-height: 55vh;
     aspect-ratio: 1/1;
     margin: auto;
   }
@@ -330,7 +331,7 @@
   .boton--compacto { padding: 6px 4px; }
   .boton--compacto small { font-size: 0.7rem; }
 
-  /* 7. Modales */
+  /* Modales */
   .modal {
     align-items: flex-start;
     padding-top: 20px;
@@ -370,18 +371,7 @@
     .dado-resultado { font-size: 1.3rem !important; letter-spacing: 0.12em !important; }
     .panel__titulo { font-size: 1.05rem !important; letter-spacing: 0.18em !important; }
     .floating-text { font-size: 1.8rem !important; }
-          /* === SCROLL SNAP SUAVE === */
-          html {
-        scroll-snap-type: y proximity;
-        scroll-padding-top: calc(16px + var(--safe-top));
-      }
 
-      @media (hover: none) and (pointer: coarse) {
-        section[aria-label="Estado del Consejo"],
-        section[aria-label="Tablero"] {
-          scroll-snap-align: start;
-        }
-      }
       .final__inspiracion {
   margin-top: 12px;
   padding: 10px 12px;
