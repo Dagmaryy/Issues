@@ -1,5 +1,10 @@
-// BOT.JS — Simulación Monte Carlo de CUBEFLICT v3
-// Coherente con el juego actual (decay 0.4, EE.UU.<38, UK<28, efectos suavizados)
+// BOT.JS — Simulación Monte Carlo de CUBEFLICT v6
+// Sincronizado con el HTML actual:
+//   - Tratado dip 1.5 | Comercio eco 4 | Militar dip -1
+//   - UMBRAL_DIPLOMACIA_VICTORIA 80 | REQUISITO_OPINION_VICTORIA 35
+//   - RACHA_BONUS_UMBRAL 8
+//   - DECISIONES_POOL recortado (dip positiva ~50% menos, T15 ~65% menos)
+//
 // Uso: node bot.js [N] [random|smart|both]
 
 const N = parseInt(process.argv[2]) || 500;
@@ -10,14 +15,14 @@ let MODO_ACTIVO = MODO;
 
 const CONFIG = {
     FILAS: 6, COLUMNAS: 6, TURNOS_TOTALES: 15,
-    EFECTO_TRATADO: { diplomacia: 2, economia: -2, opinion: 0, conflicto: -2 },
-    EFECTO_COMERCIO: { diplomacia: 0, economia: 3.5, opinion: -1.5, conflicto: 0 },
+    EFECTO_TRATADO: { diplomacia: 1.5, economia: -2, opinion: 0, conflicto: -2 },
+    EFECTO_COMERCIO: { diplomacia: 0, economia: 4, opinion: -1.5, conflicto: 0 },
     EFECTO_PRENSA: { diplomacia: 0, economia: -2, opinion: 1.5, conflicto: 0 },
-    EFECTO_MILITAR: { diplomacia: 0, economia: 2, opinion: 0, conflicto: 2 },
+    EFECTO_MILITAR: { diplomacia: -1, economia: 2, opinion: 0, conflicto: 2 },
     STAT_INICIAL: 50, STAT_MIN: 0, STAT_MAX: 100,
     UMBRAL_CONFLICTO_ROJO: 75,
-    UMBRAL_DIPLOMACIA_VICTORIA: 75,
-    REQUISITO_OPINION_VICTORIA: 30,
+    UMBRAL_DIPLOMACIA_VICTORIA: 80,
+    REQUISITO_OPINION_VICTORIA: 35,
     UMBRAL_DERROTA_ECONOMIA: 10,
     UMBRAL_DERROTA_OPINION: 15,
     CONFLICTO_UMBRAL_MODERADO: 40,
@@ -29,15 +34,20 @@ const CONFIG = {
     OPINION_PRESION_ECONOMIA_MODERADA: 0.3,
     OPINION_PRESION_ECONOMIA_SEVERA: 0.6,
     RACHA_MINIMO_SUMA: 4,
-    RACHA_BONUS_UMBRAL: 10,
+    RACHA_BONUS_UMBRAL: 8,
     MULT_BASE: 1.0, MULT_PASO: 0.25, MULT_CAP: 1.9,
     MULT_CAP_SIN_RUSIA: 1.3,
     MULTIPLICADOR_FASE_FINAL: 2,
     MINIMO_GRUPO: 3,
     DECAIMIENTO_CONFLICTO: 0.4,
     PROB_PLANTAR_4: 0.5,
-    UMBRAL_CHINA_DIPLOMACIA: 60,
-    UMBRAL_PARALISIS: 4
+    UMBRAL_CHINA_DIPLOMACIA: 70,
+    UMBRAL_PARALISIS: 4,
+    DEBUFF_EEUU_CONFLICTO: 3,
+    PROB_DECISION_BASE: 15,
+    PROB_DECISION_FACTOR: 0.75,
+    PROB_DECISION_MIN: 15,
+    PROB_DECISION_MAX: 90
 };
 
 const TIPOS_CUBO = ["tratado", "comercio", "prensa", "militar"];
@@ -48,74 +58,130 @@ const TURNOS_RECONCILIACION = [9, 13];
 const DECISIONES_POOL = {
     4: [
         { opciones: [
-            { titulo: "Observadores militares", stat: "diplomacia", efecto: { diplomacia: 3, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "conflicto", valor: 30 } },
-            { titulo: "Ignorar movilización", stat: "conflicto", efecto: { conflicto: 10, opinion: -5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -15 } }
+            { titulo: "Observadores en la frontera", stat: "diplomacia", efecto: { diplomacia: 1.5, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "conflicto", valor: 30 } },
+            { titulo: "Mirar hacia otro lado", stat: "conflicto", efecto: { conflicto: 10, opinion: -5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -15 } },
+            { titulo: "Cumbre de urgencia", stat: "diplomacia", efecto: { diplomacia: 2, opinion: 3, economia: -7 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "economia", valor: -12 } }
         ] },
         { opciones: [
-            { titulo: "Desmentir información", stat: "opinion", efecto: { opinion: 5, conflicto: -2 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -10 } },
-            { titulo: "Mostrar pruebas", stat: "diplomacia", efecto: { diplomacia: 5, conflicto: 7 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "conflicto", valor: 20 } }
+            { titulo: "Desmentirlo todo", stat: "opinion", efecto: { opinion: 5, conflicto: -2 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -10 } },
+            { titulo: "Sacar las pruebas a la luz", stat: "diplomacia", efecto: { diplomacia: 2.5, conflicto: 7 }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "conflicto", valor: 20 } },
+            { titulo: "Soltar una parte del material", stat: "opinion", efecto: { opinion: 3, conflicto: 2, diplomacia: -2 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -8 } }
         ] },
         { opciones: [
-            { titulo: "Reunión secreta", stat: "diplomacia", efecto: { diplomacia: 5, opinion: -5 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "opinion", valor: -10 } },
-            { titulo: "Rechazar y hacer público", stat: "opinion", efecto: { opinion: 8, conflicto: 7 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "conflicto", valor: 15 } }
+            { titulo: "Verlo a solas", stat: "diplomacia", efecto: { diplomacia: 2.5, opinion: -5 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -10 } },
+            { titulo: "Rechazarlo en público", stat: "opinion", efecto: { opinion: 8, conflicto: 7 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "conflicto", valor: 15 } },
+            { titulo: "Grabar y filtrar", stat: "opinion", efecto: { opinion: 5, diplomacia: -4, conflicto: 3 }, bonus: { stat: "opinion", valor: 12 }, penalty: { stat: "diplomacia", valor: -12 } }
         ] },
         { opciones: [
-            { titulo: "Enviar fragata", stat: "conflicto", efecto: { conflicto: 7, opinion: 5 }, bonus: { stat: "conflicto", valor: 10 }, penalty: { stat: "diplomacia", valor: -15 } },
-            { titulo: "Protesta formal", stat: "diplomacia", efecto: { diplomacia: 4, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "opinion", valor: -10 } }
+            { titulo: "Escoltar el destructor", stat: "conflicto", efecto: { conflicto: 7, opinion: 5 }, bonus: { stat: "conflicto", valor: 10 }, penalty: { stat: "diplomacia", valor: -15 } },
+            { titulo: "Llamar a capítulo al embajador", stat: "diplomacia", efecto: { diplomacia: 2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -10 } },
+            { titulo: "Cerrar el puerto a su comercio", stat: "conflicto", efecto: { economia: -3, conflicto: 6, opinion: 2 }, bonus: { stat: "conflicto", valor: 10 }, penalty: { stat: "economia", valor: -10 } }
+        ] },
+        { opciones: [
+            { titulo: "Compartirlo con los aliados", stat: "diplomacia", efecto: { diplomacia: 2.5, opinion: -2 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "opinion", valor: -10 } },
+            { titulo: "Publicarlo para presionar", stat: "opinion", efecto: { opinion: 6, conflicto: 8 }, bonus: { stat: "opinion", valor: 12 }, penalty: { stat: "conflicto", valor: 18 } },
+            { titulo: "Guardarlo y montar contraespionaje", stat: "economia", efecto: { economia: 5, diplomacia: 1.5, opinion: -3 }, bonus: { stat: "economia", valor: 12 }, penalty: { stat: "opinion", valor: -10 } }
+        ] },
+        { opciones: [
+            { titulo: "Firmar el texto duro", stat: "diplomacia", efecto: { diplomacia: 2, conflicto: 5 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "conflicto", valor: 15 } },
+            { titulo: "Firmar una versión suave", stat: "opinion", efecto: { opinion: 4, diplomacia: 1.5 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -10 } },
+            { titulo: "Rechazar la declaración", stat: "economia", efecto: { economia: 3, diplomacia: -4, opinion: 3 }, bonus: { stat: "economia", valor: 10 }, penalty: { stat: "diplomacia", valor: -12 } }
         ] }
     ],
     8: [
         { opciones: [
-            { titulo: "Condenar ataque", stat: "opinion", efecto: { opinion: 5, conflicto: -2 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -15 } },
-            { titulo: "Proponer embargo", stat: "diplomacia", efecto: { diplomacia: 3, economia: -10 }, requisito: { stat: "economia", valor: 40 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "economia", valor: -15 } }
+            { titulo: "Condena pública del ataque", stat: "opinion", efecto: { opinion: 5, conflicto: -2 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -15 } },
+            { titulo: "Proponer el embargo de armas", stat: "diplomacia", efecto: { diplomacia: 1.5, economia: -10 }, requisito: { stat: "economia", valor: 40 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "economia", valor: -15 } },
+            { titulo: "Llamar al embajador a consultas", stat: "diplomacia", efecto: { diplomacia: 1.5, opinion: 3, conflicto: -1 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -8 } }
         ] },
         { opciones: [
-            { titulo: "Corredores humanitarios", stat: "opinion", efecto: { opinion: 8, economia: -8 }, bonus: { stat: "opinion", valor: 15 }, penalty: { stat: "economia", valor: -10 } },
-            { titulo: "Militarizar zona", stat: "conflicto", efecto: { conflicto: 8, diplomacia: 3 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -10 } }
+            { titulo: "Abrir paso a los civiles", stat: "opinion", efecto: { opinion: 8, economia: -8 }, bonus: { stat: "opinion", valor: 15 }, penalty: { stat: "economia", valor: -10 } },
+            { titulo: "Militarizar la zona humanitaria", stat: "conflicto", efecto: { conflicto: 8, diplomacia: 1.5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -10 } },
+            { titulo: "Llevarlo a La Haya", stat: "diplomacia", efecto: { diplomacia: 2.5, opinion: 3, conflicto: 3 }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "conflicto", valor: 10 } }
         ] },
         { opciones: [
-            { titulo: "Respuesta diplomática", stat: "diplomacia", efecto: { diplomacia: 5, opinion: -2 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "conflicto", valor: 10 } },
-            { titulo: "Contraataque cibernético", stat: "conflicto", efecto: { conflicto: 10, economia: 5 }, bonus: { stat: "conflicto", valor: 20 }, penalty: { stat: "diplomacia", valor: -15 } }
+            { titulo: "Nota diplomática firme", stat: "diplomacia", efecto: { diplomacia: 2.5, opinion: -2 }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "conflicto", valor: 10 } },
+            { titulo: "Devolver el golpe en la red", stat: "conflicto", efecto: { conflicto: 10, economia: 5 }, bonus: { stat: "conflicto", valor: 20 }, penalty: { stat: "diplomacia", valor: -15 } },
+            { titulo: "Apagón y evacuación", stat: "opinion", efecto: { opinion: 5, economia: -5, conflicto: -1 }, bonus: { stat: "opinion", valor: 15 }, penalty: { stat: "economia", valor: -10 } }
         ] },
         { opciones: [
-            { titulo: "Filtrar pruebas prensa", stat: "opinion", efecto: { opinion: 12, diplomacia: 3 }, bonus: { stat: "opinion", valor: 20 }, penalty: { stat: "conflicto", valor: 15 } },
-            { titulo: "Presión diplomática", stat: "diplomacia", efecto: { diplomacia: 4, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "opinion", valor: -10 } }
+            { titulo: "Filtrarlo todo a la prensa", stat: "opinion", efecto: { opinion: 12, diplomacia: 1.5 }, bonus: { stat: "opinion", valor: 20 }, penalty: { stat: "conflicto", valor: 15 } },
+            { titulo: "Presión diplomática sin tregua", stat: "diplomacia", efecto: { diplomacia: 2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -10 } },
+            { titulo: "Vender el material al mejor postor", stat: "economia", efecto: { economia: 6, opinion: -4, diplomacia: -2 }, bonus: { stat: "economia", valor: 12 }, penalty: { stat: "opinion", valor: -12 } }
+        ] },
+        { opciones: [
+            { titulo: "Abrir campamentos oficiales", stat: "opinion", efecto: { opinion: 8, economia: -7 }, bonus: { stat: "opinion", valor: 15 }, penalty: { stat: "economia", valor: -10 } },
+            { titulo: "Cerrar la frontera", stat: "conflicto", efecto: { conflicto: 6, opinion: -6 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "opinion", valor: -15 } },
+            { titulo: "Repartir a los refugiados entre aliados", stat: "diplomacia", efecto: { diplomacia: 3, economia: -3, opinion: 3 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "economia", valor: -8 } }
+        ] },
+        { opciones: [
+            { titulo: "Sumarte a la operación conjunta", stat: "conflicto", efecto: { conflicto: 12, economia: 3 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -12 } },
+            { titulo: "Enviar apoyo logístico", stat: "economia", efecto: { economia: 4, diplomacia: 2.5 }, bonus: { stat: "economia", valor: 10 }, penalty: { stat: "diplomacia", valor: -8 } },
+            { titulo: "Declinar con diplomacia", stat: "diplomacia", efecto: { diplomacia: 2, opinion: 3, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -8 } }
         ] }
     ],
     12: [
         { opciones: [
-            { titulo: "Sanciones económicas", stat: "diplomacia", efecto: { diplomacia: 3, economia: -10 }, requisito: { stat: "economia", valor: 40 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "opinion", valor: -15 } },
-            { titulo: "Apoyo militar aliado", stat: "conflicto", efecto: { conflicto: 10, economia: 5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -15 } }
+            { titulo: "Ampliar las sanciones", stat: "diplomacia", efecto: { diplomacia: 1.5, economia: -10 }, requisito: { stat: "economia", valor: 40 }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "opinion", valor: -15 } },
+            { titulo: "Más armas al aliado", stat: "conflicto", efecto: { conflicto: 10, economia: 5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -15 } },
+            { titulo: "Abrir un pasillo humanitario", stat: "opinion", efecto: { opinion: 5, economia: -4, conflicto: -2 }, bonus: { stat: "opinion", valor: 12 }, penalty: { stat: "economia", valor: -10 } }
         ] },
         { opciones: [
-            { titulo: "Cascos azules", stat: "diplomacia", efecto: { diplomacia: 8, economia: -15 }, requisito: { stat: "economia", valor: 60 }, bonus: { stat: "diplomacia", valor: 20 }, penalty: { stat: "economia", valor: -20 } },
-            { titulo: "Rechazar intervención", stat: "conflicto", efecto: { conflicto: 10, opinion: -5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "opinion", valor: -15 } }
+            { titulo: "Cascos azules en la frontera", stat: "diplomacia", efecto: { diplomacia: 4, economia: -15 }, requisito: { stat: "economia", valor: 60 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "economia", valor: -20 } },
+            { titulo: "Rechazar la intervención", stat: "conflicto", efecto: { conflicto: 10, opinion: -5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "opinion", valor: -15 } },
+            { titulo: "Solo observadores civiles", stat: "diplomacia", efecto: { diplomacia: 1.5, opinion: 2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -6 } }
         ] },
         { opciones: [
-            { titulo: "Aceptar mediación", stat: "diplomacia", efecto: { diplomacia: 7, conflicto: -5 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "opinion", valor: -15 } },
-            { titulo: "Rechazar condiciones", stat: "opinion", efecto: { conflicto: 8, opinion: 5 }, bonus: { stat: "opinion", valor: 15 }, penalty: { stat: "conflicto", valor: 15 } }
+            { titulo: "Aceptar la mediación", stat: "diplomacia", efecto: { diplomacia: 3.5, conflicto: -5 }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "opinion", valor: -15 } },
+            { titulo: "Rechazar las condiciones", stat: "opinion", efecto: { conflicto: 8, opinion: 5 }, bonus: { stat: "opinion", valor: 15 }, penalty: { stat: "conflicto", valor: 15 } },
+            { titulo: "Proponer una contraoferta", stat: "diplomacia", efecto: { diplomacia: 2, opinion: -2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "opinion", valor: -10 } }
         ] },
         { opciones: [
-            { titulo: "Liderar coalición", stat: "diplomacia", efecto: { diplomacia: 10, opinion: 5 }, bonus: { stat: "diplomacia", valor: 20 }, penalty: { stat: "conflicto", valor: 15 } },
-            { titulo: "Perfil bajo", stat: "opinion", efecto: { opinion: 5, conflicto: -2 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -10 } }
+            { titulo: "Al frente de la coalición", stat: "diplomacia", efecto: { diplomacia: 5, opinion: 5 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "conflicto", valor: 15 } },
+            { titulo: "Perfil bajo", stat: "opinion", efecto: { opinion: 5, conflicto: -2 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -10 } },
+            { titulo: "Pagar sin liderar", stat: "diplomacia", efecto: { economia: -8, diplomacia: 2.5, opinion: 2 }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "economia", valor: -10 } }
+        ] },
+        { opciones: [
+            { titulo: "Purgar a los oficiales críticos", stat: "conflicto", efecto: { conflicto: 8, opinion: -5 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "opinion", valor: -15 } },
+            { titulo: "Conceder rotaciones y descanso", stat: "opinion", efecto: { opinion: 6, economia: -5 }, bonus: { stat: "opinion", valor: 12 }, penalty: { stat: "economia", valor: -10 } },
+            { titulo: "Llevar el debate al parlamento", stat: "diplomacia", efecto: { diplomacia: 2, opinion: 4 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -8 } }
+        ] },
+        { opciones: [
+            { titulo: "Racionar y subsidiar el gas", stat: "economia", efecto: { economia: -8, opinion: 6 }, bonus: { stat: "economia", valor: 12 }, penalty: { stat: "opinion", valor: -10 } },
+            { titulo: "Buscar nuevos proveedores", stat: "diplomacia", efecto: { diplomacia: 3, economia: -4 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "economia", valor: -10 } },
+            { titulo: "Sabotear el nudo energético", stat: "conflicto", efecto: { conflicto: 10, opinion: 4 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "diplomacia", valor: -12 } }
         ] }
     ],
     15: [
         { opciones: [
-            { titulo: "Firmar acuerdo de paz", stat: "diplomacia", efecto: { diplomacia: 10, conflicto: -10 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "conflicto", valor: 25 } },
-            { titulo: "Romper negociaciones", stat: "conflicto", efecto: { conflicto: 12, diplomacia: -10 }, bonus: { stat: "conflicto", valor: 20 }, penalty: { stat: "opinion", valor: -20 } }
+            { titulo: "Firmar la paz", stat: "diplomacia", efecto: { diplomacia: 3, conflicto: -10 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "conflicto", valor: 25 } },
+            { titulo: "Levantarse de la mesa", stat: "conflicto", efecto: { conflicto: 12, diplomacia: -10 }, bonus: { stat: "conflicto", valor: 20 }, penalty: { stat: "opinion", valor: -20 } },
+            { titulo: "Pactar en la sombra", stat: "conflicto", efecto: { conflicto: -8, opinion: -5, diplomacia: -3 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "diplomacia", valor: -15 } }
         ] },
         { opciones: [
-            { titulo: "Alto el fuego", stat: "diplomacia", efecto: { conflicto: -20, diplomacia: 7 }, bonus: { stat: "diplomacia", valor: 20 }, penalty: { stat: "opinion", valor: -15 } },
-            { titulo: "Aprovechar debilidad", stat: "conflicto", efecto: { conflicto: 10, diplomacia: -10 }, bonus: { stat: "conflicto", valor: 25 }, penalty: { stat: "diplomacia", valor: -25 } }
+            { titulo: "Aceptar el alto el fuego", stat: "diplomacia", efecto: { conflicto: -20, diplomacia: 2 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "opinion", valor: -15 } },
+            { titulo: "Aprovechar el vacío", stat: "conflicto", efecto: { conflicto: 10, diplomacia: -10 }, bonus: { stat: "conflicto", valor: 25 }, penalty: { stat: "diplomacia", valor: -25 } },
+            { titulo: "Exigir garantías", stat: "diplomacia", efecto: { diplomacia: 1.5, opinion: 2, conflicto: 2 }, bonus: { stat: "diplomacia", valor: 4 }, penalty: { stat: "opinion", valor: -10 } }
         ] },
         { opciones: [
-            { titulo: "Conferencia de paz", stat: "diplomacia", efecto: { diplomacia: 8, conflicto: -8 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "opinion", valor: -10 } },
-            { titulo: "Boicotear", stat: "conflicto", efecto: { conflicto: 10, opinion: 5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -20 } }
+            { titulo: "Ir a París", stat: "diplomacia", efecto: { diplomacia: 3, conflicto: -8 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -10 } },
+            { titulo: "Boicotear París", stat: "conflicto", efecto: { conflicto: 10, opinion: 5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -20 } },
+            { titulo: "Ir pero no firmar", stat: "diplomacia", efecto: { diplomacia: 1, opinion: -2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 3 }, penalty: { stat: "opinion", valor: -8 } }
         ] },
         { opciones: [
-            { titulo: "Resolución de consenso", stat: "diplomacia", efecto: { diplomacia: 12, conflicto: -15 }, bonus: { stat: "diplomacia", valor: 25 }, penalty: { stat: "opinion", valor: -10 } },
-            { titulo: "Firmeza", stat: "conflicto", efecto: { conflicto: 7, diplomacia: 3 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -15 } }
+            { titulo: "Firmar la resolución", stat: "diplomacia", efecto: { diplomacia: 4, conflicto: -15 }, bonus: { stat: "diplomacia", valor: 8 }, penalty: { stat: "opinion", valor: -10 } },
+            { titulo: "Mantener la firmeza", stat: "conflicto", efecto: { conflicto: 7, diplomacia: 1 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -15 } },
+            { titulo: "Enmendar la resolución", stat: "diplomacia", efecto: { diplomacia: 2, opinion: 2, conflicto: -3 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -10 } }
+        ] },
+        { opciones: [
+            { titulo: "Liderar el proceso judicial", stat: "diplomacia", efecto: { diplomacia: 3, opinion: 4 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -12 } },
+            { titulo: "Apoyar sin liderar", stat: "diplomacia", efecto: { diplomacia: 1.5, opinion: 2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 3 }, penalty: { stat: "opinion", valor: -8 } },
+            { titulo: "Bloquear el proceso", stat: "conflicto", efecto: { conflicto: 6, opinion: -4 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "diplomacia", valor: -12 } }
+        ] },
+        { opciones: [
+            { titulo: "Aceptar pagar tu parte", stat: "diplomacia", efecto: { diplomacia: 3, economia: -10 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "economia", valor: -15 } },
+            { titulo: "Exigir que el rival pague todo", stat: "conflicto", efecto: { conflicto: 8, opinion: 5 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "diplomacia", valor: -15 } },
+            { titulo: "Condonar las reparaciones por la paz", stat: "diplomacia", efecto: { diplomacia: 2, opinion: 6, economia: -5 }, bonus: { stat: "diplomacia", valor: 4 }, penalty: { stat: "economia", valor: -12 } }
         ] }
     ]
 };
@@ -128,6 +194,14 @@ function escalar(obj, m) {
     const out = {};
     Object.keys(obj).forEach(k => { out[k] = obj[k] * m; });
     return out;
+}
+
+function probDecision(statValor) {
+    return limitar(
+        Math.round(CONFIG.PROB_DECISION_BASE + statValor * CONFIG.PROB_DECISION_FACTOR),
+                   CONFIG.PROB_DECISION_MIN,
+                   CONFIG.PROB_DECISION_MAX
+    ) / 100;
 }
 
 function percentile(arr, p) {
@@ -150,7 +224,7 @@ function calcularEfectos(tipo, apoyoP5) {
     const e = { ...CONFIG["EFECTO_" + tipo.toUpperCase()] };
     if (!apoyoP5.china && e.diplomacia > 0) e.diplomacia *= 0.5;
     if (!apoyoP5.reino && e.economia > 0) e.economia /= 2;
-    if (!apoyoP5.eeuu && e.conflicto > 0) e.conflicto += 5;
+    if (!apoyoP5.eeuu && e.conflicto > 0) e.conflicto += CONFIG.DEBUFF_EEUU_CONFLICTO;
     if (!apoyoP5.francia && e.opinion > 0) e.opinion /= 2;
     return e;
 }
@@ -175,7 +249,6 @@ function hayCadenaDe(t, min) {
     }
     return false;
 }
-function hayGrupoValido(t) { return hayCadenaDe(t, CONFIG.MINIMO_GRUPO); }
 
 function plantarGrupo(t, longitudMinima) {
     const min = longitudMinima || CONFIG.MINIMO_GRUPO;
@@ -206,8 +279,11 @@ function crearTablero() {
         for (let c = 0; c < CONFIG.COLUMNAS; c++) fila.push(elegir(TIPOS_CUBO));
         t.push(fila);
     }
-    if (!hayCadenaDe(t, 3)) plantarGrupo(t, 3);
-    if (!hayCadenaDe(t, 4)) plantarGrupo(t, 4);
+    for (let i = 0; i < 10; i++) {
+        if (!hayCadenaDe(t, 3)) { plantarGrupo(t, 3); continue; }
+        if (!hayCadenaDe(t, 4)) { plantarGrupo(t, 4); continue; }
+        break;
+    }
     return t;
 }
 
@@ -221,7 +297,7 @@ function encontrarGrupos(t) {
             if (!ti) continue;
             for (const [df, dc] of dirs) {
                 const celdas = [{ fila: f, col: c }];
-                for (let p = 1; p < 8; p++) {
+                for (let p = 1; p < 6; p++) {
                     const ff = f + df * p, cc = c + dc * p;
                     if (ff < 0 || ff >= CONFIG.FILAS || cc < 0 || cc >= CONFIG.COLUMNAS) break;
                     if (t[ff][cc] !== ti) break;
@@ -249,24 +325,49 @@ function aplicarGravedad(t) {
     }
 }
 
+function repostarTablero(t) {
+    aplicarGravedad(t);
+    const quiere4 = !hayCadenaDe(t, 4) && Math.random() < CONFIG.PROB_PLANTAR_4;
+    for (let i = 0; i < 10; i++) {
+        if (!hayCadenaDe(t, 3)) { plantarGrupo(t, 3); continue; }
+        if (quiere4 && !hayCadenaDe(t, 4)) { plantarGrupo(t, 4); continue; }
+        break;
+    }
+}
+
+function valorStat(stat, v) {
+    if (stat === "diplomacia") return v * 3;
+    if (stat === "conflicto") return -v * 4;
+    if (stat === "economia") return v * 0.8;
+    if (stat === "opinion") return v * 0.8;
+    return 0;
+}
+
 function scoreGrupo(grupo, tipo, estado) {
     const efectos = calcularEfectos(tipo, estado.apoyoP5);
     const mult = multiplicador(grupo.length, estado.apoyoP5);
     const n = grupo.length;
-    const d = efectos.diplomacia * n * mult;
-    const e = efectos.economia * n * mult;
-    const o = efectos.opinion * n * mult;
-    const c = efectos.conflicto * n * mult;
     const stats = estado.estadisticas;
-    const newC = stats.conflicto + c;
-    const newE = stats.economia + e;
-    const newO = stats.opinion + o;
-    const newD = stats.diplomacia + d;
-    let penalty = 0;
-    if (newC >= 65) penalty += 1000;
-    if (newE <= 15) penalty += 800;
-    if (newO <= 20) penalty += 800;
-    return newD * 3 + newE * 0.8 + newO * 0.8 - newC * 4 - penalty;
+    const newD = limitar(stats.diplomacia + efectos.diplomacia * n * mult, 0, 100);
+    const newE = limitar(stats.economia + efectos.economia * n * mult, 0, 100);
+    const newO = limitar(stats.opinion + efectos.opinion * n * mult, 0, 100);
+    const newC = limitar(stats.conflicto + efectos.conflicto * n * mult, 0, 100);
+
+    let score = newD * 3 - newC * 4 + newE * 0.8 + newO * 0.8;
+
+    if (newC >= 70) score -= 1000;
+    if (newC >= 75) score -= 10000;
+    if (newE <= 15) score -= 800;
+    if (newE <= 10) score -= 8000;
+    if (newO <= 20) score -= 800;
+    if (newO <= 15) score -= 8000;
+
+    if (newD >= CONFIG.UMBRAL_DIPLOMACIA_VICTORIA && newC < 20 && newO >= CONFIG.REQUISITO_OPINION_VICTORIA) score += 5000;
+
+    const rachaFutura = (n >= CONFIG.RACHA_MINIMO_SUMA) ? estado.rachaGlobal + n : 0;
+    if (rachaFutura >= CONFIG.RACHA_BONUS_UMBRAL) score += 300;
+
+    return score;
 }
 
 function elegirGrupo(grupos, estado) {
@@ -288,19 +389,15 @@ function elegirOpcion(opciones, estado) {
     let mejor = opciones[0];
     let mejorScore = -Infinity;
     opciones.forEach(op => {
+        if (op.requisito && estado.estadisticas[op.requisito.stat] < op.requisito.valor) return;
         const mult = estado.turno === 15 ? CONFIG.MULTIPLICADOR_FASE_FINAL : 1;
-        const statValor = estado.estadisticas[op.stat] || 50;
-        const prob = limitar(30 + statValor / 2, 30, 80) / 100;
-        const ef = op.efecto;
-        const b = op.bonus;
-        const p = op.penalty;
+        const prob = probDecision(estado.estadisticas[op.stat] || 50);
+
         let score = 0;
-        score += (ef.diplomacia || 0) * 3 * mult;
-        score += (ef.economia || 0) * 0.8 * mult;
-        score += (ef.opinion || 0) * 0.8 * mult;
-        score -= (ef.conflicto || 0) * 4 * mult;
-        score += prob * (b.stat === "diplomacia" ? b.valor * 3 : b.stat === "conflicto" ? -b.valor * 4 : b.valor * 0.5) * mult;
-        score += (1 - prob) * (p.stat === "diplomacia" ? p.valor * 3 : p.stat === "conflicto" ? -p.valor * 4 : p.valor * 0.5) * mult;
+        Object.keys(op.efecto).forEach(k => { score += valorStat(k, op.efecto[k] * mult); });
+        score += prob * valorStat(op.bonus.stat, op.bonus.valor * mult);
+        score += (1 - prob) * valorStat(op.penalty.stat, op.penalty.valor * mult);
+
         if (score > mejorScore) { mejorScore = score; mejor = op; }
     });
     return mejor;
@@ -318,15 +415,17 @@ function simularPartida() {
         apoyoP5: { eeuu: true, rusia: true, china: true, francia: true, reino: true },
         decisionesPartida: {}, tablero: [],
         finDeJuego: false, motivoFin: null,
-        historial: [],
         cadenas: { tratado: 0, comercio: 0, prensa: 0, militar: 0 },
         cadenasPorTamano: { 3: 0, 4: 0, 5: 0, 6: 0 },
         decisiones: { 4: { total: 0, exitos: 0 }, 8: { total: 0, exitos: 0 }, 12: { total: 0, exitos: 0 }, 15: { total: 0, exitos: 0 } },
         conflictoMax: CONFIG.STAT_INICIAL,
-        sumaConflicto: CONFIG.STAT_INICIAL,
-        turnosContados: 1,
+        sumaConflicto: 0,
+        turnosContados: 0,
         supero60: false,
-        reconciliaciones: 0
+        reconciliacionesIntentadas: 0,
+        reconciliacionesAceptadas: 0,
+        rachaAlcanzada: 0,
+        rachaMaximaAlcanzada: 0
     };
 
     [4, 8, 12, 15].forEach(t => { estado.decisionesPartida[t] = elegir(DECISIONES_POOL[t]); });
@@ -375,16 +474,11 @@ function simularPartida() {
             );
 
             let presionOpinion = 0;
-            if (estado.estadisticas.conflicto >= CONFIG.CONFLICTO_UMBRAL_SEVERO) {
-                presionOpinion += CONFIG.OPINION_PRESION_CONFLICTO_SEVERA;
-            } else if (estado.estadisticas.conflicto >= CONFIG.CONFLICTO_UMBRAL_MODERADO) {
-                presionOpinion += CONFIG.OPINION_PRESION_CONFLICTO_MODERADA;
-            }
-            if (estado.estadisticas.economia < CONFIG.ECONOMIA_UMBRAL_SEVERO) {
-                presionOpinion += CONFIG.OPINION_PRESION_ECONOMIA_SEVERA;
-            } else if (estado.estadisticas.economia < CONFIG.ECONOMIA_UMBRAL_MODERADO) {
-                presionOpinion += CONFIG.OPINION_PRESION_ECONOMIA_MODERADA;
-            }
+            if (estado.estadisticas.conflicto >= CONFIG.CONFLICTO_UMBRAL_SEVERO) presionOpinion += CONFIG.OPINION_PRESION_CONFLICTO_SEVERA;
+            else if (estado.estadisticas.conflicto >= CONFIG.CONFLICTO_UMBRAL_MODERADO) presionOpinion += CONFIG.OPINION_PRESION_CONFLICTO_MODERADA;
+            if (estado.estadisticas.economia < CONFIG.ECONOMIA_UMBRAL_SEVERO) presionOpinion += CONFIG.OPINION_PRESION_ECONOMIA_SEVERA;
+            else if (estado.estadisticas.economia < CONFIG.ECONOMIA_UMBRAL_MODERADO) presionOpinion += CONFIG.OPINION_PRESION_ECONOMIA_MODERADA;
+
             if (presionOpinion > 0) {
                 estado.estadisticas.opinion = limitar(
                     estado.estadisticas.opinion - presionOpinion,
@@ -401,16 +495,22 @@ function simularPartida() {
             grupos = encontrarGrupos(estado.tablero);
         }
 
-        let tipo = null, n = 0, mult = 1;
         if (grupos.length > 0) {
             const grupo = elegirGrupo(grupos, estado);
-            tipo = estado.tablero[grupo[0].fila][grupo[0].col];
-            n = grupo.length;
+            const tipo = estado.tablero[grupo[0].fila][grupo[0].col];
+            const n = grupo.length;
             const efectos = calcularEfectos(tipo, estado.apoyoP5);
-            mult = multiplicador(n, estado.apoyoP5);
+            const mult = multiplicador(n, estado.apoyoP5);
 
-            if (n >= CONFIG.RACHA_MINIMO_SUMA) estado.rachaGlobal += n;
-            else estado.rachaGlobal = 0;
+            if (n >= CONFIG.RACHA_MINIMO_SUMA) {
+                estado.rachaGlobal += n;
+                if (estado.rachaGlobal > estado.rachaMaximaAlcanzada) {
+                    estado.rachaMaximaAlcanzada = estado.rachaGlobal;
+                }
+                if (estado.rachaGlobal >= CONFIG.RACHA_BONUS_UMBRAL) estado.rachaAlcanzada++;
+            } else {
+                estado.rachaGlobal = 0;
+            }
 
             estado.cadenas[tipo] = (estado.cadenas[tipo] || 0) + 1;
             estado.cadenasPorTamano[n] = (estado.cadenasPorTamano[n] || 0) + 1;
@@ -425,11 +525,7 @@ function simularPartida() {
 
                 if (comprobarGameOver()) break;
 
-                aplicarGravedad(estado.tablero);
-            if (!hayCadenaDe(estado.tablero, 3)) plantarGrupo(estado.tablero, 3);
-            if (!hayCadenaDe(estado.tablero, 4) && Math.random() < CONFIG.PROB_PLANTAR_4) {
-                plantarGrupo(estado.tablero, 4);
-            }
+                repostarTablero(estado.tablero);
         }
 
         if (TURNOS_DECISION.includes(estado.turno)) {
@@ -441,8 +537,7 @@ function simularPartida() {
                 );
                 if (opciones.length > 0) {
                     const op = elegirOpcion(opciones, estado);
-                    const statValor = estado.estadisticas[op.stat] || 50;
-                    const prob = limitar(30 + statValor / 2, 30, 80) / 100;
+                    const prob = probDecision(estado.estadisticas[op.stat] || 50);
 
                     aplicarCambios(escalar(op.efecto, multDec));
                     const exito = Math.random() < prob;
@@ -484,6 +579,7 @@ function simularPartida() {
         if (TURNOS_RECONCILIACION.includes(estado.turno)) {
             const perdidos = Object.keys(estado.apoyoP5).filter(k => !estado.apoyoP5[k]);
             if (perdidos.length > 0) {
+                estado.reconciliacionesIntentadas++;
                 const pais = perdidos[0];
                 let acepta;
                 if (MODO_ACTIVO === "random") {
@@ -496,7 +592,7 @@ function simularPartida() {
                 if (acepta) {
                     aplicarCambios({ economia: -15, opinion: -5 });
                     estado.apoyoP5[pais] = true;
-                    estado.reconciliaciones++;
+                    estado.reconciliacionesAceptadas++;
                     if (comprobarGameOver()) break;
                 }
             }
@@ -507,31 +603,23 @@ function simularPartida() {
         if (cFin >= 60) estado.supero60 = true;
         estado.sumaConflicto += cFin;
         estado.turnosContados++;
-
-        estado.historial.push({
-            turno: estado.turno,
-            tipo, cantidad: n, mult,
-            stats: { ...estado.estadisticas }
-        });
     }
 
     if (!estado.finDeJuego) {
         const s = estado.estadisticas;
-        if (s.diplomacia >= CONFIG.UMBRAL_DIPLOMACIA_VICTORIA
-            && s.conflicto < 20
-            && s.opinion >= CONFIG.REQUISITO_OPINION_VICTORIA) {
+        if (s.diplomacia >= CONFIG.UMBRAL_DIPLOMACIA_VICTORIA && s.conflicto < 20 && s.opinion >= CONFIG.REQUISITO_OPINION_VICTORIA) {
             estado.motivoFin = "paz_duradera";
-            } else if (s.diplomacia >= 80 && s.conflicto < 25) {
-                estado.motivoFin = "paz_presion";
-            } else if (s.diplomacia >= 70 && s.conflicto < 40) {
-                estado.motivoFin = "paz_fragil";
-            } else {
-                estado.motivoFin = "tensiones";
-            }
-            estado.finDeJuego = true;
+        } else if (s.diplomacia >= 80 && s.conflicto < 25) {
+            estado.motivoFin = "paz_presion";
+        } else if (s.diplomacia >= 70 && s.conflicto < 40) {
+            estado.motivoFin = "paz_fragil";
+        } else {
+            estado.motivoFin = "tensiones";
+        }
+        estado.finDeJuego = true;
     }
 
-    estado.conflictoMedio = estado.sumaConflicto / estado.turnosContados;
+    estado.conflictoMedio = estado.sumaConflicto / Math.max(1, estado.turnosContados);
     return estado;
 }
 
@@ -545,7 +633,9 @@ function correrSimulacion(n, modo) {
         cadenasPorTamano: { 3: 0, 4: 0, 5: 0, 6: 0 },
         decisiones: { 4: { total: 0, exitos: 0 }, 8: { total: 0, exitos: 0 }, 12: { total: 0, exitos: 0 }, 15: { total: 0, exitos: 0 } },
         conflictoMax: [], conflictoMedio: [], supero60: 0,
-        reconciliaciones: 0
+        reconciliacionesIntentadas: 0, reconciliacionesAceptadas: 0,
+        rachaAlcanzada: 0, rachaMaximaAlcanzada: 0,
+        victoriaPor: { paz_duradera: 0, paz_presion: 0, paz_fragil: 0 }
     };
 
     const t0 = Date.now();
@@ -553,9 +643,14 @@ function correrSimulacion(n, modo) {
         MODO_ACTIVO = (modo === "both") ? (i % 2 === 0 ? "smart" : "random") : modo;
         const r = simularPartida();
 
-        if (r.motivoFin.startsWith("paz_")) res.victorias++;
-        else if (r.motivoFin === "tensiones") res.neutros++;
-        else res.derrotas++;
+        if (r.motivoFin.startsWith("paz_")) {
+            res.victorias++;
+            if (r.motivoFin in res.victoriaPor) res.victoriaPor[r.motivoFin]++;
+        } else if (r.motivoFin === "tensiones") {
+            res.neutros++;
+        } else {
+            res.derrotas++;
+        }
 
         res.motivos[r.motivoFin] = (res.motivos[r.motivoFin] || 0) + 1;
 
@@ -582,7 +677,10 @@ function correrSimulacion(n, modo) {
             res.conflictoMax.push(r.conflictoMax);
             res.conflictoMedio.push(r.conflictoMedio);
             if (r.supero60) res.supero60++;
-            res.reconciliaciones += r.reconciliaciones;
+            res.reconciliacionesIntentadas += r.reconciliacionesIntentadas;
+        res.reconciliacionesAceptadas += r.reconciliacionesAceptadas;
+        res.rachaAlcanzada += r.rachaAlcanzada;
+        res.rachaMaximaAlcanzada += r.rachaMaximaAlcanzada;
     }
     const dur = Date.now() - t0;
 
@@ -603,6 +701,15 @@ function imprimirReporte({ res, dur, n, modo }) {
         console.log(`  ${k.padEnd(20)} ${String(v).padStart(5)} (${((v / n) * 100).toFixed(1)}%)`);
     });
 
+    if (res.victorias > 0) {
+        console.log("\n🏆 DESGLOSE DE VICTORIAS:");
+        Object.entries(res.victoriaPor).forEach(([k, v]) => {
+            if (v > 0) {
+                console.log(`  ${k.padEnd(14)} ${String(v).padStart(5)} (${((v / n) * 100).toFixed(1)}%)`);
+            }
+        });
+    }
+
     console.log("\n🎬 TURNO DE FIN:");
     Object.entries(res.turnoFin).sort((a, b) => Number(a[0]) - Number(b[0])).forEach(([k, v]) => {
         console.log(`  Turno ${String(k).padStart(2)}  ${String(v).padStart(5)} (${((v / n) * 100).toFixed(1)}%)`);
@@ -613,7 +720,11 @@ function imprimirReporte({ res, dur, n, modo }) {
         console.log(`  ${k.padEnd(10)} ${String(v).padStart(5)} (${((v / n) * 100).toFixed(1)}%)`);
     });
 
-    console.log(`\n🤝 Reconciliaciones aceptadas (media/partida): ${(res.reconciliaciones / n).toFixed(2)}`);
+    console.log(`\n🤝 Reconciliaciones intentadas: ${res.reconciliacionesIntentadas} (${(res.reconciliacionesIntentadas / n).toFixed(2)}/partida)`);
+    console.log(`🤝 Reconciliaciones aceptadas:  ${res.reconciliacionesAceptadas} (${(res.reconciliacionesAceptadas / n).toFixed(2)}/partida)`);
+
+    console.log(`\n🔥 Rachas >=${CONFIG.RACHA_BONUS_UMBRAL} alcanzadas: ${res.rachaAlcanzada} (${(res.rachaAlcanzada / n).toFixed(2)}/partida)`);
+    console.log(`🔥 Racha máxima media: ${(res.rachaMaximaAlcanzada / n).toFixed(2)}`);
 
     console.log("\n🧩 CADENAS USADAS (total por tipo):");
     const totalCadenas = Object.values(res.cadenas).reduce((a, b) => a + b, 0) || 1;

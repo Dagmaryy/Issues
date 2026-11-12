@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0b0e14">
   <title>CUBEFLICT — Crisis en el Consejo de Seguridad</title>
  <style>
-    /* =========================================
-       TEMA MILITAR / TACTICAL HUD
-       ========================================= */
     :root {
       --fondo: #0a0c10;
       --panel: #131820;
@@ -44,7 +44,17 @@
 
     .juego { width: 100%; max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
     .cabecera { text-align: center; padding: 4px 0; }
-    .titulo { font-size: clamp(2rem, 8vw, 4rem); font-weight: 900; letter-spacing: 0.15em; line-height: 1; color: var(--texto); text-transform: uppercase; }
+    .titulo {
+    font-size: clamp(2rem, 8vw, 4rem);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    line-height: 1;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #fff 0%, #8892a3 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
     .subtitulo { margin-top: 4px; font-size: clamp(0.8rem, 2.4vw, 1rem); color: var(--texto-suave); letter-spacing: 0.1em; text-transform: uppercase; }
 
     .panel, .noticiero, .registro-panel, .modal__tarjeta {
@@ -214,8 +224,8 @@
     .informe__lista li { margin-bottom: 3px; }
     .final__cita { margin-top: 12px; padding: 12px 14px; border-left: 3px solid var(--amarillo); background: rgba(212,163,115,0.06); font-style: italic; font-size: 0.9rem; color: #d8d0b8; border-radius: 0 2px 2px 0; line-height: 1.45; }
 
-    .floating-text { position: fixed; font-weight: 900; font-size: 1.2rem; pointer-events: none; z-index: 1000; animation: floatUpFade 1.2s ease-out forwards; text-shadow: 0 2px 4px rgba(0,0,0,0.9); transform: translate(-50%, -50%); font-family: monospace; }
-    @keyframes floatUpFade { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -150%) scale(1.2); } }
+    .floating-text { position: fixed; font-weight: 900; font-size: 1.6rem; pointer-events: none; z-index: 1000; animation: floatUpFade 1.2s ease-out forwards; text-shadow: 0 2px 4px rgba(0,0,0,0.9); transform: translate(-50%, -50%); font-family: 'VT323', monospace; letter-spacing: 0.05em; }
+    @keyframes floatUpFade { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -150%) scale(1.3); } }
     .barra__fantasma { position: absolute; top: 0; bottom: 0; pointer-events: none; z-index: 5; transition: left 0.1s, width 0.1s, background 0.1s; }
 
     .toast { position: fixed; bottom: calc(20px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); background: #131820; border: 1px solid var(--borde); padding: 10px 16px; border-radius: 2px; font-size: 0.85rem; font-weight: 600; z-index: 200; max-width: calc(100vw - 32px); box-shadow: 0 8px 24px rgba(0,0,0,0.5); animation: toastIn 0.25s ease-out; text-align: center; text-transform: uppercase; letter-spacing: 0.05em; font-family: monospace; }
@@ -236,6 +246,25 @@
     .dado-resultado--exito { color: var(--verde); }
     .dado-resultado--fallo { color: var(--rojo); }
 
+    /* === SCREEN SHAKE === */
+    @keyframes shake-suave {
+      0%, 100% { transform: translateX(0) rotate(0); }
+      20% { transform: translateX(-3px) rotate(-0.25deg); }
+      40% { transform: translateX(3px) rotate(0.25deg); }
+      60% { transform: translateX(-2px) rotate(-0.15deg); }
+      80% { transform: translateX(2px) rotate(0.15deg); }
+    }
+    @keyframes shake-fuerte {
+      0%, 100% { transform: translateX(0) rotate(0); }
+      10% { transform: translateX(-9px) rotate(-0.7deg); }
+      30% { transform: translateX(9px) rotate(0.7deg); }
+      50% { transform: translateX(-6px) rotate(-0.5deg); }
+      70% { transform: translateX(6px) rotate(0.5deg); }
+      90% { transform: translateX(-3px) rotate(-0.2deg); }
+    }
+    .shake-suave { animation: shake-suave 0.35s ease-out; }
+    .shake-fuerte { animation: shake-fuerte 0.5s ease-out; }
+
     @media (max-width: 560px) {
       .panel { padding: 12px; }
       .cabecera { padding: 2px 0; }
@@ -253,6 +282,61 @@
     @media (prefers-reduced-motion: reduce) {
       * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
+    #decision-texto {
+      text-transform: none;
+    }
+    .opcion__titulo {
+      text-transform: none;
+    }
+
+    /* =========================================
+       VT323 — PIXEL READABLE (números y marcadores)
+       ========================================= */
+    .turnos__numero,
+    .mini-stat__valor,
+    .racha,
+    .noticiero__marcador,
+    .dado,
+    .dado-resultado,
+    .panel__titulo,
+    .floating-text {
+      font-family: 'VT323', monospace !important;
+      font-weight: 400 !important;
+    }
+
+    /* VT323 se ve más pequeño, así que subimos los tamaños */
+    .turnos__numero { font-size: clamp(1.15rem, 3.2vw, 1.4rem) !important; letter-spacing: 0.05em !important; }
+    .mini-stat__valor { font-size: 1.55rem !important; line-height: 1 !important; }
+    .racha { font-size: 1rem !important; letter-spacing: 0.08em !important; }
+    .noticiero__marcador { font-size: 0.95rem !important; letter-spacing: 0.16em !important; }
+    .dado { font-size: 3.4rem !important; }
+    .dado-resultado { font-size: 1.3rem !important; letter-spacing: 0.12em !important; }
+    .panel__titulo { font-size: 1.05rem !important; letter-spacing: 0.18em !important; }
+    .floating-text { font-size: 1.8rem !important; }
+          /* === SCROLL SNAP SUAVE === */
+          html {
+        scroll-snap-type: y proximity;
+        scroll-padding-top: calc(16px + var(--safe-top));
+      }
+
+      @media (hover: none) and (pointer: coarse) {
+        section[aria-label="Estado del Consejo"],
+        section[aria-label="Tablero"] {
+          scroll-snap-align: start;
+        }
+      }
+      .final__inspiracion {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--azul);
+  background: rgba(74, 140, 189, 0.06);
+  font-size: 0.78rem;
+  color: #a0aec0;
+  font-style: normal;
+  border-radius: 0 2px 2px 0;
+  line-height: 1.45;
+  font-family: monospace;
+}
   </style>
 </head>
 <body>
@@ -271,65 +355,61 @@
           <button class="boton boton--secundario" id="btn-nombre-aleatorio">Aleatorio</button>
         </div>
       </div>
-      <div class="modal__accion">
-        <button class="boton boton--principal" id="btn-empezar-presentacion">Asumir el cargo</button>
+      <div class="modal__accion" style="flex-direction: column;">
+      <button class="boton boton--principal" id="btn-empezar-presentacion" style="width: 100%;">Ver instrucciones</button>
+        <button class="boton boton--secundario" id="btn-continuar-partida" hidden style="width: 100%; border-color: var(--verde); color: var(--verde);">Continuar partida anterior</button>
       </div>
     </div>
   </div>
 
-  <div class="modal" id="modal-tutorial" hidden>
-    <div class="modal__tarjeta">
-      <h2 class="modal__titulo">Cómo jugar</h2>
-      <div class="tutorial__stepper">
-        <button type="button" class="tutorial__step-dot tutorial__step-dot--active" data-paso="0" aria-label="Paso 1">1</button>
-        <div class="tutorial__step-line" data-linea="0"></div>
-        <button type="button" class="tutorial__step-dot" data-paso="1" aria-label="Paso 2">2</button>
-        <div class="tutorial__step-line" data-linea="1"></div>
-        <button type="button" class="tutorial__step-dot" data-paso="2" aria-label="Paso 3">3</button>
-        <div class="tutorial__step-line" data-linea="2"></div>
-        <button type="button" class="tutorial__step-dot" data-paso="3" aria-label="Paso 4">4</button>
-        <div class="tutorial__step-line" data-linea="3"></div>
-        <button type="button" class="tutorial__step-dot" data-paso="4" aria-label="Paso 5">5</button>
-      </div>
-      <p class="tutorial__indicador" id="tutorial-indicador">Paso 1 de 5</p>
-      <div class="tutorial__paso tutorial__paso--activo" data-paso="0">
-        <p class="modal__texto">Tu rival es <strong id="tutorial-rival" style="color: var(--rojo);">—</strong>. En cada turno dispones de una sola jugada. Arrastra sobre cubos adyacentes del mismo color, mínimo tres, en línea o diagonal, y suelta para confirmar. También puedes tocarlos uno a uno y tocar el último de nuevo. Si tras una jugada no quedan cadenas posibles, el tablero se reorganiza solo.</p>
-      </div>
-      <div class="tutorial__paso" data-paso="1">
-        <p class="modal__texto">Cada jugada mueve cuatro estadísticas: Diplomacia, Economía, Opinión y Conflicto. Cada tipo de cubo tiene un efecto fijo.</p>
-        <div>
-          <div class="tutorial__item"><div class="muestra muestra--tratado"></div><div class="tutorial__detalle"><strong>Azul — Tratado</strong><span>+Diplomacia, −Economía, −Conflicto</span></div></div>
-          <div class="tutorial__item"><div class="muestra muestra--comercio"></div><div class="tutorial__detalle"><strong>Verde — Comercio</strong><span>+Economía, −Opinión</span></div></div>
-          <div class="tutorial__item"><div class="muestra muestra--prensa"></div><div class="tutorial__detalle"><strong>Amarillo — Prensa</strong><span>+Opinión, −Economía</span></div></div>
-          <div class="tutorial__item"><div class="muestra muestra--militar"></div><div class="tutorial__detalle"><strong>Rojo — Militar</strong><span>+Conflicto, +Economía</span></div></div>
-        </div>
-      </div>
-      <div class="tutorial__paso" data-paso="2">
-        <p class="modal__texto">Una cadena de cuatro o más cubos multiplica el efecto y también el coste. Diez cubos acumulados en cadenas de cuatro o más anulan los vetos del siguiente turno.</p>
-        <p class="modal__texto">El Conflicto baja 0.4 por turno por sí solo. El resto de estadísticas no se mueven si no las mueves tú. La Opinión cae cuando la economía se debilita o el conflicto sube: por encima de 50 de economía y 40 de conflicto, un poco; por debajo de 30 de economía o por encima de 60 de conflicto, el doble.</p>
-      </div>
-      <div class="tutorial__paso" data-paso="3">
-        <p class="modal__texto">Cuatro veces durante la partida, en los turnos 4, 8, 12 y 15, el Consejo te pedirá una decisión. Cada opción se resuelve con un dado: cuanto más alta sea la estadística asociada, más probable será el bonus.</p>
-        <p class="modal__texto">En los turnos 9 y 13, si alguno de los cinco ha retirado su apoyo, podrás intentar recuperarlo a cambio de economía y opinión.</p>
-      </div>
-      <div class="tutorial__paso" data-paso="4">
-        <p class="modal__texto">Los cinco miembros permanentes pueden retirar su apoyo si no cumples sus condiciones. Cuando uno se retira, deja un castigo permanente:</p>
-        <div>
-          <div class="tutorial__item"><div class="muestra muestra--pais">🇺🇸</div><div class="tutorial__detalle"><strong>EE.UU.</strong><span>Si el Conflicto es demasiado bajo, retira su paraguas militar: tus cubos militares suman +3 Conflicto en cada turno.</span></div></div>
-          <div class="tutorial__item"><div class="muestra muestra--pais">🇷🇺</div><div class="tutorial__detalle"><strong>Rusia</strong><span>Si el Conflicto es demasiado alto, bloquea la maquinaria multilateral: tus cadenas de 4+ escalan menos (máx 1.3x).</span></div></div>
-          <div class="tutorial__item"><div class="muestra muestra--pais">🇨🇳</div><div class="tutorial__detalle"><strong>China</strong><span>Si descuidas la Diplomacia, no respalda tus tratados: tus cubos de Tratado dan la mitad de Diplomacia.</span></div></div>
-          <div class="tutorial__item"><div class="muestra muestra--pais">🇫🇷</div><div class="tutorial__detalle"><strong>Francia</strong><span>Si la Opinión Pública es baja, retira su altavoz humanitario: tus cubos de Prensa dan la mitad de Opinión.</span></div></div>
-          <div class="tutorial__item"><div class="muestra muestra--pais">🇬🇧</div><div class="tutorial__detalle"><strong>Reino Unido</strong><span>Si la Economía es baja, corta la financiación: tus cubos de Comercio dan la mitad de Economía.</span></div></div>
-        </div>
-        <p class="modal__texto">Si cuatro de los cinco retiran su apoyo, el Consejo se paraliza y pierdes. Una racha acumulada de 10 o más cubos anula los vetos del turno siguiente. En los turnos 9 y 13 podrás intentar recuperar a un país perdido a cambio de economía y opinión.</p>
-      </div>
-      <div class="modal__accion">
-        <button class="boton boton--secundario" id="btn-tutorial-anterior" disabled>Anterior</button>
-        <button class="boton boton--principal" id="btn-tutorial-siguiente">Siguiente</button>
-        <button class="boton boton--principal" id="btn-cerrar-tutorial" hidden>Empezar partida</button>
+ <div class="modal" id="modal-tutorial" hidden>
+  <div class="modal__tarjeta">
+    <h2 class="modal__titulo">Cómo jugar</h2>
+    <div class="tutorial__stepper">
+      <button type="button" class="tutorial__step-dot tutorial__step-dot--active" data-paso="0" aria-label="Paso 1">1</button>
+      <div class="tutorial__step-line" data-linea="0"></div>
+      <button type="button" class="tutorial__step-dot" data-paso="1" aria-label="Paso 2">2</button>
+      <div class="tutorial__step-line" data-linea="1"></div>
+      <button type="button" class="tutorial__step-dot" data-paso="2" aria-label="Paso 3">3</button>
+      <div class="tutorial__step-line" data-linea="2"></div>
+      <button type="button" class="tutorial__step-dot" data-paso="3" aria-label="Paso 4">4</button>
+    </div>
+    <p class="tutorial__indicador" id="tutorial-indicador">Paso 1 de 4</p>
+    <div class="tutorial__paso tutorial__paso--activo" data-paso="0">
+      <p class="modal__texto">Tu rival es <strong id="tutorial-rival" style="color: var(--rojo);">—</strong>. En cada turno dispones de una sola jugada. Arrastra sobre cubos adyacentes del mismo color, mínimo tres, en línea o diagonal, y suelta para confirmar. También puedes tocarlos uno a uno y tocar el último de nuevo. Si tras una jugada no quedan cadenas posibles, el tablero se reorganiza solo.</p>
+    </div>
+    <div class="tutorial__paso" data-paso="1">
+      <p class="modal__texto">Cada jugada mueve cuatro estadísticas: Diplomacia, Economía, Opinión y Conflicto. Cada tipo de cubo tiene un efecto fijo.</p>
+      <div>
+        <div class="tutorial__item"><div class="muestra muestra--tratado"></div><div class="tutorial__detalle"><strong>Azul — Tratado</strong><span>+Diplomacia, −Economía, −Conflicto</span></div></div>
+        <div class="tutorial__item"><div class="muestra muestra--comercio"></div><div class="tutorial__detalle"><strong>Verde — Comercio</strong><span>+Economía, −Opinión</span></div></div>
+        <div class="tutorial__item"><div class="muestra muestra--prensa"></div><div class="tutorial__detalle"><strong>Amarillo — Prensa</strong><span>+Opinión, −Economía</span></div></div>
+        <div class="tutorial__item"><div class="muestra muestra--militar"></div><div class="tutorial__detalle"><strong>Rojo — Militar</strong><span>+Conflicto, +Economía, −Diplomacia</span></div></div>
       </div>
     </div>
+    <div class="tutorial__paso" data-paso="2">
+      <p class="modal__texto">Cuatro veces durante la partida, en los turnos 4, 8, 12 y 15, el Consejo te pedirá una decisión. Cada opción se resuelve con un dado: cuanto más alta sea la estadística asociada, más probable será el bonus.</p>
+      <p class="modal__texto">En los turnos 9 y 13, si alguno de los cinco ha retirado su apoyo, podrás intentar recuperarlo a cambio de economía y opinión.</p>
+    </div>
+    <div class="tutorial__paso" data-paso="3">
+      <p class="modal__texto">Los cinco miembros permanentes pueden retirar su apoyo si no cumples sus condiciones. Cuando uno se retira, deja un castigo permanente:</p>
+      <div>
+        <div class="tutorial__item"><div class="muestra muestra--pais">🇺🇸</div><div class="tutorial__detalle"><strong>EE.UU.</strong><span>Si el Conflicto es demasiado bajo, retira su paraguas militar: tus cubos militares suman +3 Conflicto en cada turno.</span></div></div>
+        <div class="tutorial__item"><div class="muestra muestra--pais">🇷🇺</div><div class="tutorial__detalle"><strong>Rusia</strong><span>Si el Conflicto es demasiado alto, bloquea la maquinaria multilateral: tus cadenas de 4+ escalan menos (máx 1.3x).</span></div></div>
+        <div class="tutorial__item"><div class="muestra muestra--pais">🇨🇳</div><div class="tutorial__detalle"><strong>China</strong><span>Si descuidas la Diplomacia, no respalda tus tratados: tus cubos de Tratado dan la mitad de Diplomacia.</span></div></div>
+        <div class="tutorial__item"><div class="muestra muestra--pais">🇫🇷</div><div class="tutorial__detalle"><strong>Francia</strong><span>Si la Opinión Pública es baja, retira su altavoz humanitario: tus cubos de Prensa dan la mitad de Opinión.</span></div></div>
+        <div class="tutorial__item"><div class="muestra muestra--pais">🇬🇧</div><div class="tutorial__detalle"><strong>Reino Unido</strong><span>Si la Economía es baja, corta la financiación: tus cubos de Comercio dan la mitad de Economía.</span></div></div>
+      </div>
+      <p class="modal__texto">Si tres de los cinco retiran su apoyo, el Consejo se paraliza y pierdes. Una racha acumulada de 8 o más cubos anula los vetos del turno siguiente. En los turnos 9 y 13 podrás intentar recuperar a un país perdido a cambio de economía y opinión.</p>
+    </div>
+    <div class="modal__accion">
+      <button class="boton boton--secundario" id="btn-tutorial-anterior" disabled>Anterior</button>
+      <button class="boton boton--principal" id="btn-tutorial-siguiente">Siguiente</button>
+      <button class="boton boton--principal" id="btn-cerrar-tutorial" hidden>Asumir el cargo</button>
+    </div>
+    <button class="boton boton--secundario" id="btn-skip-tutorial" style="width: 100%; margin-top: 8px; border-color: transparent; color: var(--texto-suave); font-size: 0.8rem;">Saltar tutorial</button>
   </div>
+</div>
 
   <main class="juego">
     <header class="cabecera">
@@ -481,7 +561,10 @@
       <h2 class="modal__titulo" id="final-titulo">—</h2>
       <p style="text-align:center;color:var(--texto-suave);font-size:0.9rem;" id="final-sub">—</p>
       <div class="informe" id="final-informe">—</div>
-      <div class="modal__accion"><button class="boton boton--principal" id="btn-final-reiniciar">Jugar de nuevo</button></div>
+      <div class="modal__accion" style="flex-direction: column;">
+        <button class="boton boton--principal" id="btn-final-reiniciar" style="width: 100%;">Jugar de nuevo</button>
+        <button class="boton boton--secundario" id="btn-final-exportar" style="width: 100%;">Compartir informe (PNG)</button>
+      </div>
     </div>
   </div>
 
@@ -491,14 +574,14 @@
       EFECTO_TRATADO: { diplomacia: 2, economia: -2, opinion: 0, conflicto: -2 },
       EFECTO_COMERCIO: { diplomacia: 0, economia: 3.5, opinion: -1.5, conflicto: 0 },
       EFECTO_PRENSA: { diplomacia: 0, economia: -2, opinion: 1.5, conflicto: 0 },
-      EFECTO_MILITAR: { diplomacia: 0, economia: 2, opinion: 0, conflicto: 2 },
+      EFECTO_MILITAR: { diplomacia: -1, economia: 2, opinion: 0, conflicto: 2 },
       STAT_INICIAL: 50, STAT_MIN: 0, STAT_MAX: 100,
       UMBRAL_VERDE_ALTO: 70, UMBRAL_ROJO_BAJO: 30,
       UMBRAL_CONFLICTO_VERDE: 30, UMBRAL_CONFLICTO_ROJO: 75,
-      UMBRAL_DIPLOMACIA_VICTORIA: 75,
-      REQUISITO_OPINION_VICTORIA: 30,
+      UMBRAL_DIPLOMACIA_VICTORIA: 80,
+      REQUISITO_OPINION_VICTORIA: 35,
       REQUISITO_ECONOMIA: 40,
-      RACHA_MINIMO_SUMA: 4, RACHA_BONUS_UMBRAL: 10,
+      RACHA_MINIMO_SUMA: 4, RACHA_BONUS_UMBRAL: 8,
       MULTIPLICADOR_FASE_FINAL: 2,
       MINIMO_GRUPO: 3, MS_ELIMINAR: 220, MS_CAIDA: 200,
       MULT_BASE: 1.0, MULT_PASO: 0.25, MULT_CAP: 1.9,
@@ -512,7 +595,7 @@
       ECONOMIA_UMBRAL_SEVERO: 30,
       OPINION_PRESION_ECONOMIA_MODERADA: 0.3,
       OPINION_PRESION_ECONOMIA_SEVERA: 0.6,
-      UMBRAL_CHINA_DIPLOMACIA: 70, UMBRAL_PARALISIS: 4,
+      UMBRAL_CHINA_DIPLOMACIA: 70, UMBRAL_PARALISIS: 3,
       DECAIMIENTO_CONFLICTO: 0.4,
       PROB_PLANTAR_4: 0.5
     };
@@ -534,7 +617,7 @@
       diplomacia: {
         descripcion: "Tu capacidad de negociar y construir alianzas en el Consejo. Determina la probabilidad de éxito en decisiones que dependen del diálogo.",
         tips: [
-          "Es la estadística principal para ganar. La paz duradera exige 75.",
+          "Es la estadística principal para ganar. La paz duradera exige 80.",
           "Subirla con Tratado cuesta economía. Alterna con Comercio para no morir.",
           "Si cae por debajo de 70, China puede retirar su apoyo en el turno 9."
         ]
@@ -553,14 +636,14 @@
         tips: [
           "La Prensa la sube pero cuesta economía.",
           "Cae cuando la economía se debilita o el conflicto sube.",
-          "Para paz duradera necesitas al menos 30.",
+          "Para paz duradera necesitas al menos 35.",
           "Si cae por debajo de 35, Francia puede retirar su apoyo en el turno 13."
         ]
       },
       conflicto: {
         descripcion: "La tensión militar con el rival. Si llega a 75, la guerra estalla y pierdes.",
         tips: [
-          "Los Tratados lo bajan. El Militar lo sube pero da economía.",
+          "Los Tratados lo bajan. El Militar lo sube pero da economía y descuenta diplomacia.",
           "Por encima de 40 presiona la opinión. Por encima de 60, la presión se duplica.",
           "Rusia puede retirar su apoyo si supera 50 en el turno 5.",
           "Por debajo de 38, EE.UU. puede retirar su apoyo en el turno 5."
@@ -612,7 +695,7 @@
     const FASES = [
       { hasta: 4, nombre: "Fase 1 — Alerta Temprana" },
       { hasta: 8, nombre: "Fase 2 — Estallido y Reacción" },
-      { hasta: 12, nombre: "Fase 3 — Presión y Desgaste" },
+      { hasta: 14, nombre: "Fase 3 — Presión y Desgaste" },
       { hasta: 15, nombre: "Fase 4 — Resolución" }
     ];
     const TURNOS_DECISION = [4, 8, 12, 15];
@@ -623,105 +706,161 @@ const DECISIONES_POOL = {
   4: [
     { fase: "Fase 1 — Alerta Temprana", texto: "Los satélites han detectado algo que no estaba en los manuales: tres columnas de blindados de {RIVAL} avanzan hacia el paso fronterizo. Los analistas no se ponen de acuerdo — ¿maniobra de intimidación o preparativo real? El Consejo espera tu lectura.",
       opciones: [
-        { titulo: "Observadores en la frontera", stat: "diplomacia", efecto: { diplomacia: 3, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "conflicto", valor: 30 } },
+        { titulo: "Observadores en la frontera", stat: "diplomacia", efecto: { diplomacia: 1.5, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "conflicto", valor: 30 } },
         { titulo: "Mirar hacia otro lado", stat: "conflicto", efecto: { conflicto: 10, opinion: -5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -15 } },
-        { titulo: "Cumbre de urgencia", stat: "diplomacia", efecto: { diplomacia: 4, opinion: 3, economia: -7 }, bonus: { stat: "diplomacia", valor: 12 }, penalty: { stat: "economia", valor: -12 } }
+        { titulo: "Cumbre de urgencia", stat: "diplomacia", efecto: { diplomacia: 2, opinion: 3, economia: -7 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "economia", valor: -12 } }
       ] },
     { fase: "Fase 1 — Alerta Temprana", texto: "Un periodista de investigación publica esta mañana lo que todos sospechaban pero nadie probaba: transferencias bancarias de {RIVAL} a milicias rebeldes en tu territorio. La noticia ya está en portada. La pregunta es qué haces con ella.",
       opciones: [
         { titulo: "Desmentirlo todo", stat: "opinion", efecto: { opinion: 5, conflicto: -2 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -10 } },
-        { titulo: "Sacar las pruebas a la luz", stat: "diplomacia", efecto: { diplomacia: 5, conflicto: 7 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "conflicto", valor: 20 } },
+        { titulo: "Sacar las pruebas a la luz", stat: "diplomacia", efecto: { diplomacia: 2.5, conflicto: 7 }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "conflicto", valor: 20 } },
         { titulo: "Soltar una parte del material", stat: "opinion", efecto: { opinion: 3, conflicto: 2, diplomacia: -2 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -8 } }
       ] },
     { fase: "Fase 1 — Alerta Temprana", texto: "El embajador de {RIVAL} pide una reunión sin testigos. Sobre la mesa, una oferta tentadora: retirada de tropas a cambio de que renuncies a tus alianzas militares. Fuera de la mesa, lo de siempre — la palabra de un gobierno que ya te ha mentido antes.",
       opciones: [
-        { titulo: "Verlo a solas", stat: "diplomacia", efecto: { diplomacia: 5, opinion: -5 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "opinion", valor: -10 } },
+        { titulo: "Verlo a solas", stat: "diplomacia", efecto: { diplomacia: 2.5, opinion: -5 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -10 } },
         { titulo: "Rechazarlo en público", stat: "opinion", efecto: { opinion: 8, conflicto: 7 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "conflicto", valor: 15 } },
         { titulo: "Grabar y filtrar", stat: "opinion", efecto: { opinion: 5, diplomacia: -4, conflicto: 3 }, bonus: { stat: "opinion", valor: 12 }, penalty: { stat: "diplomacia", valor: -12 } }
       ] },
     { fase: "Fase 1 — Alerta Temprana", texto: "Un destructor de {RIVAL} ha cruzado tu mar territorial sin aviso. La marina pide mano dura; el ministerio de Exteriores pide cabeza fría. En el puente del buque, los oficiales esperan tu orden.",
       opciones: [
         { titulo: "Escoltar el destructor", stat: "conflicto", efecto: { conflicto: 7, opinion: 5 }, bonus: { stat: "conflicto", valor: 10 }, penalty: { stat: "diplomacia", valor: -15 } },
-        { titulo: "Llamar a capítulo al embajador", stat: "diplomacia", efecto: { diplomacia: 4, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "opinion", valor: -10 } },
+        { titulo: "Llamar a capítulo al embajador", stat: "diplomacia", efecto: { diplomacia: 2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -10 } },
         { titulo: "Cerrar el puerto a su comercio", stat: "conflicto", efecto: { economia: -3, conflicto: 6, opinion: 2 }, bonus: { stat: "conflicto", valor: 10 }, penalty: { stat: "economia", valor: -10 } }
+      ] },
+    // NUEVA T4.5
+    { fase: "Fase 1 — Alerta Temprana", texto: "Un informante dentro del gobierno de {RIVAL} filtra un informe de inteligencia: conoces sus planes militares antes de que se ejecuten. La pregunta no es qué dice el informe, sino qué haces con él.",
+      opciones: [
+        { titulo: "Compartirlo con los aliados", stat: "diplomacia", efecto: { diplomacia: 2.5, opinion: -2 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "opinion", valor: -10 } },
+        { titulo: "Publicarlo para presionar", stat: "opinion", efecto: { opinion: 6, conflicto: 8 }, bonus: { stat: "opinion", valor: 12 }, penalty: { stat: "conflicto", valor: 18 } },
+        { titulo: "Guardarlo y montar contraespionaje", stat: "economia", efecto: { economia: 5, diplomacia: 1.5, opinion: -3 }, bonus: { stat: "economia", valor: 12 }, penalty: { stat: "opinion", valor: -10 } }
+      ] },
+    // NUEVA T4.6
+    { fase: "Fase 1 — Alerta Temprana", texto: "Tus principales aliados te piden firmar una declaración conjunta sobre {RIVAL}. El texto es duro. Firmarlo te compromete; suavizarlo lo vacía; rechazarlo te deja solo.",
+      opciones: [
+        { titulo: "Firmar el texto duro", stat: "diplomacia", efecto: { diplomacia: 2, conflicto: 5 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "conflicto", valor: 15 } },
+        { titulo: "Firmar una versión suave", stat: "opinion", efecto: { opinion: 4, diplomacia: 1.5 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -10 } },
+        { titulo: "Rechazar la declaración", stat: "economia", efecto: { economia: 3, diplomacia: -4, opinion: 3 }, bonus: { stat: "economia", valor: 10 }, penalty: { stat: "diplomacia", valor: -12 } }
       ] }
   ],
   8: [
     { fase: "Fase 2 — Estallido y Reacción", texto: "El primer choque armado con {RIVAL} ha dejado muertos. Pocos, pero suficientes para que ya nadie pueda hablar de 'incidente'. El Consejo se reúne de urgencia y las cámaras buscan tu reacción.",
       opciones: [
         { titulo: "Condena pública del ataque", stat: "opinion", efecto: { opinion: 5, conflicto: -2 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -15 } },
-        { titulo: "Proponer el embargo de armas", stat: "diplomacia", efecto: { diplomacia: 3, economia: -10 }, requisito: { stat: "economia", valor: CONFIG.REQUISITO_ECONOMIA }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "economia", valor: -15 } },
-        { titulo: "Llamar al embajador a consultas", stat: "diplomacia", efecto: { diplomacia: 3, opinion: 3, conflicto: -1 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "opinion", valor: -8 } }
+        { titulo: "Proponer el embargo de armas", stat: "diplomacia", efecto: { diplomacia: 1.5, economia: -10 }, requisito: { stat: "economia", valor: CONFIG.REQUISITO_ECONOMIA }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "economia", valor: -15 } },
+        { titulo: "Llamar al embajador a consultas", stat: "diplomacia", efecto: { diplomacia: 1.5, opinion: 3, conflicto: -1 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -8 } }
       ] },
     { fase: "Fase 2 — Estallido y Reacción", texto: "Una ONG internacional denuncia que {RIVAL} está usando hospitales como escudos humanos. Las imágenes ya circulan. La ONU exige una respuesta pública antes del anochecer.",
       opciones: [
         { titulo: "Abrir paso a los civiles", stat: "opinion", efecto: { opinion: 8, economia: -8 }, bonus: { stat: "opinion", valor: 15 }, penalty: { stat: "economia", valor: -10 } },
-        { titulo: "Militarizar la zona humanitaria", stat: "conflicto", efecto: { conflicto: 8, diplomacia: 3 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -10 } },
-        { titulo: "Llevarlo a La Haya", stat: "diplomacia", efecto: { diplomacia: 5, opinion: 3, conflicto: 3 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "conflicto", valor: 10 } }
+        { titulo: "Militarizar la zona humanitaria", stat: "conflicto", efecto: { conflicto: 8, diplomacia: 1.5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -10 } },
+        { titulo: "Llevarlo a La Haya", stat: "diplomacia", efecto: { diplomacia: 2.5, opinion: 3, conflicto: 3 }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "conflicto", valor: 10 } }
       ] },
     { fase: "Fase 2 — Estallido y Reacción", texto: "El ciberataque de {RIVAL} ha dejado a media capital sin luz. Los hospitales funcionan con generadores, los semáforos están caídos y la población empieza a preguntar qué está pasando. La respuesta depende de ti.",
       opciones: [
-        { titulo: "Nota diplomática firme", stat: "diplomacia", efecto: { diplomacia: 5, opinion: -2 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "conflicto", valor: 10 } },
+        { titulo: "Nota diplomática firme", stat: "diplomacia", efecto: { diplomacia: 2.5, opinion: -2 }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "conflicto", valor: 10 } },
         { titulo: "Devolver el golpe en la red", stat: "conflicto", efecto: { conflicto: 10, economia: 5 }, bonus: { stat: "conflicto", valor: 20 }, penalty: { stat: "diplomacia", valor: -15 } },
         { titulo: "Apagón y evacuación", stat: "opinion", efecto: { opinion: 5, economia: -5, conflicto: -1 }, bonus: { stat: "opinion", valor: 15 }, penalty: { stat: "economia", valor: -10 } }
       ] },
     { fase: "Fase 2 — Estallido y Reacción", texto: "El material que llevas semanas guardando sobre {RIVAL} está sobre la mesa. La prensa internacional espera. Publicarlo puede cambiarlo todo; guardarlo te deja una bala en la recámara. Tú decides.",
       opciones: [
-        { titulo: "Filtrarlo todo a la prensa", stat: "opinion", efecto: { opinion: 12, diplomacia: 3 }, bonus: { stat: "opinion", valor: 20 }, penalty: { stat: "conflicto", valor: 15 } },
-        { titulo: "Presión diplomática sin tregua", stat: "diplomacia", efecto: { diplomacia: 4, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "opinion", valor: -10 } },
+        { titulo: "Filtrarlo todo a la prensa", stat: "opinion", efecto: { opinion: 12, diplomacia: 1.5 }, bonus: { stat: "opinion", valor: 20 }, penalty: { stat: "conflicto", valor: 15 } },
+        { titulo: "Presión diplomática sin tregua", stat: "diplomacia", efecto: { diplomacia: 2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -10 } },
         { titulo: "Vender el material al mejor postor", stat: "economia", efecto: { economia: 6, opinion: -4, diplomacia: -2 }, bonus: { stat: "economia", valor: 12 }, penalty: { stat: "opinion", valor: -12 } }
+      ] },
+    // NUEVA T8.5
+    { fase: "Fase 2 — Estallido y Reacción", texto: "Miles de civiles de {RIVAL} cruzan la frontera huyendo de los combates. Los campamentos improvisados se desbordan y la prensa ya habla de 'crisis humanitaria'.",
+      opciones: [
+        { titulo: "Abrir campamentos oficiales", stat: "opinion", efecto: { opinion: 8, economia: -7 }, bonus: { stat: "opinion", valor: 15 }, penalty: { stat: "economia", valor: -10 } },
+        { titulo: "Cerrar la frontera", stat: "conflicto", efecto: { conflicto: 6, opinion: -6 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "opinion", valor: -15 } },
+        { titulo: "Repartir a los refugiados entre aliados", stat: "diplomacia", efecto: { diplomacia: 3, economia: -3, opinion: 3 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "economia", valor: -8 } }
+      ] },
+    // NUEVA T8.6
+    { fase: "Fase 2 — Estallido y Reacción", texto: "El bloque aliado te propone una operación conjunta contra {RIVAL}. No es una petición: es una prueba. Sumarte refuerza el frente; rechazarla te deja fuera del paraguas.",
+      opciones: [
+        { titulo: "Sumarte a la operación conjunta", stat: "conflicto", efecto: { conflicto: 12, economia: 3 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -12 } },
+        { titulo: "Enviar apoyo logístico", stat: "economia", efecto: { economia: 4, diplomacia: 2.5 }, bonus: { stat: "economia", valor: 10 }, penalty: { stat: "diplomacia", valor: -8 } },
+        { titulo: "Declinar con diplomacia", stat: "diplomacia", efecto: { diplomacia: 2, opinion: 3, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -8 } }
       ] }
   ],
   12: [
     { fase: "Fase 3 — Presión y Desgaste", texto: "La guerra con {RIVAL} se ha estancado en las mismas trincheras desde hace semanas. Las bajas se cuentan ya en miles y la economía empieza a resentirse. El Consejo te pide una decisión antes de que el desgaste sea irreversible.",
       opciones: [
-        { titulo: "Ampliar las sanciones", stat: "diplomacia", efecto: { diplomacia: 3, economia: -10 }, requisito: { stat: "economia", valor: CONFIG.REQUISITO_ECONOMIA }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "opinion", valor: -15 } },
+        { titulo: "Ampliar las sanciones", stat: "diplomacia", efecto: { diplomacia: 1.5, economia: -10 }, requisito: { stat: "economia", valor: CONFIG.REQUISITO_ECONOMIA }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "opinion", valor: -15 } },
         { titulo: "Más armas al aliado", stat: "conflicto", efecto: { conflicto: 10, economia: 5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -15 } },
         { titulo: "Abrir un pasillo humanitario", stat: "opinion", efecto: { opinion: 5, economia: -4, conflicto: -2 }, bonus: { stat: "opinion", valor: 12 }, penalty: { stat: "economia", valor: -10 } }
       ] },
     { fase: "Fase 3 — Presión y Desgaste", texto: "El Consejo propone desplegar cascos azules en la frontera con {RIVAL}. Es una intervención histórica — la primera en la región en décadas — y también un coste enorme. La pelota está en tu tejado.",
       opciones: [
-        { titulo: "Cascos azules en la frontera", stat: "diplomacia", efecto: { diplomacia: 8, economia: -15 }, requisito: { stat: "economia", valor: 60 }, bonus: { stat: "diplomacia", valor: 20 }, penalty: { stat: "economia", valor: -20 } },
+        { titulo: "Cascos azules en la frontera", stat: "diplomacia", efecto: { diplomacia: 4, economia: -15 }, requisito: { stat: "economia", valor: 60 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "economia", valor: -20 } },
         { titulo: "Rechazar la intervención", stat: "conflicto", efecto: { conflicto: 10, opinion: -5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "opinion", valor: -15 } },
-        { titulo: "Solo observadores civiles", stat: "diplomacia", efecto: { diplomacia: 3, opinion: 2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "opinion", valor: -6 } }
+        { titulo: "Solo observadores civiles", stat: "diplomacia", efecto: { diplomacia: 1.5, opinion: 2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -6 } }
       ] },
     { fase: "Fase 3 — Presión y Desgaste", texto: "Un grupo de países neutrales se ofrece a mediar con {RIVAL}. Ponen una condición: ambas partes renuncian públicamente a sus demandas territoriales. Es una salida, pero también una humillación para quien la firme.",
       opciones: [
-        { titulo: "Aceptar la mediación", stat: "diplomacia", efecto: { diplomacia: 7, conflicto: -5 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "opinion", valor: -15 } },
+        { titulo: "Aceptar la mediación", stat: "diplomacia", efecto: { diplomacia: 3.5, conflicto: -5 }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "opinion", valor: -15 } },
         { titulo: "Rechazar las condiciones", stat: "opinion", efecto: { conflicto: 8, opinion: 5 }, bonus: { stat: "opinion", valor: 15 }, penalty: { stat: "conflicto", valor: 15 } },
-        { titulo: "Proponer una contraoferta", stat: "diplomacia", efecto: { diplomacia: 4, opinion: -2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 12 }, penalty: { stat: "opinion", valor: -10 } }
+        { titulo: "Proponer una contraoferta", stat: "diplomacia", efecto: { diplomacia: 2, opinion: -2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "opinion", valor: -10 } }
       ] },
     { fase: "Fase 3 — Presión y Desgaste", texto: "La comunidad internacional debate cómo responder a {RIVAL}. Varios países esperan que alguien dé el primer paso. Tú puedes ser ese alguien, o puedes dejar que otro lo sea y quedar en segunda fila.",
       opciones: [
-        { titulo: "Al frente de la coalición", stat: "diplomacia", efecto: { diplomacia: 10, opinion: 5 }, bonus: { stat: "diplomacia", valor: 20 }, penalty: { stat: "conflicto", valor: 15 } },
+        { titulo: "Al frente de la coalición", stat: "diplomacia", efecto: { diplomacia: 5, opinion: 5 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "conflicto", valor: 15 } },
         { titulo: "Perfil bajo", stat: "opinion", efecto: { opinion: 5, conflicto: -2 }, bonus: { stat: "opinion", valor: 10 }, penalty: { stat: "diplomacia", valor: -10 } },
-        { titulo: "Pagar sin liderar", stat: "diplomacia", efecto: { economia: -8, diplomacia: 5, opinion: 2 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "economia", valor: -10 } }
+        { titulo: "Pagar sin liderar", stat: "diplomacia", efecto: { economia: -8, diplomacia: 2.5, opinion: 2 }, bonus: { stat: "diplomacia", valor: 7 }, penalty: { stat: "economia", valor: -10 } }
+      ] },
+    // NUEVA T12.5
+    { fase: "Fase 3 — Presión y Desgaste", texto: "Un grupo de oficiales del ejército ha cuestionado públicamente tu estrategia. La tropa está exhausta, las familias presionan, y el rumor de un motín corre por los cuarteles.",
+      opciones: [
+        { titulo: "Purgar a los oficiales críticos", stat: "conflicto", efecto: { conflicto: 8, opinion: -5 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "opinion", valor: -15 } },
+        { titulo: "Conceder rotaciones y descanso", stat: "opinion", efecto: { opinion: 6, economia: -5 }, bonus: { stat: "opinion", valor: 12 }, penalty: { stat: "economia", valor: -10 } },
+        { titulo: "Llevar el debate al parlamento", stat: "diplomacia", efecto: { diplomacia: 2, opinion: 4 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -8 } }
+      ] },
+    // NUEVA T12.6
+    { fase: "Fase 3 — Presión y Desgaste", texto: "{RIVAL} ha cortado el suministro energético. Media capital se queda sin calefacción en pleno invierno. La población espera una respuesta y no hay margen para improvisar.",
+      opciones: [
+        { titulo: "Racionar y subsidiar el gas", stat: "economia", efecto: { economia: -8, opinion: 6 }, bonus: { stat: "economia", valor: 12 }, penalty: { stat: "opinion", valor: -10 } },
+        { titulo: "Buscar nuevos proveedores", stat: "diplomacia", efecto: { diplomacia: 3, economia: -4 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "economia", valor: -10 } },
+        { titulo: "Sabotear el nudo energético", stat: "conflicto", efecto: { conflicto: 10, opinion: 4 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "diplomacia", valor: -12 } }
       ] }
   ],
   15: [
     { fase: "Fase 4 — Resolución", texto: "El Consejo vota la resolución final esta noche. Lo que decidas quedará escrito en los libros de historia. La historia no juzga intenciones: juzga resultados.",
       opciones: [
-        { titulo: "Firmar la paz", stat: "diplomacia", efecto: { diplomacia: 10, conflicto: -10 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "conflicto", valor: 25 } },
+        { titulo: "Firmar la paz", stat: "diplomacia", efecto: { diplomacia: 3, conflicto: -10 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "conflicto", valor: 25 } },
         { titulo: "Levantarse de la mesa", stat: "conflicto", efecto: { conflicto: 12, diplomacia: -10 }, bonus: { stat: "conflicto", valor: 20 }, penalty: { stat: "opinion", valor: -20 } },
         { titulo: "Pactar en la sombra", stat: "conflicto", efecto: { conflicto: -8, opinion: -5, diplomacia: -3 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "diplomacia", valor: -15 } }
       ] },
     { fase: "Fase 4 — Resolución", texto: "Un golpe de estado en {RIVAL} ha derrocado al gobierno con el que llevas meses negociando. Los nuevos líderes piden un alto el fuego inmediato. Nadie sabe cuánto durarán ni si su palabra vale algo.",
       opciones: [
-        { titulo: "Aceptar el alto el fuego", stat: "diplomacia", efecto: { conflicto: -20, diplomacia: 7 }, bonus: { stat: "diplomacia", valor: 20 }, penalty: { stat: "opinion", valor: -15 } },
+        { titulo: "Aceptar el alto el fuego", stat: "diplomacia", efecto: { conflicto: -20, diplomacia: 2 }, bonus: { stat: "diplomacia", valor: 6 }, penalty: { stat: "opinion", valor: -15 } },
         { titulo: "Aprovechar el vacío", stat: "conflicto", efecto: { conflicto: 10, diplomacia: -10 }, bonus: { stat: "conflicto", valor: 25 }, penalty: { stat: "diplomacia", valor: -25 } },
-        { titulo: "Exigir garantías", stat: "diplomacia", efecto: { diplomacia: 4, opinion: 2, conflicto: 2 }, bonus: { stat: "diplomacia", valor: 12 }, penalty: { stat: "opinion", valor: -10 } }
+        { titulo: "Exigir garantías", stat: "diplomacia", efecto: { diplomacia: 1.5, opinion: 2, conflicto: 2 }, bonus: { stat: "diplomacia", valor: 4 }, penalty: { stat: "opinion", valor: -10 } }
       ] },
     { fase: "Fase 4 — Resolución", texto: "Francia propone una conferencia de paz en París con {RIVAL}. Es la última oportunidad de cerrar esto por la vía diplomática y también el último escaparate para tu país. Asistir o boicotear: las dos opciones tienen coste.",
       opciones: [
-        { titulo: "Ir a París", stat: "diplomacia", efecto: { diplomacia: 8, conflicto: -8 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "opinion", valor: -10 } },
+        { titulo: "Ir a París", stat: "diplomacia", efecto: { diplomacia: 3, conflicto: -8 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -10 } },
         { titulo: "Boicotear París", stat: "conflicto", efecto: { conflicto: 10, opinion: 5 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -20 } },
-        { titulo: "Ir pero no firmar", stat: "diplomacia", efecto: { diplomacia: 3, opinion: -2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 10 }, penalty: { stat: "opinion", valor: -8 } }
+        { titulo: "Ir pero no firmar", stat: "diplomacia", efecto: { diplomacia: 1, opinion: -2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 3 }, penalty: { stat: "opinion", valor: -8 } }
       ] },
     { fase: "Fase 4 — Resolución", texto: "Una resolución de consenso con {RIVAL} está sobre la mesa. Es la carta que llevas toda la partida esperando. Firmarla te da la paz; rechazarla te da otra cosa. El reloj corre.",
       opciones: [
-        { titulo: "Firmar la resolución", stat: "diplomacia", efecto: { diplomacia: 12, conflicto: -15 }, bonus: { stat: "diplomacia", valor: 25 }, penalty: { stat: "opinion", valor: -10 } },
-        { titulo: "Mantener la firmeza", stat: "conflicto", efecto: { conflicto: 7, diplomacia: 3 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -15 } },
-        { titulo: "Enmendar la resolución", stat: "diplomacia", efecto: { diplomacia: 6, opinion: 2, conflicto: -3 }, bonus: { stat: "diplomacia", valor: 15 }, penalty: { stat: "opinion", valor: -10 } }
+        { titulo: "Firmar la resolución", stat: "diplomacia", efecto: { diplomacia: 4, conflicto: -15 }, bonus: { stat: "diplomacia", valor: 8 }, penalty: { stat: "opinion", valor: -10 } },
+        { titulo: "Mantener la firmeza", stat: "conflicto", efecto: { conflicto: 7, diplomacia: 1 }, bonus: { stat: "conflicto", valor: 15 }, penalty: { stat: "diplomacia", valor: -15 } },
+        { titulo: "Enmendar la resolución", stat: "diplomacia", efecto: { diplomacia: 2, opinion: 2, conflicto: -3 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -10 } }
+      ] },
+    // NUEVA T15.5
+    { fase: "Fase 4 — Resolución", texto: "La comunidad internacional propone juzgar a los responsables de la crisis. La corte internacional pide tu apoyo para abrir el proceso. La historia te va a mirar: ¿colaboras o te apartas?",
+      opciones: [
+        { titulo: "Liderar el proceso judicial", stat: "diplomacia", efecto: { diplomacia: 3, opinion: 4 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "opinion", valor: -12 } },
+        { titulo: "Apoyar sin liderar", stat: "diplomacia", efecto: { diplomacia: 1.5, opinion: 2, conflicto: -2 }, bonus: { stat: "diplomacia", valor: 3 }, penalty: { stat: "opinion", valor: -8 } },
+        { titulo: "Bloquear el proceso", stat: "conflicto", efecto: { conflicto: 6, opinion: -4 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "diplomacia", valor: -12 } }
+      ] },
+    // NUEVA T15.6
+    { fase: "Fase 4 — Resolución", texto: "Las reparaciones de guerra están sobre la mesa. {RIVAL} quiere que tú pagues los daños. Tus aliados quieren que pague él. Y en medio, la paz que ambos necesitáis.",
+      opciones: [
+        { titulo: "Aceptar pagar tu parte", stat: "diplomacia", efecto: { diplomacia: 3, economia: -10 }, bonus: { stat: "diplomacia", valor: 5 }, penalty: { stat: "economia", valor: -15 } },
+        { titulo: "Exigir que {RIVAL} pague todo", stat: "conflicto", efecto: { conflicto: 8, opinion: 5 }, bonus: { stat: "conflicto", valor: 12 }, penalty: { stat: "diplomacia", valor: -15 } },
+        { titulo: "Condonar las reparaciones por la paz", stat: "diplomacia", efecto: { diplomacia: 2, opinion: 6, economia: -5 }, bonus: { stat: "diplomacia", valor: 4 }, penalty: { stat: "economia", valor: -12 } }
       ] }
   ]
 };
@@ -730,6 +869,7 @@ const DECISIONES_POOL = {
     let seleccion = [], arrastrando = false, huboMovimiento = false;
     let noticieroExpandido = true;
     let lastNoticieroKey = "";
+    let nivelConflictoAnterior = "neutral";
 
     const el = {};
     [
@@ -747,7 +887,8 @@ const DECISIONES_POOL = {
       "modal-stat","stat-titulo","stat-descripcion","stat-tips","btn-stat-cerrar",
       "modal-p5","p5-titulo","p5-icono","p5-condicion","p5-debuff","btn-p5-cerrar",
       "modal-reinicio","btn-reinicio-cancelar","btn-reinicio-confirmar",
-      "modal-final","final-titulo","final-sub","final-informe","btn-final-reiniciar"
+      "modal-final","final-titulo","final-sub","final-informe","btn-final-reiniciar",
+      "btn-skip-tutorial", "btn-continuar-partida", "btn-final-exportar"
     ].forEach(id => el[id.replace(/-/g, "_")] = document.getElementById(id));
 
     function aleatorio(n) { return Math.floor(Math.random() * n); }
@@ -777,33 +918,188 @@ const DECISIONES_POOL = {
     }
     document.addEventListener("pointerdown", initAudio, { once: true });
 
-  const Sonido = {
-  playTone(freq, type, dur, vol, slideTo = null) {
-    if (!ctx) return;
-    try {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = type;
-      o.frequency.setValueAtTime(freq, ctx.currentTime);
-      if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, ctx.currentTime + dur);
-      g.gain.setValueAtTime(vol, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
-      o.connect(g); g.connect(ctx.destination);
-      o.start();
-      o.stop(ctx.currentTime + dur);
-      o.onended = () => { o.disconnect(); g.disconnect(); };
-    } catch(e) {}
-  },
-  cubo(n = 0) { this.playTone(440 + n * 40, 'sine', 0.12, 0.06); },
-  cadena(n) { this.playTone(440 + (n + 1) * 40, 'sine', 0.3, 0.08); }, // <-- Sube un paso extra al soltar
-  tick() { this.playTone(800, 'triangle', 0.03, 0.02); },
-  exito() { this.playTone(523.25, 'sine', 0.1, 0.06); setTimeout(() => this.playTone(659.25, 'sine', 0.1, 0.06), 80); setTimeout(() => this.playTone(783.99, 'sine', 0.3, 0.06), 160); },
-  fallo() { this.playTone(150, 'sawtooth', 0.3, 0.08, 100); },
-  veto() {
-    this.playTone(60, 'sine', 0.8, 0.15, 40);
-    setTimeout(() => this.playTone(120, 'square', 0.4, 0.05, 80), 100);
-  }
-};
+    const Sonido = {
+      masterGain: null,
+      ensure() {
+        if (!ctx) return false;
+        if (!this.masterGain) {
+          this.masterGain = ctx.createGain();
+          this.masterGain.gain.value = 0.7;
+          this.masterGain.connect(ctx.destination);
+        }
+        return true;
+      },
+      playTone(freq, type, dur, vol, slideTo = null, delay = 0) {
+        if (!this.ensure()) return;
+        try {
+          const t = ctx.currentTime + delay;
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.type = type;
+          o.frequency.setValueAtTime(Math.max(20, freq), t);
+          if (slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(20, slideTo), t + dur);
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+          o.connect(g); g.connect(this.masterGain);
+          o.start(t); o.stop(t + dur + 0.05);
+          o.onended = () => { o.disconnect(); g.disconnect(); };
+        } catch(e) {}
+      },
+      playNoise(dur, vol, filterFreq = 2000, delay = 0) {
+        if (!this.ensure()) return;
+        try {
+          const t = ctx.currentTime + delay;
+          const bufferSize = Math.floor(ctx.sampleRate * dur);
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+          const src = ctx.createBufferSource();
+          src.buffer = buffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(filterFreq, t);
+          filter.frequency.exponentialRampToValueAtTime(Math.max(100, filterFreq * 0.3), t + dur);
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(vol, t);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+          src.connect(filter); filter.connect(g); g.connect(this.masterGain);
+          src.start(t); src.stop(t + dur);
+          src.onended = () => { src.disconnect(); filter.disconnect(); g.disconnect(); };
+        } catch(e) {}
+      },
+      playChord(freqs, type, dur, vol, delay = 0) {
+        freqs.forEach((f, i) => this.playTone(f, type, dur, vol, null, delay + i * 0.015));
+      },
+      cubo(n = 0) {
+        const base = 440 + n * 40;
+        this.playTone(base, 'sine', 0.12, 0.07);
+        this.playTone(base * 2, 'sine', 0.06, 0.025);
+      },
+      cadena(n) {
+        const base = 440 + (n + 1) * 40;
+        this.playTone(base, 'sine', 0.3, 0.09);
+        this.playTone(base * 1.5, 'sine', 0.25, 0.04, null, 0.03);
+        this.playNoise(0.12, 0.03, 3000);
+      },
+      combo(n) {
+        const base = 440 + n * 40;
+        this.playTone(base, 'triangle', 0.35, 0.09);
+        this.playTone(base * 1.25, 'sine', 0.35, 0.05, null, 0.05);
+        this.playTone(base * 1.5, 'sine', 0.4, 0.05, null, 0.1);
+        this.playTone(base * 2, 'sine', 0.5, 0.04, null, 0.15);
+        this.playNoise(0.2, 0.04, 5000);
+      },
+      tick() { this.playTone(700 + Math.random() * 300, 'triangle', 0.03, 0.025); },
+      dadoStop() {
+        this.playTone(200, 'square', 0.08, 0.09, 80);
+        this.playNoise(0.06, 0.07, 1500);
+      },
+      exito() {
+        this.playChord([523.25, 659.25, 783.99], 'sine', 0.4, 0.05);
+        this.playTone(1046.5, 'sine', 0.5, 0.04, null, 0.18);
+        this.playNoise(0.15, 0.025, 4000);
+      },
+      fallo() {
+        this.playTone(220, 'sawtooth', 0.35, 0.07, 80);
+        this.playTone(150, 'square', 0.4, 0.04, 60, 0.1);
+        this.playNoise(0.2, 0.03, 400);
+      },
+      veto() {
+        this.playTone(55, 'sine', 1.2, 0.18, 35);
+        this.playTone(70, 'sine', 1.0, 0.1, 40, 0.05);
+        this.playNoise(0.5, 0.06, 300, 0.1);
+        this.playTone(180, 'square', 0.6, 0.03, 100, 0.2);
+      },
+      conflicto() {
+        this.playTone(80, 'sawtooth', 0.5, 0.07, 55);
+        this.playTone(90, 'sawtooth', 0.45, 0.05, 65, 0.15);
+        this.playTone(80, 'sawtooth', 0.5, 0.07, 55, 0.5);
+        this.playNoise(0.4, 0.03, 400);
+      },
+      conflictoSuave() {
+        this.playTone(300, 'triangle', 0.3, 0.04, 400);
+        this.playTone(450, 'sine', 0.25, 0.03, 500, 0.1);
+      },
+      turno() {
+        this.playTone(180, 'sine', 0.2, 0.05, 320);
+        this.playTone(320, 'sine', 0.15, 0.035, 480, 0.1);
+        this.playNoise(0.15, 0.02, 800);
+      },
+      click() {
+        this.playTone(1200, 'square', 0.03, 0.015);
+        this.playTone(900, 'sine', 0.05, 0.025, 700);
+      },
+      cancelar() { this.playTone(350, 'triangle', 0.08, 0.035, 220); },
+      modal() {
+        this.playTone(500, 'sine', 0.12, 0.03, 900);
+        this.playNoise(0.08, 0.02, 3000);
+      },
+      reconciliacion() {
+        this.playTone(659.25, 'sine', 0.2, 0.05);
+        this.playTone(783.99, 'sine', 0.25, 0.05, null, 0.1);
+        this.playTone(1046.5, 'sine', 0.4, 0.04, null, 0.2);
+      },
+      victoria() {
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((f, i) => this.playTone(f, 'sine', 0.5, 0.06, null, i * 0.14));
+        notes.forEach((f, i) => this.playTone(f / 2, 'triangle', 0.5, 0.035, null, i * 0.14));
+        setTimeout(() => {
+          this.playChord([1046.5, 1318.5, 1567.98], 'sine', 1.2, 0.05);
+        }, 700);
+        this.playNoise(0.3, 0.025, 5000);
+      },
+      derrota() {
+        const notes = [440, 415.3, 392, 369.99, 349.23, 329.63, 311.13, 293.66];
+        notes.forEach((f, i) => {
+          this.playTone(f, 'triangle', 0.4, 0.045, f * 0.92, i * 0.16);
+        });
+        this.playTone(55, 'sine', 2.5, 0.1, 35, 0.6);
+        this.playNoise(1.5, 0.03, 500, 0.4);
+      },
+      neutro() {
+        this.playTone(392, 'sine', 0.6, 0.05, 369.99);
+        this.playTone(293.66, 'sine', 0.8, 0.04, 261.63, 0.3);
+      }
+    };
+
+    // === SCREEN SHAKE ===
+    function sacudir(intensidad) {
+      const juego = document.querySelector('.juego');
+      if (!juego) return;
+      juego.classList.remove('shake-suave', 'shake-fuerte');
+      void juego.offsetWidth;
+      juego.classList.add(intensidad === 'fuerte' ? 'shake-fuerte' : 'shake-suave');
+      setTimeout(() => juego.classList.remove('shake-suave', 'shake-fuerte'), 600);
+    }
+
+    // === AUTOGUARDADO ===
+    const SAVE_KEY = "cubeflict_autosave";
+    const SAVE_VERSION = 1;
+
+    function guardarPartida() {
+      if (!estado || estado.finDeJuego) return;
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify({ version: SAVE_VERSION, estado }));
+      } catch(e) {}
+    }
+
+    function borrarPartida() {
+      try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+    }
+
+    function cargarPartida() {
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (data.version !== SAVE_VERSION || !data.estado || data.estado.finDeJuego) {
+          borrarPartida();
+          return null;
+        }
+        return data.estado;
+      } catch(e) { borrarPartida(); return null; }
+    }
 
     function vibrar(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
 
@@ -935,7 +1231,7 @@ const DECISIONES_POOL = {
           "Avances en las conversaciones con " + rival + ".",
           "El Consejo respalda tu última propuesta. Las conversaciones avanzan.",
           "Los mediadores internacionales aplauden tu gestión. Todavía hay margen.",
-          "Reunión discreta en Ginebra. Nadie confirma nada, pero todos sonríen."
+          "Reunión discreta en la sede de la ONU. Nadie confirma nada, pero todos sonríen."
         ];
       } else if (s.economia <= 15) {
         marcador = "COLAPSO"; color = "var(--rojo)"; clase = "noticiero peligro";
@@ -979,6 +1275,14 @@ const DECISIONES_POOL = {
         ];
       }
 
+      let nivelActual = "neutral";
+      if (clase.includes("peligro")) nivelActual = "peligro";
+      else if (clase.includes("alerta")) nivelActual = "alerta";
+      if (nivelActual !== nivelConflictoAnterior) {
+        if (nivelActual === "peligro" && nivelConflictoAnterior !== "peligro") { Sonido.conflicto(); sacudir('fuerte'); }
+        else if (nivelActual === "alerta" && nivelConflictoAnterior === "neutral") { Sonido.conflictoSuave(); sacudir('suave'); }
+        nivelConflictoAnterior = nivelActual;
+      }
       const texto = opcionesTexto[(turno * 7 + 3) % opcionesTexto.length];
       const frases = [];
 
@@ -1088,10 +1392,12 @@ const DECISIONES_POOL = {
         for (let c = 0; c < CONFIG.COLUMNAS; c++) fila.push(tipoAleatorio());
         estado.tablero.push(fila);
       }
-      if (!hayCadenaDe(estado.tablero, 3)) plantarGrupo(estado.tablero, 3);
-      if (!hayCadenaDe(estado.tablero, 4)) plantarGrupo(estado.tablero, 4);
-    }
-
+    for (let i = 0; i < 10; i++) {
+  if (!hayCadenaDe(estado.tablero, 3)) { plantarGrupo(estado.tablero, 3); continue; }
+  if (!hayCadenaDe(estado.tablero, 4)) { plantarGrupo(estado.tablero, 4); continue; }
+  break;
+}
+}
     function pintarTablero() {
       el.tablero.innerHTML = "";
       for (let f = 0; f < CONFIG.FILAS; f++)
@@ -1270,7 +1576,7 @@ const DECISIONES_POOL = {
         t.className = "floating-text";
         t.style.color = COLORES_STATS[clave];
         t.style.left = cx + "px";
-        t.style.top = (cy - i * 25) + "px";
+        t.style.top = (cy - i * 30) + "px";
         const v = Math.round(cambios[clave] * 10) / 10;
         t.textContent = (v > 0 ? "+" : "") + v + " " + ABREV_STATS[clave];
         document.body.appendChild(t);
@@ -1335,7 +1641,9 @@ const DECISIONES_POOL = {
       const mult = multiplicador(cantidad);
 
       estado.resolviendo = true; estado.jugadaUsada = true;
-      vibrar(50); Sonido.cadena(cantidad);
+      vibrar(50);
+      if (cantidad >= 4) Sonido.combo(cantidad);
+      else Sonido.cadena(cantidad);
 
       if (cantidad >= CONFIG.RACHA_MINIMO_SUMA) estado.rachaGlobal += cantidad;
       else estado.rachaGlobal = 0;
@@ -1360,16 +1668,15 @@ const DECISIONES_POOL = {
       if (verificarGameOver()) return;
 
       setTimeout(() => {
-        // Guardamos el estado anterior para que la animación de caída se aplique correctamente
-        const tableroAnterior = estado.tablero.map(fila => fila.slice());
+  const tableroAnterior = estado.tablero.map(fila => fila.slice());
 
-        aplicarGravedad();
-        if (!hayCadenaDe(estado.tablero, 3)) plantarGrupo(estado.tablero, 3);
-        if (!hayCadenaDe(estado.tablero, 4) && Math.random() < CONFIG.PROB_PLANTAR_4) {
-          plantarGrupo(estado.tablero, 4);
-        }
-
-        // Le pasamos el tablero anterior a la función
+  aplicarGravedad();
+  const quiere4 = !hayCadenaDe(estado.tablero, 4) && Math.random() < CONFIG.PROB_PLANTAR_4;
+for (let i = 0; i < 10; i++) {
+  if (!hayCadenaDe(estado.tablero, 3)) { plantarGrupo(estado.tablero, 3); continue; }
+  if (quiere4 && !hayCadenaDe(estado.tablero, 4)) { plantarGrupo(estado.tablero, 4); continue; }
+  break;
+}
         actualizarTablero(tableroAnterior);
 
         estado.resolviendo = false;
@@ -1399,6 +1706,7 @@ const DECISIONES_POOL = {
     function continuarAvance() {
       if (estado.turno >= CONFIG.TURNOS_TOTALES) { finalizarJuego(); return; }
       estado.turno++;
+      Sonido.turno();
 
       const antesConflicto = estado.estadisticas.conflicto;
       estado.estadisticas.conflicto = limitar(antesConflicto - CONFIG.DECAIMIENTO_CONFLICTO, CONFIG.STAT_MIN, CONFIG.STAT_MAX);
@@ -1429,6 +1737,7 @@ const DECISIONES_POOL = {
       pintarNoticiero(true);
       registrar("— Turno " + estado.turno + " —");
       if (verificarGameOver()) return;
+      guardarPartida();
     }
 
     function elegirDecision(turno) {
@@ -1457,7 +1766,7 @@ const DECISIONES_POOL = {
 
         const tieneReq = op.requisito && estado.estadisticas[op.requisito.stat] < op.requisito.valor;
         const statValor = estado.estadisticas[op.stat] || 50;
-        const prob = limitar(Math.round(30 + statValor / 2), 30, 80);
+        const prob = limitar(Math.round(15 + statValor * 0.75), 15, 90);
 
         let html = `<span class="opcion__titulo">${esc(op.titulo)}</span>`;
         html += `<span class="opcion__efecto">Garantizado: ${esc(textoEfectos(op.efecto))}</span>`;
@@ -1475,18 +1784,19 @@ const DECISIONES_POOL = {
       });
 
       el.modal_decision.hidden = false;
+      guardarPartida();
     }
 
-    function mensajeDado(exito, stat) {
+      function mensajeDado(exito, stat) {
       const EXITO = {
-        diplomacia: ["El Consejo respalda tu propuesta", "La sala asiente. Hay acuerdo", "Ginebra sonríe por una vez"],
+        diplomacia: ["El Consejo respalda tu propuesta", "La sala asiente. Hay acuerdo", "El cónclave sonríe por una vez"],
         conflicto: ["La amenaza surte efecto", "El pulso se resuelve a tu favor", "El otro lado parpadea primero"],
         economia: ["La maniobra económica da resultado", "Los mercados aplauden", "Los números salen"],
         opinion: ["La opinión pública te respalda", "Las calles lo celebran", "El relato es tuyo"],
         generico: ["La resolución prospera", "Los dados están de tu lado", "Todo sale como esperabas"]
       };
       const FALLO = {
-        diplomacia: ["El Consejo rechaza tu propuesta", "La sala te da la espalda", "Ginebra no cede"],
+        diplomacia: ["El Consejo rechaza tu propuesta", "La sala te da la espalda", "El cónclave no cede"],
         conflicto: ["La amenaza se vuelve contra ti", "El pulso se rompe en tu contra", "El otro lado no parpadea"],
         economia: ["La maniobra económica fracasa", "Los mercados castigan tu jugada", "Los números no salen"],
         opinion: ["La opinión pública te da la espalda", "Las calles lo critican", "El relato se te escapa"],
@@ -1526,7 +1836,11 @@ const DECISIONES_POOL = {
             el.dado_resultado.textContent = mensajeDado(exito, stat);
             el.dado_resultado.className = "dado-resultado " + (exito ? "dado-resultado--exito" : "dado-resultado--fallo");
 
-            if (exito) Sonido.exito(); else Sonido.fallo();
+           Sonido.dadoStop();
+           setTimeout(() => {
+             if (exito) Sonido.exito();
+             else { Sonido.fallo(); sacudir('suave'); }
+           }, 80);
             vibrar(exito ? [30, 30, 30] : [80, 40, 80]);
 
             setTimeout(() => {
@@ -1544,7 +1858,7 @@ const DECISIONES_POOL = {
       const mult = estado.turno === 15 ? CONFIG.MULTIPLICADOR_FASE_FINAL : 1;
 
       const statValor = estado.estadisticas[op.stat] || 50;
-      const prob = limitar(30 + statValor / 2, 30, 80) / 100;
+      const prob = limitar(15 + statValor * 0.75, 15, 90) / 100;
       const exito = Math.random() < prob;
 
       el.decision_opciones.style.display = "none";
@@ -1570,6 +1884,7 @@ const DECISIONES_POOL = {
       el.modal_decision.hidden = true;
 
       if (verificarGameOver()) return;
+      guardarPartida();
       avanzarTurno();
     }
 
@@ -1611,8 +1926,10 @@ const DECISIONES_POOL = {
 
       vetosCandidatos.forEach(v => { estado.apoyoP5[v.key] = false; });
       pintarP5();
+      sacudir('fuerte');
       if (verificarGameOver()) return true;
       estado.colaVetos = vetosCandidatos.map(v => ({ pais: v.pais, icono: v.icono, dialogo: v.dialogo, debuff: v.debuff }));
+      guardarPartida();
       mostrarSiguienteVeto();
       return true;
     }
@@ -1647,13 +1964,15 @@ const DECISIONES_POOL = {
       b1.className = "opcion";
       b1.innerHTML = `<span class="opcion__titulo">Ofrecer concesiones</span><span class="opcion__efecto">−15 Economía, −5 Opinión. Recupera el apoyo.</span>`;
       b1.addEventListener("click", () => {
-        Sonido.cubo();
-        aplicarCambios({ economia: -15, opinion: -5 });
+      Sonido.cubo();
+      Sonido.reconciliacion();
+      aplicarCambios({ economia: -15, opinion: -5 });
         estado.apoyoP5[pais] = true;
         pintarP5();
         el.modal_reconciliacion.hidden = true;
         registrar("Reconciliación con " + NOMBRES_P5[pais] + ".", true);
         if (verificarGameOver()) return;
+        guardarPartida();
         continuarAvance();
       });
 
@@ -1663,6 +1982,7 @@ const DECISIONES_POOL = {
       b2.addEventListener("click", () => {
         Sonido.cubo();
         el.modal_reconciliacion.hidden = true;
+        guardarPartida();
         continuarAvance();
       });
 
@@ -1672,72 +1992,236 @@ const DECISIONES_POOL = {
       return true;
     }
 
-    function finalizarJuego() {
-      if (estado.finalMostrado) return;
-      estado.finalMostrado = true;
-      estado.finDeJuego = true;
-      const s = estado.estadisticas;
-      const rival = estado.nombreRival;
-      const sinApoyo = Object.keys(estado.apoyoP5).filter(k => !estado.apoyoP5[k]).length;
-    let clase, titulo, sub, informe, cita;
-    const pais = estado.nombrePais;
+   function finalizarJuego() {
+  borrarPartida();
+  if (estado.finalMostrado) return;
+  estado.finalMostrado = true;
+  estado.finDeJuego = true;
+  const s = estado.estadisticas;
+  const rival = estado.nombreRival;
+  const sinApoyo = Object.keys(estado.apoyoP5).filter(k => !estado.apoyoP5[k]).length;
+let clase, titulo, sub, informe, inspiracion;
+const pais = estado.nombrePais;
 
-    if (s.conflicto >= CONFIG.UMBRAL_CONFLICTO_ROJO && s.diplomacia < 40) {
-      clase = "derrota"; titulo = "LA GUERRA ESTALLA"; sub = "Derrota militar";
-      informe = `Los primeros misiles cayeron antes del amanecer. Lo que empezó como una crisis fronteriza terminó como una guerra abierta entre ${pais} y ${rival}. El Consejo de Seguridad se reunió de urgencia, pero ya no había nada que decidir: la historia había tomado el relevo de la diplomacia.`;
-      cita = `"Lo advertimos. Lo advertimos todos." — El Observador Global`;
-    } else if (s.conflicto >= CONFIG.UMBRAL_CONFLICTO_ROJO) {
-      clase = "derrota"; titulo = "GUERRA POR ACCIDENTE"; sub = "Derrota militar";
-      informe = `Nadie quiso esta guerra. Pero todos la permitieron. Una transmisión de radio malinterpretada, un oficial nervioso, un ultimátum que llegó tarde: la historia se rompió por un detalle. ${pais} y ${rival} están en guerra, y ni siquiera sus gobiernos saben explicar del todo por qué.`;
-      cita = `"No fue una decisión. Fue una cadena de errores que nadie se atrevió a detener." — The Continental Review`;
-    } else if (s.economia <= CONFIG.UMBRAL_DERROTA_ECONOMIA) {
-      clase = "derrota"; titulo = "COLAPSO ECONÓMICO"; sub = "Derrota interna";
-      informe = `Los mercados cerraron antes que el Consejo. La economía de ${pais} no aguantó la presión de la crisis: la bolsa se desplomó, el gobierno perdió la confianza de sus acreedores y el país se quedó sin recursos para sostener su política exterior. ${rival} no necesitó ganar la guerra: le bastó con no perderla.`;
-      cita = `"La caída no fue militar. Fue contable." — The Continental Review`;
-    } else if (s.opinion <= CONFIG.UMBRAL_DERROTA_OPINION) {
-      clase = "derrota"; titulo = "AISLAMIENTO POPULAR"; sub = "Derrota política";
-      informe = `La población dio la espalda a su gobierno en plena crisis. Las protestas en la capital se multiplicaron, la oposición exigió elecciones anticipadas y el gobierno de ${pais} se quedó solo frente a ${rival}. El aislamiento no fue diplomático: fue interno.`;
-      cita = `"El enemigo no estaba en la frontera. Estaba en casa." — El Observador Global`;
-    } else if (sinApoyo >= CONFIG.UMBRAL_PARALISIS) {
-      clase = "derrota"; titulo = "PARÁLISIS DEL CONSEJO"; sub = "Derrota diplomática";
-      informe = `Cuatro de los cinco miembros permanentes retiraron su apoyo. El Consejo de Seguridad quedó bloqueado, sin capacidad de aprobar resoluciones, y ${rival} aprovechó el vacío para consolidar su posición. ${pais} no perdió la guerra: perdió la institución que debía evitarla.`;
-      cita = `"El Consejo no falló. El Consejo fue el fallo." — El Observador Global`;
-    } else if (s.diplomacia >= CONFIG.UMBRAL_DIPLOMACIA_VICTORIA && s.conflicto < 20 && s.opinion >= CONFIG.REQUISITO_OPINION_VICTORIA) {
-      clase = "victoria"; titulo = "PAZ DURADERA"; sub = "Victoria diplomática";
-      informe = `El acuerdo se firmó al amanecer en la sede de la ONU. ${rival} aceptó retirar sus tropas a cambio de garantías multilaterales, y el Consejo aprobó por unanimidad la resolución que llevará el nombre de ${pais}. En la capital, miles de personas salieron a las calles. Los analistas hablan ya de "el milagro de ${pais}".`;
-      cita = `"Nunca creímos que lo lograrían." — El Observador Global`;
-    } else if (s.diplomacia >= 80 && s.conflicto < 25) {
-      clase = "victoria"; titulo = "PAZ BAJO PRESIÓN"; sub = "Victoria parcial";
-      informe = `La paz se firmó, pero nadie sonríe en la fotografía. ${rival} cedió ante la presión internacional, no ante tu diplomacia, y el acuerdo se sostiene sobre un equilibrio frágil de intereses. ${pais} evita la guerra, pero paga el precio de una paz que no convenció a nadie.`;
-      cita = `"Ganaron. Pero que nadie confunda esto con una victoria." — The Continental Review`;
-    } else if (s.diplomacia >= 70 && s.conflicto < 40) {
-      clase = "victoria"; titulo = "PAZ FRÁGIL"; sub = "Victoria parcial";
-      informe = `El alto el fuego se mantiene. Por ahora. El Consejo logró contener la crisis con ${rival}, pero las condiciones del acuerdo dejan abiertas las mismas heridas que provocaron el conflicto. Los observadores internacionales hablan de "una pausa, no de una paz".`;
-      cita = `"La guerra no ha terminado. Solo ha decidido esperar." — The Continental Review`;
-    } else {
-      clase = "neutro"; titulo = "LAS TENSIONES PERMANECEN"; sub = "Final neutro";
-      informe = `Ni guerra ni paz. Solo una crisis que se ha vuelto permanente. ${pais} y ${rival} no llegaron a enfrentarse abiertamente, pero tampoco resolvieron nada. El Consejo cierra la sesión sin acuerdo, y los cascos azules se quedan en la frontera sin saber muy bien para qué.`;
-      cita = `"El problema no es que no haya pasado nada. Es que nada ha dejado de pasar." — El Observador Global`;
+if (s.conflicto >= CONFIG.UMBRAL_CONFLICTO_ROJO && s.diplomacia < 40) {
+  clase = "derrota"; titulo = "LA GUERRA ESTALLA"; sub = "Derrota militar";
+  informe = `Los primeros misiles cayeron antes del amanecer. Lo que empezó como una crisis fronteriza terminó como una guerra abierta entre ${pais} y ${rival}. El Consejo de Seguridad se reunió de urgencia, pero ya no había nada que decidir: la historia había tomado el relevo de la diplomacia.`;
+  inspiracion = `Inspirado en la invasión de Kuwait por Irak (1990) y la posterior autorización del uso de la fuerza mediante la Resolución 678 del Consejo de Seguridad, que desembocó en la Guerra del Golfo.`;
+} else if (s.conflicto >= CONFIG.UMBRAL_CONFLICTO_ROJO) {
+  clase = "derrota"; titulo = "GUERRA POR ACCIDENTE"; sub = "Derrota militar";
+  informe = `Nadie quiso esta guerra. Pero todos la permitieron. Una transmisión de radio malinterpretada, un oficial nervioso, un ultimátum que llegó tarde: la historia se rompió por un detalle. ${pais} y ${rival} están en guerra, y ni siquiera sus gobiernos saben explicar del todo por qué.`;
+  inspiracion = `Inspirado en el impacto de un misil en Polonia (noviembre de 2022) durante la guerra de Ucrania, un incidente que el Consejo de Seguridad trató como un "escalofriante recordatorio" del riesgo de escalada accidental entre potencias nucleares.`;
+} else if (s.economia <= CONFIG.UMBRAL_DERROTA_ECONOMIA) {
+  clase = "derrota"; titulo = "COLAPSO ECONÓMICO"; sub = "Derrota interna";
+  informe = `Los mercados cerraron antes que el Consejo. La economía de ${pais} no aguantó la presión de la crisis: la bolsa se desplomó, el gobierno perdió la confianza de sus acreedores y el país se quedó sin recursos para sostener su política exterior. ${rival} no necesitó ganar la guerra: le bastó con no perderla.`;
+  inspiracion = `Inspirado en el régimen de sanciones económicas integrales impuesto a Irak tras la invasión de Kuwait (Resolución 661 de 1990), cuyas consecuencias humanas y económicas documentó la ONU durante más de una década.`;
+} else if (s.opinion <= CONFIG.UMBRAL_DERROTA_OPINION) {
+  clase = "derrota"; titulo = "AISLAMIENTO POPULAR"; sub = "Derrota política";
+  informe = `La población dio la espalda a su gobierno en plena crisis. Las protestas en la capital se multiplicaron, la oposición exigió elecciones anticipadas y el gobierno de ${pais} se quedó solo frente a ${rival}. El aislamiento no fue diplomático: fue interno.`;
+  inspiracion = `Inspirado en la crisis de Suez (1956), cuando la presión popular y la condena internacional por la intervención en Egipto forzaron la dimisión del primer ministro británico Anthony Eden en enero de 1957.`;
+} else if (sinApoyo >= CONFIG.UMBRAL_PARALISIS) {
+  clase = "derrota"; titulo = "PARÁLISIS DEL CONSEJO"; sub = "Derrota diplomática";
+  informe = `Tres de los cinco miembros permanentes retiraron su apoyo. El Consejo de Seguridad quedó bloqueado, sin capacidad de aprobar resoluciones, y ${rival} aprovechó el vacío para consolidar su posición. ${pais} no perdió la guerra: perdió la institución que debía evitarla.`;
+  inspiracion = `Inspirado en la parálisis del Consejo de Seguridad por el uso sistemático del veto (Rusia en Siria y Ucrania; EE.UU. en Gaza), que en 2024 alcanzó ocho vetos, una de las cifras más altas desde el final de la Guerra Fría.`;
+} else if (s.diplomacia >= CONFIG.UMBRAL_DIPLOMACIA_VICTORIA && s.conflicto < 20 && s.opinion >= CONFIG.REQUISITO_OPINION_VICTORIA) {
+  clase = "victoria"; titulo = "PAZ DURADERA"; sub = "Victoria diplomática";
+  informe = `El acuerdo se firmó al amanecer en la sede de la ONU. ${rival} aceptó retirar sus tropas a cambio de garantías multilaterales, y el Consejo aprobó por unanimidad la resolución que llevará el nombre de ${pais}. En la capital, miles de personas salieron a las calles. Los analistas hablan ya de "el milagro de ${pais}".`;
+  inspiracion = `Inspirado en la Resolución 338 del Consejo de Seguridad (1973), que impuso un alto el fuego entre Egipto, Siria e Israel y abrió la vía a las negociaciones de paz que culminaron en los Acuerdos de Camp David.`;
+} else if (s.diplomacia >= 80 && s.conflicto < 25) {
+  clase = "victoria"; titulo = "PAZ BAJO PRESIÓN"; sub = "Victoria parcial";
+  informe = `La paz se firmó, pero nadie sonríe en la fotografía. ${rival} cedió ante la presión internacional, no ante tu diplomacia, y el acuerdo se sostiene sobre un equilibrio frágil de intereses. ${pais} evita la guerra, pero paga el precio de una paz que no convenció a nadie.`;
+ inspiracion = `Inspirado en los Acuerdos de Dayton (1995) para Bosnia, una paz impuesta bajo presión internacional tras el genocidio de Srebrenica que puso fin a la guerra sin resolver las tensiones políticas de fondo.`;
+} else if (s.diplomacia >= 70 && s.conflicto < 40) {
+  clase = "victoria"; titulo = "PAZ FRÁGIL"; sub = "Victoria parcial";
+  informe = `El alto el fuego se mantiene. Por ahora. El Consejo logró contener la crisis con ${rival}, pero las condiciones del acuerdo dejan abiertas las mismas heridas que provocaron el conflicto. Los observadores internacionales hablan de "una pausa, no de una paz".`;
+  inspiracion = `Inspirado en la Resolución 2118 del Consejo de Seguridad (2013), que logró un acuerdo unánime para destruir el arsenal químico de Siria y evitó una intervención militar inminente, aunque el conflicto de fondo continuó durante años.`;
+} else {
+  clase = "neutro"; titulo = "LAS TENSIONES PERMANECEN"; sub = "Final neutro";
+  informe = `Ni guerra ni paz. Solo una crisis que se ha vuelto permanente. ${pais} y ${rival} no llegaron a enfrentarse abiertamente, pero tampoco resolvieron nada. El Consejo cierra la sesión sin acuerdo, y los cascos azules se quedan en la frontera sin saber muy bien para qué.`;
+  inspiracion = `Inspirado en las misiones de mantenimiento de la paz de la ONU en Chipre (UNFICYP, desde 1964) y en el Sáhara Occidental (MINURSO), despliegues que se han prolongado durante décadas sin una solución política definitiva.`;
+}
+  el.final_titulo.textContent = titulo;
+  el.final_titulo.className = "modal__titulo final__titulo--" + clase;
+  el.final_sub.textContent = sub;
+
+  const listaDecisiones = estado.decisionesTomadas.map(d =>
+    `<li>T${d.turno}: ${esc(d.titulo)} ${d.exito ? "acertada" : "fallida"}</li>`
+  ).join("");
+  const paisesSinApoyo = Object.keys(estado.apoyoP5).filter(k => !estado.apoyoP5[k]).map(k => esc(NOMBRES_P5[k])).join(", ") || "Ninguno";
+
+    el.final_informe.innerHTML =
+    "<strong>Informe del Consejo · " + esc(estado.nombrePais) + " vs. " + esc(rival) + "</strong><br><br>" + esc(informe) +
+    "<div class='final__inspiracion'>" + esc(inspiracion) + "</div>" +
+    "<br><br><strong>Estadísticas finales:</strong> Dip " + fmt(s.diplomacia) +
+    " · Eco " + fmt(s.economia) + " · Opi " + fmt(s.opinion) + " · Con " + fmt(s.conflicto) +
+    "<br><strong>Países sin apoyo:</strong> " + paisesSinApoyo +
+    (listaDecisiones ? "<br><br><strong>Decisiones clave:</strong><ul class='informe__lista'>" + listaDecisiones + "</ul>" : "");
+
+  estado._datosInforme = { clase, titulo, sub, informe, inspiracion, nombrePais: estado.nombrePais, nombreRival: rival, stats: { ...s } };
+
+  el.modal_final.hidden = false;
+  if (clase === "victoria") { Sonido.victoria(); sacudir('suave'); }
+  else if (clase === "derrota") { Sonido.derrota(); sacudir('fuerte'); }
+  else Sonido.neutro();
+  registrar("FIN: " + titulo, true);
+}
+
+ function exportarInforme() {
+  const d = estado && estado._datosInforme;
+  if (!d) {
+    mostrarToast("No hay informe para exportar", "fallo");
+    return;
+  }
+
+  try {
+    const W = 900, H = 1200;
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const c2 = canvas.getContext('2d');
+
+    // ---- Fondo ----
+    c2.fillStyle = '#0a0c10';
+    c2.fillRect(0, 0, W, H);
+
+    const colores = { victoria: '#5c9e75', derrota: '#c94b4b', neutro: '#d4a373' };
+    const colorAcento = colores[d.clase] || '#6b7280';
+
+    c2.fillStyle = colorAcento;
+    c2.fillRect(0, 0, W, 10);
+
+    // ---- Cabecera ----
+    c2.textAlign = 'center';
+    c2.fillStyle = '#6b7280';
+    c2.font = 'bold 18px system-ui, sans-serif';
+    c2.fillText('CUBEFLICT · INFORME DEL CONSEJO DE SEGURIDAD', W / 2, 90);
+
+    c2.fillStyle = colorAcento;
+    c2.font = 'bold 56px system-ui, sans-serif';
+    let y = 180;
+    wrapTextLines(c2, (d.titulo || '').toUpperCase(), W - 100)
+      .forEach(l => { c2.fillText(l, W / 2, y); y += 62; });
+
+    c2.fillStyle = '#9ca3af';
+    c2.font = '22px system-ui, sans-serif';
+    c2.fillText(d.sub || '', W / 2, y);
+    y += 45;
+
+    c2.fillStyle = '#d1d5db';
+    c2.font = 'bold 26px system-ui, sans-serif';
+    c2.fillText(d.nombrePais + '   vs.   ' + d.nombreRival, W / 2, y);
+    y += 30;
+
+    // ---- Separador ----
+    c2.strokeStyle = '#2a3441';
+    c2.lineWidth = 1;
+    c2.beginPath();
+    c2.moveTo(100, y);
+    c2.lineTo(W - 100, y);
+    c2.stroke();
+    y += 40;
+
+    // ---- Informe ----
+    c2.textAlign = 'left';
+    c2.fillStyle = '#d1d5db';
+    c2.font = '20px system-ui, sans-serif';
+    wrapTextLines(c2, d.informe || '', W - 160)
+      .forEach(l => { c2.fillText(l, 80, y); y += 30; });
+    y += 20;
+
+    // ---- Inspiración histórica ----
+    if (d.inspiracion) {
+      c2.fillStyle = '#8892a3';
+      c2.font = 'italic 15px system-ui, sans-serif';
+      c2.fillText('◆ Inspirado en:', 80, y);
+      y += 22;
+
+      c2.fillStyle = '#a0aec0';
+      c2.font = '14px system-ui, sans-serif';
+      wrapTextLines(c2, d.inspiracion, W - 160)
+        .forEach(l => { c2.fillText(l, 80, y); y += 20; });
+      y += 20;
     }
-      el.final_titulo.textContent = titulo;
-      el.final_titulo.className = "modal__titulo final__titulo--" + clase;
-      el.final_sub.textContent = sub;
 
-      const listaDecisiones = estado.decisionesTomadas.map(d =>
-        `<li>T${d.turno}: ${esc(d.titulo)} ${d.exito ? "acertada" : "fallida"}</li>`
-      ).join("");
-      const paisesSinApoyo = Object.keys(estado.apoyoP5).filter(k => !estado.apoyoP5[k]).map(k => esc(NOMBRES_P5[k])).join(", ") || "Ninguno";
+    // ---- Separador antes de stats ----
+    c2.strokeStyle = '#2a3441';
+    c2.beginPath();
+    c2.moveTo(100, y);
+    c2.lineTo(W - 100, y);
+    c2.stroke();
+    y += 45;
 
-        el.final_informe.innerHTML =
-        "<strong>Informe del Consejo · " + esc(estado.nombrePais) + " vs. " + esc(rival) + "</strong><br><br>" + esc(informe) +
-        "<div class='final__cita'>" + esc(cita) + "</div>" +
-        "<br><br><strong>Estadísticas finales:</strong> Dip " + fmt(s.diplomacia) +
-        " · Eco " + fmt(s.economia) + " · Opi " + fmt(s.opinion) + " · Con " + fmt(s.conflicto) +
-        "<br><strong>Países sin apoyo:</strong> " + paisesSinApoyo +
-        (listaDecisiones ? "<br><br><strong>Decisiones clave:</strong><ul class='informe__lista'>" + listaDecisiones + "</ul>" : "");
+    // ---- Stats ----
+    c2.textAlign = 'center';
+    c2.fillStyle = '#9ca3af';
+    c2.font = 'bold 18px system-ui, sans-serif';
+    c2.fillText('ESTADÍSTICAS FINALES', W / 2, y);
+    y += 50;
 
-      el.modal_final.hidden = false;
-      registrar("FIN: " + titulo, true);
+    const s = d.stats || {};
+    const stats = [
+      { label: 'DIPLOMACIA', val: s.diplomacia || 0, color: '#4a8cbd' },
+      { label: 'ECONOMÍA',  val: s.economia   || 0, color: '#5c9e75' },
+      { label: 'OPINIÓN',   val: s.opinion    || 0, color: '#d4a373' },
+      { label: 'CONFLICTO', val: s.conflicto  || 0, color: '#c94b4b' }
+    ];
+    const sw = (W - 160) / 4;
+    stats.forEach((stat, i) => {
+      const cx = 80 + sw * i + sw / 2;
+      c2.fillStyle = stat.color;
+      c2.font = 'bold 52px system-ui, sans-serif';
+      c2.fillText(String(Math.round(stat.val)), cx, y + 45);
+      c2.fillStyle = '#6b7280';
+      c2.font = 'bold 14px system-ui, sans-serif';
+      c2.fillText(stat.label, cx, y + 80);
+    });
+
+    // ---- Footer ----
+    c2.textAlign = 'center';
+    c2.fillStyle = '#6b7280';
+    c2.font = '14px system-ui, sans-serif';
+    c2.fillText(
+      'Inspirado en la Resolución 1298 (2000) del Consejo de Seguridad de la ONU.',
+      W / 2, H - 30
+    );
+
+    // ---- Descarga ----
+    canvas.toBlob(blob => {
+      if (!blob) {
+        mostrarToast("No se pudo generar el PNG", "fallo");
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cubeflict_' + d.clase + '_' + Date.now() + '.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      mostrarToast("Informe descargado", "exito");
+    }, 'image/png');
+
+  } catch (err) {
+    console.error('Error exportando informe:', err);
+    mostrarToast("Error al exportar el informe", "fallo");
+  }
+}
+
+    function wrapTextLines(ctx, text, maxWidth) {
+      const words = text.split(' ');
+      const lines = [];
+      let current = '';
+      for (const w of words) {
+        const test = current ? current + ' ' + w : w;
+        if (ctx.measureText(test).width > maxWidth && current) {
+          lines.push(current);
+          current = w;
+        } else {
+          current = test;
+        }
+      }
+      if (current) lines.push(current);
+      return lines;
     }
 
     function nuevaPartida(nombrePais, nombreRival) {
@@ -1764,6 +2248,7 @@ const DECISIONES_POOL = {
       estado.decisionesPartida[15] = elegirDecision(15);
 
       seleccion = []; arrastrando = false;
+      nivelConflictoAnterior = "neutral";
       lastNoticieroKey = "";
       el.registro.innerHTML = "";
       el.modal_final.hidden = true;
@@ -1776,6 +2261,7 @@ const DECISIONES_POOL = {
       crearTablero(); pintarTablero();
       pintar(); actualizarCabecera();
       registrar("Nueva partida. " + estado.nombrePais + " vs. " + estado.nombreRival + ".", true);
+      guardarPartida();
     }
 
     function datosEvento(e) {
@@ -1904,6 +2390,13 @@ const DECISIONES_POOL = {
       nuevaPartida(nombrePais, nombreRival);
     });
 
+    el.btn_skip_tutorial.addEventListener("click", () => {
+      const nombrePais = el.btn_cerrar_tutorial.dataset.pais || el.input_nombre.value.trim() || elegir(PAISES_DICCIONARIO);
+      const nombreRival = el.btn_cerrar_tutorial.dataset.rival || elegirRival(nombrePais);
+      el.modal_tutorial.hidden = true;
+      nuevaPartida(nombrePais, nombreRival);
+    });
+
     el.boton_reiniciar.addEventListener("click", () => {
       if (!estado) { el.modal_presentacion.hidden = false; return; }
       el.modal_reinicio.hidden = false;
@@ -1915,15 +2408,58 @@ const DECISIONES_POOL = {
 
     el.btn_reinicio_confirmar.addEventListener("click", () => {
       el.modal_reinicio.hidden = true;
-      const pais = estado.nombrePais;
-      const rival = elegirRival(pais);
-      nuevaPartida(pais, rival);
+      const paisAnterior = estado.nombrePais;
+      borrarPartida();
+      el.modal_presentacion.hidden = false;
+      el.input_nombre.value = paisAnterior || "";
+      el.btn_continuar_partida.hidden = true;
     });
 
     el.btn_final_reiniciar.addEventListener("click", () => {
       el.modal_final.hidden = true;
       el.modal_presentacion.hidden = false;
       el.input_nombre.value = (estado && estado.nombrePais) || "";
+    });
+
+    el.btn_final_exportar.addEventListener("click", exportarInforme);
+
+    el.btn_continuar_partida.addEventListener("click", () => {
+      const guardado = cargarPartida();
+      if (!guardado) {
+        el.btn_continuar_partida.hidden = true;
+        mostrarToast("No hay partida guardada", "fallo");
+        return;
+      }
+      estado = guardado;
+      estado.resolviendo = false;
+      estado.finalMostrado = false;
+      seleccion = [];
+      arrastrando = false;
+      huboMovimiento = false;
+      lastNoticieroKey = "";
+      const c = estado.estadisticas.conflicto;
+      nivelConflictoAnterior = c >= 60 ? "peligro" : (c >= 40 ? "alerta" : "neutral");
+
+      el.modal_presentacion.hidden = true;
+      el.modal_tutorial.hidden = true;
+      el.modal_final.hidden = true;
+      el.modal_veto.hidden = true;
+      el.modal_decision.hidden = true;
+      el.modal_dado.hidden = true;
+      el.modal_reconciliacion.hidden = true;
+      el.modal_reinicio.hidden = true;
+
+      crearTablero();
+      pintarTablero();
+      pintar();
+      actualizarCabecera();
+      registrar("Partida restaurada · Turno " + estado.turno, true);
+
+      if (estado.colaVetos && estado.colaVetos.length > 0) {
+        setTimeout(() => mostrarSiguienteVeto(), 250);
+      } else if (estado.decisionPendiente) {
+        setTimeout(() => mostrarDecision(), 250);
+      }
     });
 
     let tutorialPasoActual = 0;
@@ -1970,21 +2506,23 @@ const DECISIONES_POOL = {
       });
     });
 
-    el.input_nombre.value = elegir(PAISES_DICCIONARIO);
-    estado = {
-      turno: 1, fase: "Fase 1 — Alerta Temprana",
-      rachaGlobal: 0, jugadaUsada: false, resolviendo: false,
-      decisionPendiente: false, decisionResuelta: false,
-      finDeJuego: false, finalMostrado: false,
-      nombrePais: "Valdavia", nombreRival: "Amara",
-      estadisticas: { diplomacia: CONFIG.STAT_INICIAL, economia: CONFIG.STAT_INICIAL, opinion: CONFIG.STAT_INICIAL, conflicto: CONFIG.STAT_INICIAL },
-      apoyoP5: { eeuu: true, rusia: true, china: true, francia: true, reino: true },
-      colaVetos: [], decisionesTomadas: [], decisionesPartida: {}, tablero: []
-    };
-    crearTablero();
-    pintarTablero();
-    pintar();
-    actualizarCabecera();
+    // === COMPROBAR SAVE AL CARGAR ===
+    (function comprobarSaveAlCargar() {
+      const guardado = cargarPartida();
+      if (guardado) {
+        el.btn_continuar_partida.hidden = false;
+      }
+      el.input_nombre.value = elegir(PAISES_DICCIONARIO);
+    })();
+
+    document.addEventListener("pointerdown", (e) => {
+    if (!e.target.closest) return;
+    if (e.target.closest(".cubo")) return;
+    if (e.target.closest(".boton, .opcion, .mini-stat, .p5-pais, .tutorial__step-dot, .noticiero")) {
+      Sonido.click();
+    }
+  }, { passive: true });
+
   </script>
 </body>
 </html>
