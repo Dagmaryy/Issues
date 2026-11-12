@@ -1,9 +1,9 @@
-// BOT.JS — Simulación Monte Carlo de CUBEFLICT v6
-// Sincronizado con el HTML actual:
+// BOT.JS — Simulación Monte Carlo de CUBEFLICT v7
+// Sincronizado con el HTML final (commit v1.0):
 //   - Tratado dip 1.5 | Comercio eco 4 | Militar dip -1
 //   - UMBRAL_DIPLOMACIA_VICTORIA 80 | REQUISITO_OPINION_VICTORIA 35
-//   - RACHA_BONUS_UMBRAL 8
-//   - DECISIONES_POOL recortado (dip positiva ~50% menos, T15 ~65% menos)
+//   - RACHA_BONUS_UMBRAL 8 | UMBRAL_PARALISIS 3
+//   - DECISIONES_POOL recortado (dip positiva reducida)
 //
 // Uso: node bot.js [N] [random|smart|both]
 
@@ -42,7 +42,7 @@ const CONFIG = {
     DECAIMIENTO_CONFLICTO: 0.4,
     PROB_PLANTAR_4: 0.5,
     UMBRAL_CHINA_DIPLOMACIA: 70,
-    UMBRAL_PARALISIS: 4,
+    UMBRAL_PARALISIS: 3,
     DEBUFF_EEUU_CONFLICTO: 3,
     PROB_DECISION_BASE: 15,
     PROB_DECISION_FACTOR: 0.75,
