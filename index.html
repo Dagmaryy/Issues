@@ -197,17 +197,22 @@
     .tutorial__indicador { text-align: center; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--texto-suave); margin-top: -6px; margin-bottom: 4px; }
 
     .opciones { display: grid; gap: 8px; }
-    #decision-texto { font-size: clamp(1rem, 3.8vw, 1.15rem); font-weight: 400; line-height: 1.55; color: #d1d5db; text-align: left; margin: 0; }
+
+    /* AÑADIDO: text-transform none para quitar las mayúsculas de la pregunta */
+    #decision-texto { font-size: clamp(1rem, 3.8vw, 1.15rem); font-weight: 400; line-height: 1.55; color: #d1d5db; text-align: left; margin: 0; text-transform: none; }
+
     .opcion { display: flex; flex-direction: column; gap: 3px; width: 100%; padding: 14px 16px; text-align: left; font: inherit; color: var(--texto); background: #0a0c10; border: 1px solid var(--borde); border-left: 3px solid var(--borde); border-radius: 2px; cursor: pointer; transition: background 0.15s, border 0.15s; }
     .opcion:hover:not(:disabled) { background: #131820; border-left-color: var(--azul); }
     .opcion:disabled { opacity: 0.5; cursor: not-allowed; }
-    .opcion__titulo { font-weight: 700; font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+    /* CAMBIADO: uppercase por none para quitar las mayúsculas de los botones A, B, C */
+    .opcion__titulo { font-weight: 700; font-size: 1.05rem; text-transform: none; letter-spacing: 0.03em; }
+
     .opcion__efecto, .opcion__probabilidad, .opcion__penalizacion, .opcion__requisito { font-size: 0.85rem; line-height: 1.45; font-family: monospace; }
     .opcion__efecto { color: var(--texto-suave); }
     .opcion__requisito { color: #e89a9a; font-weight: 700; }
     .opcion__probabilidad { color: var(--verde); font-weight: 700; }
     .opcion__penalizacion { color: var(--rojo); font-weight: 700; }
-
     .veto__tarjeta { border: 2px solid var(--rojo); box-shadow: 0 0 30px rgba(201,75,75,0.2); text-align: center; }
     .veto__dialogo { background: #0a0c10; border-left: 3px solid var(--rojo); padding: 14px; border-radius: 2px; font-style: italic; color: #ddd; text-align: left; font-size: 1rem; }
     .veto__debuff { background: rgba(201,75,75,0.1); padding: 12px; border-radius: 2px; border: 1px solid var(--rojo); color: #e89a9a; font-size: 0.9rem; }
