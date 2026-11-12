@@ -265,30 +265,94 @@
     .shake-suave { animation: shake-suave 0.35s ease-out; }
     .shake-fuerte { animation: shake-fuerte 0.5s ease-out; }
 
-    @media (max-width: 560px) {
-      .panel { padding: 12px; }
-      .cabecera { padding: 2px 0; }
-      .boton--compacto { padding: 9px 4px; }
-      .boton--compacto small { font-size: 0.7rem; }
-      .mini-stat__label { font-size: 0.55rem; letter-spacing: 0; }
-    }
-    @media (max-width: 340px) {
-      .tablero { min-width: 280px; margin: 0; }
-      .tablero-scroll { padding-right: 12px; }
-    }
-    @media (max-width: 360px) {
-      .estadisticas-compactas { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-    }
-    #decision-texto {
-      text-transform: none;
-    }
-    .opcion__titulo {
-      text-transform: none;
-    }
+  /* === AJUSTES PARA MÓVIL (UN SOLO PLANO) === */
+@media (max-width: 560px) {
+  /* 1. Bloquear scroll y ajustar al alto de pantalla */
+  body {
+    padding: calc(8px + var(--safe-top)) 8px calc(8px + var(--safe-bottom));
+    height: 100dvh;
+    overflow: hidden;
+  }
 
+  .juego {
+    height: 100%;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  /* 2. Ocultar lo que sobra en el plano principal */
+  .cabecera { display: none; }
+  .registro-panel { display: none; }
+  footer { display: none; }
+
+  /* 3. Panel superior y noticiero compactos */
+  .panel { padding: 8px 10px; }
+  .turnos__numero { font-size: 1rem !important; }
+  .turnos__fase { font-size: 0.65rem; padding: 2px 6px; }
+  .noticiero { padding: 8px; font-size: 0.8rem; }
+  .noticiero__texto { font-size: 0.75rem; }
+
+  /* 4. P5 y Estadísticas apretados */
+  .p5-grid { gap: 4px; margin-bottom: 6px; padding-bottom: 6px; }
+  .p5-pais { padding: 4px 2px; }
+  .p5-pais span { font-size: 1.1rem; }
+  .p5-pais small { font-size: 0.55rem; }
+
+  .estadisticas-compactas { gap: 4px; }
+  .mini-stat { padding: 4px 2px; }
+  .mini-stat__label { font-size: 0.55rem; letter-spacing: 0; }
+  .mini-stat__valor { font-size: 1.2rem !important; }
+  .mini-stat__barra { height: 3px; }
+
+  /* 5. Tablero: ocupa todo el espacio vertical restante */
+  section[aria-label="Tablero"] {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+    padding: 8px;
+  }
+  .tablero-scroll {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 0;
+  }
+  .tablero {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: 1/1;
+    margin: auto;
+  }
+  .cubo svg { width: clamp(18px, 6vw, 24px); height: clamp(18px, 6vw, 24px); }
+
+  /* Ocultamos textos de ayuda en móvil para ganar espacio */
+  .pista-accion { display: none; }
+  .boton--compacto { padding: 6px 4px; }
+  .boton--compacto small { font-size: 0.7rem; }
+
+  /* 6. Modales: evitar que se corten arriba/abajo */
+  .modal {
+    align-items: flex-start;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  .modal__tarjeta {
+    max-height: 85dvh;
+    padding: 16px;
+  }
+  .modal__titulo { font-size: 1.3rem; }
+  .modal__texto { font-size: 0.9rem; }
+  .opcion { padding: 10px; }
+  .opcion__titulo { font-size: 0.95rem; }
+  .opcion__efecto, .opcion__probabilidad, .opcion__penalizacion { font-size: 0.75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
     /* =========================================
        VT323 — PIXEL READABLE (números y marcadores)
        ========================================= */
