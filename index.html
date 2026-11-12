@@ -350,8 +350,20 @@
 .tutorial__detalle strong { font-size: 1.05rem; }
 .tutorial__detalle span { font-size: 0.95rem; line-height: 1.4; }
 .tutorial__item { padding: 12px; gap: 10px; margin-bottom: 8px; }
-    }
 
+/* AQUÍ ESTÁ EL TRUCO: Forzar letra más gorda y blanca para que no se vea fina */
+.modal__texto,
+.presentacion__rol,
+.tutorial__detalle span,
+.tutorial__detalle strong,
+.opcion__efecto,
+.opcion__probabilidad,
+.opcion__penalizacion,
+.opcion__titulo {
+  font-weight: 600 !important; /* Sube el grosor (normal es 400) */
+  color: #ffffff !important; /* Blanco puro para que contraste con el fondo oscuro */
+}
+    } /* <--- ESTA LLAVE SIGUE CERRANDO EL MÓVIL */
     .turnos__numero, .mini-stat__valor, .racha, .noticiero__marcador, .dado, .dado-resultado, .panel__titulo, .floating-text {
       font-family: 'VT323', monospace !important;
       font-weight: 400 !important;
