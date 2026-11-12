@@ -169,7 +169,16 @@
     .modal__accion .boton { font-size: 1rem; padding: 12px 22px; }
 
     .presentacion .modal__tarjeta { text-align: left; }
-    .presentacion__rol { background: rgba(74, 140, 189, 0.1); border-left: 3px solid var(--azul); padding: 12px; border-radius: 2px; font-size: 0.9rem; margin-bottom: 10px; line-height: 1.55; }
+    /* Subimos el texto general de los modales (tutorial, decisiones, etc) */
+      .modal__texto { font-size: 1.05rem; line-height: 1.5; }
+
+      /* Subimos el texto del recuadro azul de la presentación */
+      .presentacion__rol {
+        font-size: 1.05rem;
+        line-height: 1.5;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+      }
     .form-nombre { display: flex; flex-direction: column; gap: 6px; }
     .form-nombre label { font-size: 0.8rem; color: var(--texto-suave); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
     .form-nombre__row { display: flex; gap: 8px; }
