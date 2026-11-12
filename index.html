@@ -169,12 +169,7 @@
     .modal__accion .boton { font-size: 1rem; padding: 12px 22px; }
 
     .presentacion .modal__tarjeta { text-align: left; }
-    /* Subimos el texto general de los modales (tutorial, decisiones, etc) */
-      .modal__texto { font-size: 1.05rem; line-height: 1.5; }
-
-      /* Subimos el texto del recuadro azul de la presentación */
     .presentacion__rol { background: rgba(74, 140, 189, 0.1); border-left: 3px solid var(--azul); padding: 12px; border-radius: 2px; font-size: 0.95rem; margin-bottom: 10px; line-height: 1.6; font-family: 'Courier New', Courier, monospace; }
-      }
     .form-nombre { display: flex; flex-direction: column; gap: 6px; }
     .form-nombre label { font-size: 0.8rem; color: var(--texto-suave); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
     .form-nombre__row { display: flex; gap: 8px; }
@@ -269,94 +264,113 @@
     .shake-suave { animation: shake-suave 0.35s ease-out; }
     .shake-fuerte { animation: shake-fuerte 0.5s ease-out; }
 
-  /* === AJUSTES PARA MÓVIL === */
-@media (max-width: 560px) {
-  body {
-    padding: calc(8px + var(--safe-top)) 8px calc(8px + var(--safe-bottom));
-    overflow-y: auto;
-    font-family: system-ui, -apple-system, sans-serif !important; /* Letra limpia en móvil */
-  }
+    /* === AJUSTES PARA MÓVIL === */
+    @media (max-width: 560px) {
+      body {
+        padding: calc(8px + var(--safe-top)) 8px calc(8px + var(--safe-bottom));
+        overflow-y: auto;
+        font-family: system-ui, -apple-system, sans-serif !important;
+      }
 
-  .juego { min-height: 100dvh; gap: 8px; justify-content: flex-start; }
+      .juego { min-height: 100dvh; gap: 8px; justify-content: flex-start; }
 
-  .cabecera { display: none; }
-  .registro-panel { display: none; }
-  footer { display: none; }
+      .cabecera { display: none; }
+      .registro-panel { display: none; }
+      footer { display: none; }
 
-  .panel { padding: 8px 10px; }
-  .turnos__numero { font-size: 1rem !important; }
-  .turnos__fase { font-size: 0.65rem; padding: 2px 6px; }
+      .panel { padding: 8px 10px; }
+      .turnos__numero { font-size: 1rem !important; }
+      .turnos__fase { font-size: 0.65rem; padding: 2px 6px; }
 
-  .noticiero { padding: 8px 10px; gap: 8px; margin-bottom: 0; }
-  .noticiero__marcador { font-size: 0.8rem !important; padding-right: 6px; padding-top: 2px; }
-  .noticiero__texto { font-size: 0.9rem !important; line-height: 1.4; }
-  .noticiero__p5 { font-size: 0.85rem !important; margin-top: 6px; }
-  .noticiero__toggle { font-size: 0.8rem; line-height: 1; }
+      .noticiero { padding: 8px 10px; gap: 8px; margin-bottom: 0; }
+      .noticiero__marcador { font-size: 0.8rem !important; padding-right: 6px; padding-top: 2px; }
+      .noticiero__texto { font-size: 0.9rem !important; line-height: 1.4; }
+      .noticiero__p5 { font-size: 0.85rem !important; margin-top: 6px; }
+      .noticiero__toggle { font-size: 0.8rem; line-height: 1; }
 
-  .p5-grid { gap: 4px; margin-bottom: 8px; padding-bottom: 8px; }
-  .p5-pais { padding: 6px 4px; }
-  .p5-pais span { font-size: 1.3rem; }
-  .p5-pais small { font-size: 0.75rem !important; } /* Antes 0.55, ahora se lee */
+      .p5-grid { gap: 4px; margin-bottom: 8px; padding-bottom: 8px; }
+      .p5-pais { padding: 6px 4px; }
+      .p5-pais span { font-size: 1.3rem; }
+      .p5-pais small { font-size: 0.75rem !important; }
 
-  .estadisticas-compactas { gap: 4px; }
-  .mini-stat { padding: 6px 2px; }
-  .mini-stat__label { font-size: 0.6rem !important; letter-spacing: -0.02em; } /* Bajamos a 0.6rem y apretamos las letras */
-  .mini-stat__valor { font-size: 1.4rem !important; }
-  .mini-stat__barra { height: 4px; }
+      .estadisticas-compactas { gap: 4px; }
+      .mini-stat { padding: 6px 2px; }
+      .mini-stat__label { font-size: 0.6rem !important; letter-spacing: -0.02em; }
+      .mini-stat__valor { font-size: 1.4rem !important; }
+      .mini-stat__barra { height: 4px; }
 
-  section[aria-label="Tablero"] {
-    display: flex; flex-direction: column; justify-content: flex-start; min-height: 0; padding: 8px; flex-shrink: 0;
-  }
-  .tablero-scroll { display: flex; align-items: center; padding: 0; width: 100%; }
-  .tablero { width: 100%; max-width: 100%; max-height: 48vh; aspect-ratio: 1/1; margin: auto; }
-  .cubo svg { width: clamp(18px, 6vw, 24px); height: clamp(18px, 6vw, 24px); }
+      section[aria-label="Tablero"] {
+        display: flex; flex-direction: column; justify-content: flex-start; min-height: 0; padding: 8px; flex-shrink: 0;
+      }
+      .tablero-scroll { display: flex; align-items: center; padding: 0; width: 100%; }
+      .tablero { width: 100%; max-width: 100%; max-height: 48vh; aspect-ratio: 1/1; margin: auto; }
+      .cubo svg { width: clamp(18px, 6vw, 24px); height: clamp(18px, 6vw, 24px); }
 
-  .pista-accion { display: none; }
-  .acciones-tablero { display: none; }
+      .pista-accion { display: none; }
+      .acciones-tablero { display: none; }
 
-/* MODALES EN MÓVIL */
-.modal { align-items: center; padding: 8px; }
-.modal__tarjeta {
-  max-height: 95dvh;
-  padding: 16px;
-  gap: 12px;
-  overflow-y: auto;
-}
-.modal__etiqueta { display: none; }
-.modal__titulo { font-size: 1.4rem; color: #ffffff !important; font-family: "Segoe UI", Roboto, sans-serif; }
+      /* MODALES EN MÓVIL */
+      .modal { align-items: center; padding: 8px; }
+      .modal__tarjeta {
+        max-height: 95dvh;
+        padding: 16px;
+        gap: 12px;
+        overflow-y: auto;
+      }
+      .modal__etiqueta { display: none; }
+      .modal__titulo { font-size: 1.4rem; color: #ffffff !important; font-family: "Segoe UI", Roboto, sans-serif; }
 
-/* FORZAR COURIER (Solo en los textos) */
-.modal__texto,
-.presentacion__rol,
-.tutorial__detalle span,
-.tutorial__detalle strong,
-.opcion__titulo,
-.opcion__efecto,
-.opcion__probabilidad,
-.opcion__penalizacion {
-  font-family: 'Courier New', Courier, monospace !important;
-  font-size: 1.05rem !important;
-  line-height: 1.45 !important;
-  letter-spacing: -0.3px !important;
-  font-weight: normal !important;
-  /* color: #e2e8f0 !important;  <--- ELIMINA O COMENTA ESTA LÍNEA */
-}
+      /* FORZAR COURIER (Solo en los textos) */
+      .modal__texto,
+      .presentacion__rol,
+      .tutorial__detalle span,
+      .tutorial__detalle strong,
+      .opcion__titulo,
+      .opcion__efecto,
+      .opcion__probabilidad,
+      .opcion__penalizacion {
+        font-family: 'Courier New', Courier, monospace !important;
+        font-size: 1.05rem !important;
+        line-height: 1.45 !important;
+        letter-spacing: -0.3px !important;
+        font-weight: normal !important;
+      }
 
-/* PRESENTACIÓN */
-.presentacion__rol {
-  padding: 12px;
-  margin-bottom: 12px;
-  border-left: 4px solid var(--azul) !important;
-  background: rgba(74, 140, 189, 0.15) !important;
-}
+      /* PRESENTACIÓN */
+      .presentacion__rol {
+        padding: 12px;
+        margin-bottom: 12px;
+        border-left: 4px solid var(--azul) !important;
+        background: rgba(74, 140, 189, 0.15) !important;
+      }
 
-.tutorial__item { padding: 10px; gap: 10px; margin-bottom: 8px; }
-.form-nombre { margin-bottom: 0; }
-.form-nombre label { font-size: 0.85rem; font-family: "Segoe UI", Roboto, sans-serif; }
-.input-texto { padding: 12px 14px; font-size: 1.1rem; font-family: 'Courier New', Courier, monospace !important; }
-.modal__accion { gap: 8px; }
-.modal__accion .boton { padding: 12px 16px; font-size: 1rem; font-family: "Segoe UI", Roboto, sans-serif; }
-}
+      .tutorial__item { padding: 10px; gap: 10px; margin-bottom: 8px; }
+      .form-nombre { margin-bottom: 0; }
+      .form-nombre label { font-size: 0.85rem; font-family: "Segoe UI", Roboto, sans-serif; }
+      .input-texto { padding: 12px 14px; font-size: 1.1rem; font-family: 'Courier New', Courier, monospace !important; }
+      .modal__accion { gap: 8px; }
+      .modal__accion .boton { padding: 12px 16px; font-size: 1rem; font-family: "Segoe UI", Roboto, sans-serif; }
+    }
+
+    .turnos__numero, .mini-stat__valor, .racha, .noticiero__marcador, .dado, .dado-resultado, .panel__titulo, .floating-text {
+      font-family: 'VT323', monospace !important;
+      font-weight: 400 !important;
+    }
+
+    .turnos__numero { font-size: clamp(1.15rem, 3.2vw, 1.4rem) !important; letter-spacing: 0.05em !important; }
+    .mini-stat__valor { font-size: 1.55rem !important; line-height: 1 !important; }
+    .racha { font-size: 1rem !important; letter-spacing: 0.08em !important; }
+    .noticiero__marcador { font-size: 0.95rem !important; letter-spacing: 0.16em !important; }
+    .dado { font-size: 3.4rem !important; }
+    .dado-resultado { font-size: 1.3rem !important; letter-spacing: 0.12em !important; }
+    .panel__titulo { font-size: 1.05rem !important; letter-spacing: 0.18em !important; }
+    .floating-text { font-size: 1.8rem !important; }
+
+    .final__inspiracion {
+      margin-top: 12px; padding: 10px 12px; border-left: 3px solid var(--azul);
+      background: rgba(74, 140, 189, 0.06); font-size: 0.78rem; color: #a0aec0;
+      font-style: normal; border-radius: 0 2px 2px 0; line-height: 1.45; font-family: monospace;
+    }
   </style>
 </head>
 <body>
