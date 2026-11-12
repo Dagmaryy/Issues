@@ -265,34 +265,34 @@
     .shake-suave { animation: shake-suave 0.35s ease-out; }
     .shake-fuerte { animation: shake-fuerte 0.5s ease-out; }
 
-  /* === AJUSTES PARA MÓVIL (UN SOLO PLANO) === */
+ /* === AJUSTES PARA MÓVIL (UN SOLO PLANO) === */
 @media (max-width: 560px) {
-  /* 1. Bloquear scroll y ajustar al alto de pantalla */
+  /* 1. Dejar que el body haga scroll normal, pero apretado */
   body {
     padding: calc(8px + var(--safe-top)) 8px calc(8px + var(--safe-bottom));
-    height: 100dvh;
-    overflow: hidden;
+    /* Quitamos height: 100dvh y overflow: hidden */
   }
 
+  /* 2. El contenedor ocupa el alto de la pantalla, pero permite desbordar si hace falta */
   .juego {
-    height: 100%;
+    min-height: 100dvh;
     gap: 8px;
-    justify-content: space-between;
+    justify-content: flex-start;
   }
 
-  /* 2. Ocultar lo que sobra en el plano principal */
+  /* 3. Ocultar lo que sobra */
   .cabecera { display: none; }
   .registro-panel { display: none; }
   footer { display: none; }
 
-  /* 3. Panel superior y noticiero compactos */
+  /* 4. Paneles superiores compactos */
   .panel { padding: 8px 10px; }
   .turnos__numero { font-size: 1rem !important; }
   .turnos__fase { font-size: 0.65rem; padding: 2px 6px; }
   .noticiero { padding: 8px; font-size: 0.8rem; }
   .noticiero__texto { font-size: 0.75rem; }
 
-  /* 4. P5 y Estadísticas apretados */
+  /* 5. P5 y Estadísticas */
   .p5-grid { gap: 4px; margin-bottom: 6px; padding-bottom: 6px; }
   .p5-pais { padding: 4px 2px; }
   .p5-pais span { font-size: 1.1rem; }
@@ -304,9 +304,8 @@
   .mini-stat__valor { font-size: 1.2rem !important; }
   .mini-stat__barra { height: 3px; }
 
-  /* 5. Tablero: ocupa todo el espacio vertical restante */
+  /* 6. Tablero */
   section[aria-label="Tablero"] {
-    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -314,7 +313,6 @@
     padding: 8px;
   }
   .tablero-scroll {
-    flex: 1;
     display: flex;
     align-items: center;
     padding: 0;
@@ -328,12 +326,11 @@
   }
   .cubo svg { width: clamp(18px, 6vw, 24px); height: clamp(18px, 6vw, 24px); }
 
-  /* Ocultamos textos de ayuda en móvil para ganar espacio */
   .pista-accion { display: none; }
   .boton--compacto { padding: 6px 4px; }
   .boton--compacto small { font-size: 0.7rem; }
 
-  /* 6. Modales: evitar que se corten arriba/abajo */
+  /* 7. Modales */
   .modal {
     align-items: flex-start;
     padding-top: 20px;
@@ -348,10 +345,6 @@
   .opcion { padding: 10px; }
   .opcion__titulo { font-size: 0.95rem; }
   .opcion__efecto, .opcion__probabilidad, .opcion__penalizacion { font-size: 0.75rem; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
     /* =========================================
        VT323 — PIXEL READABLE (números y marcadores)
